@@ -189,6 +189,7 @@ Conventional Symfony, module-first: `src/<Module>/<Layer>/`, namespace `App\<Mod
 - **Constraints in the database:** every relation has a foreign key; unique `teacher.email` (normalised to lower case), `(course_id, student_id)` on `enrollment`, `(course_id, starts_at_utc)` on `lesson_session`, `(lesson_session_id, student_id)` on `attendance`, `token_hash` on `check_in_window`.
 - **The balance is never stored.** It is credits of non-voided grants minus `present` attendances at non-cancelled lessons of that enrollment's course (PRD §4.4).
 - **Migrations** run unchanged on SQLite and MariaDB. Where SQL must differ, the migration branches on the platform. Every migration has a `down()`.
+- **Repositories and UUIDs in SQL** (from #3): entities declare no `repositoryClass` (phpat forbids Entity → Repository); services inject repositories by class. Raw DBAL binds a UUID with type `'uuid'` (or its string form), never `ParameterType::BINARY`.
 - **SQLite:** `foreign_keys=ON`, a `busy_timeout`, and WAL where the file system supports it, set on connect by #0.
 
 ### S4. Tenancy and security
