@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;icon_names=add,arrow_back,arrow_forward,calendar_month,calendar_today,check,check_circle,chevron_right,close,confirmation_number,edit,error,expand_more,fullscreen,group,history,home,info,location_on,lock,more_horiz,person,person_add,qr_code_2,remove,repeat,schedule,search,timer,undo,visibility,warning&amp;display=block">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<style>
+body{margin:0;background:#E7E2D8;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;-webkit-font-smoothing:antialiased}
+a{color:var(--ac,#62295A);text-decoration:none}a:hover{color:var(--ac-d,#4E1F48)}
+@keyframes thPulse{0%{box-shadow:0 0 0 0 rgba(46,134,96,.45)}70%,100%{box-shadow:0 0 0 9px rgba(46,134,96,0)}}
+</style>
+</helmet>
+<section id="intro" data-screen-label="Intro" style="width:2820px;box-sizing:border-box;padding:96px 80px 72px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;gap:120px;align-items:flex-start">
+<div style="flex:none;width:800px">
+<div style="display:flex;align-items:center;gap:14px"><span style="width:48px;height:48px;border-radius:14px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:34px;font-weight:500;letter-spacing:-.01em">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<h1 style="margin:44px 0 0;font-family:'Newsreader',serif;font-weight:400;font-size:84px;line-height:1;letter-spacing:-.035em">The attendance sheet, <i style="color:var(--ac,#62295A)">without the sheet.</i></h1>
+<p style="margin:28px 0 0;max-width:660px;font-size:20px;line-height:1.5;color:#5C5458;text-wrap:pretty">A calm, mobile-first web app for independent dance teachers. The teacher opens a lesson, students scan one QR code, and a credit comes off their 10-lesson pass.</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:36px;font-size:15px;font-weight:600">
+<a href="#foundations" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">Foundations</a>
+<a href="#sec-a" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">A · Login</a>
+<a href="#sec-b" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">B · Today</a>
+<a href="#sec-c" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">C · Courses</a>
+<a href="#sec-d" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">D · New course</a>
+<a href="#sec-e" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">E · Course</a>
+<a href="#sec-f" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">F · Lesson</a>
+<a href="#sec-g" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">G · QR display</a>
+<a href="#sec-h" style="padding:8px 14px;border-radius:999px;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1)">H · Student check-in</a>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,360px);gap:56px;padding-top:10px;font-size:16px;line-height:1.55;color:#5C5458">
+<div><div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:14px">Direction</div><p style="margin:0;text-wrap:pretty"><b style="color:#1E1A1D;font-weight:600">Paper, ink and one plum.</b> A warm paper ground, near-white cards and a single deep accent that only ever marks what you can act on. Green, amber and red are reserved for attendance and pass balance, never decoration.</p></div>
+<div><div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:14px">Decisions</div><ul style="margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:8px"><li>One filled button per screen. Everything else is quiet.</li><li>The tick (Haken) is the brand and the confirmation.</li><li>A pass is ten dots, the paper punch card kept.</li><li>No tables on mobile. Rows open in place, one at a time.</li></ul></div>
+<div><div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:14px">Assumptions</div><ul style="margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:8px"><li>English copy, Swiss conventions (24 h, Tue 10 Nov).</li><li>Credits belong to the student, not to one course.</li><li>The dashboard is labelled “Today”.</li><li>The brief stops midway through Screen H. The name list, success and low-pass states are my reading of it.</li></ul></div>
+</div>
+</div>
+</section>
+<section id="foundations" data-screen-label="Foundations" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Foundations</h2><span style="font-size:17px;color:#5C5458">Colour, type and the handful of parts every screen is made from.</span></div>
+<div style="display:grid;grid-template-columns:480px 480px minmax(0,1fr);gap:32px;align-items:start">
+<div style="background:#F7F4EE;border-radius:24px;padding:32px;box-shadow:0 0 0 1px rgba(30,26,29,.08)">
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:12px">Ground</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+<div><div style="height:60px;border-radius:14px;background:#F7F4EE;box-shadow:inset 0 0 0 1px #D9D0C2"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Paper</div><div style="font-size:12px;color:#766D71">#F7F4EE</div></div>
+<div><div style="height:60px;border-radius:14px;background:#FFFEFB;box-shadow:inset 0 0 0 1px #D9D0C2"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Card</div><div style="font-size:12px;color:#766D71">#FFFEFB</div></div>
+<div><div style="height:60px;border-radius:14px;background:#F1ECE3"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Inset</div><div style="font-size:12px;color:#766D71">#F1ECE3</div></div>
+<div><div style="height:60px;border-radius:14px;background:#E8E1D5"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Line</div><div style="font-size:12px;color:#766D71">#E8E1D5</div></div>
+</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:28px 0 12px">Ink</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+<div><div style="height:60px;border-radius:14px;background:#1E1A1D"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Ink</div><div style="font-size:12px;color:#766D71">#1E1A1D</div></div>
+<div><div style="height:60px;border-radius:14px;background:#5C5458"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Ink 2</div><div style="font-size:12px;color:#766D71">#5C5458</div></div>
+<div><div style="height:60px;border-radius:14px;background:#766D71"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Ink 3</div><div style="font-size:12px;color:#766D71">#766D71</div></div>
+<div><div style="height:60px;border-radius:14px;background:#D9D0C2"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Field line</div><div style="font-size:12px;color:#766D71">#D9D0C2</div></div>
+</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:28px 0 12px">Accent · Plum by default, Petrol and Ink in Tweaks</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+<div><div style="height:60px;border-radius:14px;background:var(--ac,#62295A)"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Accent</div><div style="font-size:12px;color:#766D71">#62295A</div></div>
+<div><div style="height:60px;border-radius:14px;background:var(--ac-d,#4E1F48)"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Pressed</div><div style="font-size:12px;color:#766D71">#4E1F48</div></div>
+<div><div style="height:60px;border-radius:14px;background:var(--ac-s,#F3E9F1)"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Soft</div><div style="font-size:12px;color:#766D71">#F3E9F1</div></div>
+<div><div style="height:60px;border-radius:14px;background:var(--ac-b,#E3CFE0)"></div><div style="margin-top:8px;font-size:13px;font-weight:600">Soft line</div><div style="font-size:12px;color:#766D71">#E3CFE0</div></div>
+</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:28px 0 12px">Status</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;font-size:13px;line-height:1.35">
+<div style="padding:14px;border-radius:14px;background:#E5F1EA;box-shadow:inset 0 0 0 1px #C6E0D2;color:#256B4D"><div style="display:flex;align-items:center;gap:7px;font-weight:700"><span style="width:10px;height:10px;border-radius:50%;background:#2E8660"></span>Present</div><div style="margin-top:6px">Confirmed attendance</div></div>
+<div style="padding:14px;border-radius:14px;background:#FBF0D6;box-shadow:inset 0 0 0 1px #EFD9A6;color:#8A5A00"><div style="display:flex;align-items:center;gap:7px;font-weight:700"><span style="width:10px;height:10px;border-radius:50%;background:#D9982B"></span>Low</div><div style="margin-top:6px">1 or 2 lessons left</div></div>
+<div style="padding:14px;border-radius:14px;background:#FBE8E3;box-shadow:inset 0 0 0 1px #F1C9BE;color:#A8321F"><div style="display:flex;align-items:center;gap:7px;font-weight:700"><span style="width:10px;height:10px;border-radius:50%;background:#C2412C"></span>Used up</div><div style="margin-top:6px">0 or below</div></div>
+</div>
+</div>
+<div style="background:#F7F4EE;border-radius:24px;padding:32px;box-shadow:0 0 0 1px rgba(30,26,29,.08)">
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:12px">Newsreader · display</div>
+<div style="font-family:'Newsreader',serif;font-size:48px;line-height:1.05;letter-spacing:-.025em">Good evening, Lena</div>
+<div style="font-family:'Newsreader',serif;font-size:48px;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums;color:#5C5458">19:00 <i style="color:var(--ac,#62295A)">Haken</i></div>
+<p style="margin:12px 0 0;font-size:14px;line-height:1.5;color:#5C5458">Greetings, page titles and lesson times. Weight 400, tracking −2%, lining figures.</p>
+<div style="height:1px;background:#E8E1D5;margin:28px 0"></div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:12px">Figtree · interface</div>
+<div style="font-size:20px;font-weight:600">Salsa Beginners</div>
+<div style="font-size:16px;color:#5C5458;margin-top:4px">12 students · Studio 2</div>
+<div style="font-size:14px;color:#766D71;margin-top:4px">Next lesson today, 19:00</div>
+<div style="margin-top:20px;font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.02em">0123456789 <span style="color:#A8321F">−1</span> <span style="color:var(--ac,#62295A)">+10</span></div>
+<p style="margin:12px 0 0;font-size:14px;line-height:1.5;color:#5C5458">Everything else. Tabular figures for balances, times and countdowns so digits never jump.</p>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:6px 20px;margin-top:22px;font-size:14px;color:#5C5458"><span style="font-weight:600;color:#1E1A1D">30–38</span><span>Display, serif</span><span style="font-weight:600;color:#1E1A1D">17–20</span><span>Titles, 600</span><span style="font-weight:600;color:#1E1A1D">16</span><span>Body and inputs</span><span style="font-weight:600;color:#1E1A1D">14</span><span>Meta</span><span style="font-weight:600;color:#1E1A1D">13</span><span>Smallest text on mobile</span></div>
+</div>
+<div style="background:#F7F4EE;border-radius:24px;padding:32px;box-shadow:0 0 0 1px rgba(30,26,29,.08);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:36px 40px">
+<div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:12px">Buttons</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+<button style="height:48px;padding:0 20px;border:0;border-radius:14px;background:var(--ac,#62295A);color:#fff;font-family:inherit;font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:8px;cursor:pointer" style-hover="background:var(--ac-d,#4E1F48)" style-focus="outline:3px solid var(--ac-b,#E3CFE0);outline-offset:2px"><span style="font:400 20px/1 'Material Symbols Rounded'">qr_code_2</span>Open check-in</button>
+<button style="height:48px;padding:0 18px;border:0;border-radius:14px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:var(--ac-b,#E3CFE0)" style-focus="outline:3px solid var(--ac-b,#E3CFE0);outline-offset:2px">+10</button>
+<button style="height:48px;padding:0 18px;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;color:#1E1A1D;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:#F1ECE3" style-focus="outline:3px solid var(--ac-b,#E3CFE0);outline-offset:2px">Close check-in</button>
+<button style="height:48px;padding:0 12px;border:0;border-radius:14px;background:none;color:var(--ac,#62295A);font-family:inherit;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:var(--ac-s,#F3E9F1)" style-focus="outline:3px solid var(--ac-b,#E3CFE0);outline-offset:2px">Undo</button>
+<button disabled style="height:48px;padding:0 20px;border:0;border-radius:14px;background:#E8E1D5;color:#766D71;font-family:inherit;font-size:15px;font-weight:600">Disabled</button>
+</div>
+<div style="display:flex;gap:10px;margin-top:12px;color:#1E1A1D">
+<span style="width:44px;height:44px;border-radius:50%;background:#FFFEFB;box-shadow:0 0 0 1px #E8E1D5;display:flex;align-items:center;justify-content:center"><span style="font:300 22px/1 'Material Symbols Rounded'">arrow_back</span></span>
+<span style="width:44px;height:44px;border-radius:50%;background:#FFFEFB;box-shadow:0 0 0 1px #E8E1D5;display:flex;align-items:center;justify-content:center"><span style="font:300 22px/1 'Material Symbols Rounded'">more_horiz</span></span>
+<span style="width:44px;height:44px;border-radius:50%;background:#FFFEFB;box-shadow:0 0 0 1px #E8E1D5;display:flex;align-items:center;justify-content:center"><span style="font:300 22px/1 'Material Symbols Rounded'">close</span></span>
+<span style="align-self:center;font-size:13px;color:#766D71;margin-left:6px">44 px minimum touch target</span>
+</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:30px 0 12px">Fields</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 14px">
+<div><div style="font-size:13px;font-weight:600;color:#5C5458">Course name</div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px;color:#766D71">e.g. Salsa Beginners</div></div>
+<div><div style="font-size:13px;font-weight:600;color:#5C5458">Focused</div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;border:1.5px solid var(--ac,#62295A);border-radius:14px;background:#FFFEFB;font-size:16px;box-shadow:0 0 0 4px var(--ac-s,#F3E9F1)">Salsa Beginners</div></div>
+<div><div style="font-size:13px;font-weight:600;color:#5C5458">Email</div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1.5px solid #C2412C;border-radius:14px;background:#FFFEFB;font-size:16px">lena@tanzraum<span style="font:400 20px/1 'Material Symbols Rounded';color:#C2412C">error</span></div><div style="margin-top:6px;font-size:13px;color:#A8321F">Enter a full email address.</div></div>
+<div><div style="font-size:13px;font-weight:600;color:#5C5458">Weekday</div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px">Tuesday<span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div></div>
+</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:30px 0 12px">Status badges</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;font-size:12px;font-weight:600">
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A)">Today</span>
+<span style="display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:#E5F1EA;color:#256B4D"><span style="width:7px;height:7px;border-radius:50%;background:#2E8660"></span>Check-in open</span>
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:#E5F1EA;color:#256B4D">Present</span>
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:#F1ECE3;color:#5C5458">Absent</span>
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;box-shadow:inset 0 0 0 1px #D9D0C2;color:#5C5458">Not yet</span>
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:#FBF0D6;color:#8A5A00">3 to renew</span>
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:#FBE8E3;color:#A8321F">Pass used up</span>
+</div>
+</div>
+<div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin-bottom:12px">Credit balance</div>
+<div style="display:flex;gap:22px;align-items:flex-start;font-size:13px;color:#5C5458">
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#F1ECE3;color:#1E1A1D">7</span>3 or more</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBF0D6;color:#8A5A00">2</span>Low</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBE8E3;color:#A8321F">0</span>Used up</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBE8E3;color:#A8321F">−1</span>Owes a lesson</div>
+</div>
+<div style="display:flex;align-items:center;gap:14px;margin-top:18px"><div style="display:flex;gap:6px"><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:14px;height:14px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span><span style="width:14px;height:14px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span><span style="width:14px;height:14px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span></div><span style="font-size:13px;color:#5C5458">The pass: filled dots are lessons left</span></div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:30px 0 12px">Rows</div>
+<div style="border-radius:18px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 14px 0 16px">
+<div style="display:flex;align-items:center;gap:12px;height:60px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">EB</span><div style="flex:1"><div style="font-size:16px;font-weight:500">Elias Baumann</div><div style="font-size:13px;color:#766D71">Last here Tue 3 Nov</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#FBF0D6;color:#8A5A00">1</span><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:62px"><div style="flex:none;width:44px;height:44px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#766D71">THU</span><span style="font-family:'Newsreader',serif;font-size:18px;line-height:1;font-variant-numeric:lining-nums">12</span></div><div style="flex:1"><div style="font-size:16px;font-weight:600">Kizomba Basics</div><div style="font-size:13px;color:#766D71">18:30 · 9 students</div></div><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+</div>
+<div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#766D71;margin:30px 0 12px">Toast and confirmation</div>
+<div style="display:flex;align-items:center;gap:14px;height:52px;padding:0 8px 0 18px;border-radius:16px;background:#1E1A1D;color:#F7F4EE;font-size:15px;box-shadow:0 14px 30px -12px rgba(30,26,29,.5)"><span style="font:400 20px/1 'Material Symbols Rounded';color:#8FD1B0">check</span><span style="flex:1">Luca B. marked present · 1 credit used</span><span style="height:36px;padding:0 12px;border-radius:10px;display:flex;align-items:center;font-weight:600;color:#fff;background:rgba(255,255,255,.12)">Undo</span></div>
+<div style="margin-top:14px;padding:24px;border-radius:22px;background:#FFFEFB;box-shadow:0 0 0 1px #E8E1D5,0 24px 48px -24px rgba(30,26,29,.35)">
+<div style="font-family:'Newsreader',serif;font-size:24px;letter-spacing:-.01em">Close check-in?</div>
+<p style="margin:8px 0 0;font-size:15px;line-height:1.5;color:#5C5458">The QR code stops working. 3 students have not checked in yet. You can still mark them by hand.</p>
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px"><span style="height:44px;padding:0 16px;border-radius:12px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:15px;font-weight:600">Keep open</span><span style="height:44px;padding:0 16px;border-radius:12px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;font-size:15px;font-weight:600">Close check-in</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="sec-a" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">A</span><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Login and registration</h2><span style="font-size:17px;color:#5C5458">Two fields and a button. Registration is one screen, no onboarding.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="a1" data-screen-label="A1 Login — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#a1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">A1</a>Login · mobile</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding:54px 28px 34px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D">
+<div style="margin-top:44px;display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:13px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:28px;font-weight:500;letter-spacing:-.01em">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="margin-top:48px;font-family:'Newsreader',serif;font-size:38px;line-height:1.08;letter-spacing:-.025em">Welcome back.</div>
+<div style="margin-top:10px;font-size:16px;line-height:1.45;color:#5C5458">Your classes and lesson passes, without the paper sheet.</div>
+<div style="margin-top:32px;font-size:13px;font-weight:600;color:#5C5458">Email</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px">lena@tanzraum.example</div>
+<div style="margin-top:16px;font-size:13px;font-weight:600;color:#5C5458">Password</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 14px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px;letter-spacing:.12em">••••••••••<span style="font:300 22px/1 'Material Symbols Rounded';letter-spacing:0;color:#766D71">visibility</span></div>
+<div style="align-self:flex-end;padding:13px 0;font-size:14px;font-weight:600;color:var(--ac,#62295A)">Forgot password?</div>
+<div style="margin-top:6px;height:54px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Log in</div>
+<div style="margin-top:auto;padding:14px 0;text-align:center;font-size:15px;color:#5C5458">New to TanzHaken? <a href="#a2" style="font-weight:600">Create an account</a></div>
+</div>
+</x-import>
+</div>
+<div id="a2" data-screen-label="A2 Register — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#a2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">A2</a>Register · mobile</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding:54px 28px 34px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D">
+<div style="margin:10px 0 0 -10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">arrow_back</span></div>
+<div style="margin-top:18px;font-family:'Newsreader',serif;font-size:36px;line-height:1.08;letter-spacing:-.025em">Create your account</div>
+<div style="margin-top:10px;font-size:16px;line-height:1.45;color:#5C5458">Set it up once. After that it is just names and ticks.</div>
+<div style="margin-top:28px;font-size:13px;font-weight:600;color:#5C5458">Your name</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px">Lena Brunner</div>
+<div style="margin-top:16px;font-size:13px;font-weight:600;color:#5C5458">Email</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px">lena@tanzraum.example</div>
+<div style="margin-top:16px;font-size:13px;font-weight:600;color:#5C5458">Password</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 14px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1.5px solid var(--ac,#62295A);border-radius:14px;background:#FFFEFB;font-size:16px;letter-spacing:.12em;box-shadow:0 0 0 4px var(--ac-s,#F3E9F1)">•••••••••<span style="font:300 22px/1 'Material Symbols Rounded';letter-spacing:0;color:#766D71">visibility</span></div>
+<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#256B4D"><span style="font:500 16px/1 'Material Symbols Rounded'">check</span>8 characters or more</div>
+<div style="margin-top:24px;height:54px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Create account</div>
+<div style="margin-top:14px;font-size:13px;line-height:1.5;color:#766D71;text-align:center">By creating an account you agree to the <span style="text-decoration:underline">Terms</span> and <span style="text-decoration:underline">Privacy Policy</span>.</div>
+<div style="margin-top:auto;padding:14px 0;text-align:center;font-size:15px;color:#5C5458">Already registered? <a href="#a1" style="font-weight:600">Log in</a></div>
+</div>
+</x-import>
+</div>
+<div id="a3" data-screen-label="A3 Login — desktop" style="flex:none;width:1280px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#a3" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">A3</a>Login · desktop</div>
+<div style="width:1280px;height:800px;border-radius:14px;overflow:hidden;display:flex;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1),0 30px 60px -24px rgba(30,26,29,.28)">
+<div style="flex:none;width:560px;box-sizing:border-box;padding:40px 48px;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:23px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="margin:auto;width:360px;display:flex;flex-direction:column">
+<div style="font-family:'Newsreader',serif;font-size:44px;line-height:1.05;letter-spacing:-.025em">Welcome back.</div>
+<div style="margin-top:10px;font-size:16px;color:#5C5458">Log in to see tonight's classes.</div>
+<div style="margin-top:32px;font-size:13px;font-weight:600;color:#5C5458">Email</div>
+<div style="margin-top:6px;height:48px;box-sizing:border-box;padding:0 14px;display:flex;align-items:center;border:1px solid #D9D0C2;border-radius:12px;background:#FFFEFB;font-size:15px">lena@tanzraum.example</div>
+<div style="margin-top:16px;display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:#5C5458">Password<span style="color:var(--ac,#62295A)">Forgot password?</span></div>
+<div style="margin-top:6px;height:48px;box-sizing:border-box;padding:0 12px 0 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:12px;background:#FFFEFB;font-size:15px;letter-spacing:.12em">••••••••••<span style="font:300 20px/1 'Material Symbols Rounded';letter-spacing:0;color:#766D71">visibility</span></div>
+<div style="margin-top:24px;height:50px;border-radius:14px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Log in</div>
+<div style="margin-top:22px;text-align:center;font-size:15px;color:#5C5458">New to TanzHaken? <a href="#a2" style="font-weight:600">Create an account</a></div>
+</div>
+<div style="font-size:13px;color:#766D71">For independent dance teachers in Switzerland</div>
+</div>
+<div style="flex:1;margin:12px 12px 12px 0;border-radius:10px;background:var(--ac,#62295A);color:#fff;box-sizing:border-box;padding:64px;display:flex;flex-direction:column;justify-content:space-between">
+<div style="font-family:'Newsreader',serif;font-size:60px;line-height:1.02;letter-spacing:-.03em;max-width:520px">The attendance sheet, <i>without the sheet.</i></div>
+<div style="align-self:flex-start;width:372px;box-sizing:border-box;padding:24px 26px 26px;border-radius:20px;background:#F7F4EE;color:#1E1A1D;transform:rotate(-2deg);box-shadow:0 30px 50px -24px rgba(0,0,0,.5)">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'Newsreader',serif;font-size:22px">10-lesson pass</span><span style="font-size:14px;color:#5C5458">Anna M.</span></div>
+<div style="display:grid;grid-template-columns:repeat(5,44px);justify-content:space-between;gap:16px 0;margin-top:20px">
+<span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:44px;height:44px;box-sizing:border-box;border-radius:50%;border:2px dashed #D9D0C2"></span><span style="width:44px;height:44px;box-sizing:border-box;border-radius:50%;border:2px dashed #D9D0C2"></span><span style="width:44px;height:44px;box-sizing:border-box;border-radius:50%;border:2px dashed #D9D0C2"></span>
+</div>
+<div style="margin-top:18px;font-size:14px;color:#5C5458"><b style="color:#1E1A1D;font-weight:600">7 lessons left</b> · one comes off with every tick</div>
+</div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;max-width:760px;font-size:14px;line-height:1.5;color:#5C5458">Desktop splits form and brand. The pass card introduces the ten-dot motif used for every credit balance later on.</p>
+</div>
+</div>
+</section>
+<section id="sec-b" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">B</span><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Today</h2><span style="font-size:17px;color:#5C5458">What do I need to do tonight? The lesson that matters now is the hero and carries the only filled button.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="b1" data-screen-label="B1 Today — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#b1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">B1</a>Today · mobile</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:02" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="flex:1;min-height:0;overflow:hidden;padding:10px 20px 0">
+<div style="display:flex;align-items:center;justify-content:space-between;height:40px"><span style="font-size:14px;font-weight:500;color:#766D71">Tuesday, 10 November</span><span style="display:flex;align-items:center;gap:4px;height:36px;padding:0 14px 0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:14px;font-weight:600"><span style="font:400 20px/1 'Material Symbols Rounded'">add</span>New course</span></div>
+<div style="font-family:'Newsreader',serif;font-size:32px;line-height:1.15;letter-spacing:-.02em;margin-top:4px">Good evening, Lena</div>
+<div style="margin-top:22px;font-size:15px;font-weight:600">Today</div>
+<div style="margin-top:10px;padding:18px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;box-shadow:0 10px 24px -16px rgba(30,26,29,.25)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:12px;font-weight:600">Ended 2 min ago</span><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;gap:14px;margin-top:12px"><div style="font-family:'Newsreader',serif;font-size:30px;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums;padding-top:2px">19:00</div><div><div style="font-size:19px;font-weight:600;line-height:1.2">Salsa Beginners</div><div style="font-size:14px;color:#5C5458;margin-top:3px">12 students · Studio 2</div></div></div>
+<div style="margin-top:16px;height:52px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><span style="font:400 22px/1 'Material Symbols Rounded'">qr_code_2</span>Open check-in</div>
+</div>
+<div style="margin-top:10px;padding:14px 14px 14px 18px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;display:flex;align-items:center;gap:14px">
+<div style="font-family:'Newsreader',serif;font-size:24px;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums">20:15</div>
+<div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600;white-space:nowrap">Bachata Intermediate</div><div style="font-size:13px;color:#5C5458;margin-top:2px">8 students · in 13 min</div></div>
+<span style="flex:none;height:40px;padding:0 16px;border-radius:999px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:14px;font-weight:600">Open</span>
+</div>
+<div style="margin-top:24px;display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:15px;font-weight:600">Passes to renew</span><span style="font-size:13px;color:#766D71">3 students</span></div>
+<div style="margin-top:10px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 12px 0 16px">
+<div style="display:flex;align-items:center;gap:10px;height:58px;border-bottom:1px solid #F1ECE3"><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600">David Roth</div><div style="font-size:13px;color:#766D71">In tonight's Salsa class</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBE8E3;color:#A8321F">−1</span><span style="height:44px;display:flex;align-items:center"><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></span></div>
+<div style="display:flex;align-items:center;gap:10px;height:58px;border-bottom:1px solid #F1ECE3"><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600">Noah Frei</div><div style="font-size:13px;color:#766D71">In tonight's Salsa class</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBE8E3;color:#A8321F">0</span><span style="height:44px;display:flex;align-items:center"><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></span></div>
+<div style="display:flex;align-items:center;gap:10px;height:58px"><div style="flex:1;min-width:0"><div style="font-size:15px;font-weight:600">Elias Baumann</div><div style="font-size:13px;color:#766D71">In tonight's Salsa class</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBF0D6;color:#8A5A00">1</span><span style="height:44px;display:flex;align-items:center"><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></span></div>
+</div>
+<div style="margin-top:24px;font-size:15px;font-weight:600">Upcoming</div>
+<div style="margin-top:10px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 12px 0 14px">
+<div style="display:flex;align-items:center;gap:12px;height:64px;border-bottom:1px solid #F1ECE3"><div style="flex:none;width:44px;height:44px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#766D71">THU</span><span style="font-family:'Newsreader',serif;font-size:18px;line-height:1;font-variant-numeric:lining-nums">12</span></div><div style="flex:1"><div style="font-size:16px;font-weight:600">Kizomba Basics</div><div style="font-size:13px;color:#766D71">18:30 · 9 students</div></div><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:64px"><div style="flex:none;width:44px;height:44px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#766D71">THU</span><span style="font-family:'Newsreader',serif;font-size:18px;line-height:1;font-variant-numeric:lining-nums">12</span></div><div style="flex:1"><div style="font-size:16px;font-weight:600">Salsa Improvers</div><div style="font-size:13px;color:#766D71">19:45 · 14 students</div></div><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+</div>
+</div>
+<div style="flex:none;height:84px;box-sizing:border-box;padding:8px 12px 30px;display:flex;background:#FFFEFB;border-top:1px solid #E8E1D5;font-size:11px">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ac,#62295A);font-weight:700"><span style="font:400 24px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">home</span>Today</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">calendar_month</span>Courses</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">group</span>Students</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">person</span>Account</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Shown at 20:02, right after class. One tap on the hero opens the QR code. “Passes to renew” sits above Upcoming because those students are in the room tonight.</p>
+</div>
+<div id="b2" data-screen-label="B2 Today — desktop" style="flex:none;width:1280px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#b2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">B2</a>Today · desktop</div>
+<div style="width:1280px;height:800px;border-radius:14px;overflow:hidden;display:flex;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1),0 30px 60px -24px rgba(30,26,29,.28)">
+<div style="flex:none;width:232px;box-sizing:border-box;padding:24px 14px 16px;display:flex;flex-direction:column;border-right:1px solid #E8E1D5;background:#F3EFE7">
+<div style="display:flex;align-items:center;gap:10px;padding:0 10px 22px"><span style="width:30px;height:30px;border-radius:9px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:21px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="display:flex;flex-direction:column;gap:2px;font-size:15px;font-weight:500;color:#5C5458">
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;background:#FFFEFB;color:var(--ac,#62295A);font-weight:600;box-shadow:0 0 0 1px #E8E1D5"><span style="font:400 21px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">home</span>Today</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">calendar_month</span>Courses</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">group</span>Students</div>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px"><span style="flex:none;width:32px;height:32px;border-radius:50%;background:#E8E1D5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#5C5458">LB</span><div><div style="font-size:14px;font-weight:600">Lena Brunner</div><div style="font-size:12px;color:#766D71">Account</div></div></div>
+</div>
+<div style="flex:1;min-width:0;box-sizing:border-box;padding:40px 56px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between"><div><div style="font-size:14px;font-weight:500;color:#766D71">Tuesday, 10 November</div><div style="font-family:'Newsreader',serif;font-size:42px;line-height:1.1;letter-spacing:-.025em;margin-top:4px">Good evening, Lena</div></div><span style="display:flex;align-items:center;gap:6px;height:42px;padding:0 16px 0 12px;border-radius:12px;border:1px solid #D9D0C2;background:#FFFEFB;font-size:15px;font-weight:600"><span style="font:400 20px/1 'Material Symbols Rounded'">add</span>New course</span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;margin-top:36px">
+<div>
+<div style="font-size:15px;font-weight:600">Today</div>
+<div style="margin-top:10px;padding:24px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;box-shadow:0 14px 30px -20px rgba(30,26,29,.25)">
+<span style="display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:12px;font-weight:600">Ended 2 min ago</span>
+<div style="display:flex;gap:20px;margin-top:14px;align-items:center"><div style="font-family:'Newsreader',serif;font-size:44px;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums">19:00</div><div><div style="font-size:22px;font-weight:600;line-height:1.2">Salsa Beginners</div><div style="font-size:15px;color:#5C5458;margin-top:3px">12 students · Studio 2 · 60 min</div></div></div>
+<div style="display:flex;gap:10px;margin-top:20px"><span style="height:48px;padding:0 22px 0 18px;border-radius:14px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600"><span style="font:400 21px/1 'Material Symbols Rounded'">qr_code_2</span>Open check-in</span><span style="height:48px;padding:0 16px;border-radius:14px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ac,#62295A)">View lesson</span></div>
+</div>
+<div style="margin-top:10px;padding:16px 16px 16px 24px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;display:flex;align-items:center;gap:20px">
+<div style="font-family:'Newsreader',serif;font-size:30px;line-height:1;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums">20:15</div>
+<div style="flex:1"><div style="font-size:17px;font-weight:600">Bachata Intermediate</div><div style="font-size:14px;color:#5C5458;margin-top:2px">8 students · Studio 2 · in 13 min</div></div>
+<span style="height:42px;padding:0 16px;border-radius:12px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:15px;font-weight:600">Open lesson</span>
+</div>
+<div style="margin-top:28px;font-size:15px;font-weight:600">Upcoming</div>
+<div style="margin-top:10px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 14px 0 16px">
+<div style="display:flex;align-items:center;gap:14px;height:60px;border-bottom:1px solid #F1ECE3"><div style="flex:none;width:42px;height:42px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#766D71">THU</span><span style="font-family:'Newsreader',serif;font-size:17px;line-height:1;font-variant-numeric:lining-nums">12</span></div><div style="flex:1;font-size:16px;font-weight:600">Kizomba Basics</div><span style="font-size:14px;color:#5C5458;font-variant-numeric:tabular-nums">18:30 · 9 students</span><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:14px;height:60px;border-bottom:1px solid #F1ECE3"><div style="flex:none;width:42px;height:42px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#766D71">THU</span><span style="font-family:'Newsreader',serif;font-size:17px;line-height:1;font-variant-numeric:lining-nums">12</span></div><div style="flex:1;font-size:16px;font-weight:600">Salsa Improvers</div><span style="font-size:14px;color:#5C5458;font-variant-numeric:tabular-nums">19:45 · 14 students</span><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:14px;height:60px"><div style="flex:none;width:42px;height:42px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:10px;font-weight:700;color:#766D71">SAT</span><span style="font-family:'Newsreader',serif;font-size:17px;line-height:1;font-variant-numeric:lining-nums">14</span></div><div style="flex:1;font-size:16px;font-weight:600">Lindy Hop Open Level</div><span style="font-size:14px;color:#5C5458;font-variant-numeric:tabular-nums">11:00 · 6 students</span><span style="font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+</div>
+</div>
+<div>
+<div style="display:flex;align-items:baseline;justify-content:space-between"><span style="font-size:15px;font-weight:600">Passes to renew</span><span style="font-size:13px;color:#766D71">3 students</span></div>
+<div style="margin-top:10px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 14px 0 18px">
+<div style="display:flex;align-items:center;gap:10px;height:64px;border-bottom:1px solid #F1ECE3"><div style="flex:1"><div style="font-size:15px;font-weight:600">David Roth</div><div style="font-size:13px;color:#766D71">In tonight's Salsa class</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#FBE8E3;color:#A8321F">−1</span><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></div>
+<div style="display:flex;align-items:center;gap:10px;height:64px;border-bottom:1px solid #F1ECE3"><div style="flex:1"><div style="font-size:15px;font-weight:600">Noah Frei</div><div style="font-size:13px;color:#766D71">In tonight's Salsa class</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#FBE8E3;color:#A8321F">0</span><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></div>
+<div style="display:flex;align-items:center;gap:10px;height:64px"><div style="flex:1"><div style="font-size:15px;font-weight:600">Elias Baumann</div><div style="font-size:13px;color:#766D71">In tonight's Salsa class</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#FBF0D6;color:#8A5A00">1</span><span style="height:36px;padding:0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:14px;font-weight:600">+10</span></div>
+</div>
+<p style="margin:14px 4px 0;font-size:13px;line-height:1.5;color:#766D71">+10 adds a full pass in one click, with Undo.</p>
+</div>
+</div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;max-width:760px;font-size:14px;line-height:1.5;color:#5C5458">Desktop keeps the same order in two columns: schedule on the left, people on the right. The sidebar holds three destinations and the account.</p>
+</div>
+</div>
+</section>
+<section id="sec-c" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">C</span><h2 id="sec-d" style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Courses <span style="color:#766D71">and</span> <i style="color:var(--ac,#62295A)">D</i> New course</h2><span style="font-size:17px;color:#5C5458">Each course leads with its weekday and time, the way a teacher thinks of it.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="c1" data-screen-label="C1 Courses — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#c1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">C1</a>Courses · mobile</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:02" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="flex:1;min-height:0;overflow:hidden;padding:14px 20px 0">
+<div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:'Newsreader',serif;font-size:32px;line-height:1.15;letter-spacing:-.02em">Courses</div><span style="display:flex;align-items:center;gap:4px;height:40px;padding:0 16px 0 12px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:14px;font-weight:600"><span style="font:400 20px/1 'Material Symbols Rounded'">add</span>New course</span></div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:18px">
+<div style="display:flex;gap:14px;padding:14px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:18px"><div style="flex:none;width:54px;height:56px;border-radius:12px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700">TUE</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">19:00</span></div><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">Salsa Beginners</div><div style="font-size:14px;color:#5C5458;margin-top:2px">12 students · Studio 2</div><div style="display:flex;gap:6px;margin-top:8px;font-size:12px;font-weight:600"><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A)">Today</span><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#FBF0D6;color:#8A5A00">3 to renew</span></div></div><span style="align-self:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;gap:14px;padding:14px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:18px"><div style="flex:none;width:54px;height:56px;border-radius:12px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700">TUE</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">20:15</span></div><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">Bachata Intermediate</div><div style="font-size:14px;color:#5C5458;margin-top:2px">8 students · Studio 2</div><div style="display:flex;gap:6px;margin-top:8px;font-size:12px;font-weight:600"><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A)">Today</span></div></div><span style="align-self:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;gap:14px;padding:14px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:18px"><div style="flex:none;width:54px;height:56px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">THU</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">18:30</span></div><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">Kizomba Basics</div><div style="font-size:14px;color:#5C5458;margin-top:2px">9 students · Studio 1</div><div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:#766D71">Next lesson Thu 12 Nov<span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#FBF0D6;color:#8A5A00;font-size:12px;font-weight:600">1 to renew</span></div></div><span style="align-self:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;gap:14px;padding:14px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:18px"><div style="flex:none;width:54px;height:56px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">THU</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">19:45</span></div><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">Salsa Improvers</div><div style="font-size:14px;color:#5C5458;margin-top:2px">14 students · Studio 1</div><div style="margin-top:8px;height:22px;display:flex;align-items:center;font-size:13px;color:#766D71">Next lesson Thu 12 Nov</div></div><span style="align-self:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;gap:14px;padding:14px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:18px"><div style="flex:none;width:54px;height:56px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">SAT</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">11:00</span></div><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">Lindy Hop Open Level</div><div style="font-size:14px;color:#5C5458;margin-top:2px">6 students · Volkshaus</div><div style="margin-top:8px;height:22px;display:flex;align-items:center;font-size:13px;color:#766D71">Next lesson Sat 14 Nov</div></div><span style="align-self:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;gap:14px;padding:14px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:18px"><div style="flex:none;width:54px;height:56px;border-radius:12px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">SAT</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">14:00</span></div><div style="flex:1;min-width:0"><div style="font-size:17px;font-weight:600">Tango Foundations</div><div style="font-size:14px;color:#5C5458;margin-top:2px">No students yet · Studio 2</div><div style="margin-top:8px"><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;box-shadow:inset 0 0 0 1px #D9D0C2;color:#5C5458;font-size:12px;font-weight:600">Starts 9 Jan</span></div></div><span style="align-self:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+</div>
+</div>
+<div style="flex:none;height:84px;box-sizing:border-box;padding:8px 12px 30px;display:flex;background:#FFFEFB;border-top:1px solid #E8E1D5;font-size:11px">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">home</span>Today</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ac,#62295A);font-weight:700"><span style="font:400 24px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">calendar_month</span>Courses</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">group</span>Students</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">person</span>Account</div>
+</div>
+</div>
+</x-import>
+</div>
+<div id="c2" data-screen-label="C2 Courses empty — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#c2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">C2</a>Empty state</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="padding:14px 20px 0;font-family:'Newsreader',serif;font-size:32px;line-height:1.15;letter-spacing:-.02em;height:40px">Courses</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 36px 30px;text-align:center">
+<div style="width:260px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;border:1.5px dashed #D9D0C2"><span style="width:40px;height:40px;border-radius:10px;background:#E8E1D5"></span><span style="flex:1;display:flex;flex-direction:column;gap:7px"><span style="width:120px;height:9px;border-radius:5px;background:#E8E1D5"></span><span style="width:76px;height:9px;border-radius:5px;background:#EDE7DC"></span></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;border:1.5px dashed #D9D0C2;opacity:.6"><span style="width:40px;height:40px;border-radius:10px;background:#E8E1D5"></span><span style="flex:1;display:flex;flex-direction:column;gap:7px"><span style="width:96px;height:9px;border-radius:5px;background:#E8E1D5"></span><span style="width:60px;height:9px;border-radius:5px;background:#EDE7DC"></span></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;border:1.5px dashed #D9D0C2;opacity:.3"><span style="width:40px;height:40px;border-radius:10px;background:#E8E1D5"></span><span style="flex:1;display:flex;flex-direction:column;gap:7px"><span style="width:132px;height:9px;border-radius:5px;background:#E8E1D5"></span><span style="width:70px;height:9px;border-radius:5px;background:#EDE7DC"></span></span></div>
+</div>
+<div style="margin-top:32px;font-family:'Newsreader',serif;font-size:28px;letter-spacing:-.02em">No courses yet</div>
+<div style="margin-top:8px;font-size:16px;line-height:1.5;color:#5C5458;text-wrap:pretty">Add your first course and its weekly lessons appear here. It takes about a minute.</div>
+<div style="margin-top:24px;height:52px;padding:0 24px 0 18px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;gap:6px;font-size:16px;font-weight:600"><span style="font:400 22px/1 'Material Symbols Rounded'">add</span>Create your first course</div>
+</div>
+<div style="flex:none;height:84px;box-sizing:border-box;padding:8px 12px 30px;display:flex;background:#FFFEFB;border-top:1px solid #E8E1D5;font-size:11px">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">home</span>Today</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ac,#62295A);font-weight:700"><span style="font:400 24px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">calendar_month</span>Courses</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">group</span>Students</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">person</span>Account</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Ghost rows show where courses will live, so the empty page already explains itself. No illustration.</p>
+</div>
+<div id="d1" data-screen-label="D1 New course — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#d1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">D1</a>New course · mobile</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="display:flex;align-items:center;height:48px;padding:0 10px"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">close</span></span><span style="flex:1;text-align:center;font-size:17px;font-weight:600;margin-right:44px">New course</span></div>
+<div style="flex:1;min-height:0;padding:8px 20px 0">
+<div style="font-size:13px;font-weight:600;color:#5C5458">Course name</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px;display:flex;align-items:center;border:1.5px solid var(--ac,#62295A);border-radius:14px;background:#FFFEFB;font-size:16px;box-shadow:0 0 0 4px var(--ac-s,#F3E9F1)">Salsa Beginners<span style="width:1.5px;height:22px;background:var(--ac,#62295A);margin-left:1px"></span></div>
+<div style="margin-top:18px;font-size:13px;font-weight:600;color:#5C5458">Weekday</div>
+<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:15px;font-weight:600">
+<span style="width:46px;height:46px;border-radius:13px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Mo</span>
+<span style="width:46px;height:46px;border-radius:13px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center">Tu</span>
+<span style="width:46px;height:46px;border-radius:13px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">We</span>
+<span style="width:46px;height:46px;border-radius:13px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Th</span>
+<span style="width:46px;height:46px;border-radius:13px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Fr</span>
+<span style="width:46px;height:46px;border-radius:13px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Sa</span>
+<span style="width:46px;height:46px;border-radius:13px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Su</span>
+</div>
+<div style="display:flex;gap:12px;margin-top:18px">
+<div style="flex:none;width:116px"><div style="font-size:13px;font-weight:600;color:#5C5458">Starts at</div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px;font-variant-numeric:tabular-nums">19:00<span style="font:300 20px/1 'Material Symbols Rounded';color:#766D71">schedule</span></div></div>
+<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#5C5458">Duration, minutes</div><div style="display:flex;gap:6px;margin-top:6px;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums"><span style="flex:1;height:52px;border-radius:14px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">45</span><span style="flex:1;height:52px;border-radius:14px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center">60</span><span style="flex:1;height:52px;border-radius:14px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">75</span><span style="flex:1;height:52px;border-radius:14px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">90</span></div></div>
+</div>
+<div style="margin-top:18px;font-size:13px;font-weight:600;color:#5C5458">Location</div>
+<div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 16px 0 12px;display:flex;align-items:center;gap:8px;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px"><span style="font:300 20px/1 'Material Symbols Rounded';color:#766D71">location_on</span>Studio 2, Tanzraum Wipkingen</div>
+<div style="margin-top:6px;font-size:13px;color:#766D71">Filled in from your last course</div>
+<div style="display:flex;gap:12px;margin-top:18px">
+<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#5C5458">First lesson</div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px">Tue 17 Nov<span style="font:300 20px/1 'Material Symbols Rounded';color:#766D71">calendar_today</span></div></div>
+<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#5C5458">Last lesson <span style="font-weight:400;color:#766D71">optional</span></div><div style="margin-top:6px;height:52px;box-sizing:border-box;padding:0 12px 0 16px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:14px;background:#FFFEFB;font-size:16px;color:#766D71">No end date<span style="font:300 20px/1 'Material Symbols Rounded'">calendar_today</span></div></div>
+</div>
+<div style="display:flex;align-items:center;gap:4px;height:44px;margin-top:10px;font-size:15px;font-weight:600;color:var(--ac,#62295A)"><span style="font:400 20px/1 'Material Symbols Rounded'">add</span>Add a description</div>
+</div>
+<div style="flex:none;padding:14px 20px 40px;background:#FFFEFB;border-top:1px solid #E8E1D5">
+<div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:#5C5458"><span style="font:300 18px/1 'Material Symbols Rounded'">repeat</span>Every Tuesday, 19:00–20:00, from 17 Nov</div>
+<div style="margin-top:12px;height:54px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Create course</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Only the name has to be typed. Weekday and duration are one tap, the rest is pre-filled, and the plain-language summary confirms the schedule before saving.</p>
+</div>
+<div id="c3" data-screen-label="C3 Courses with new-course panel — desktop" style="flex:none;width:1280px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#c3" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">C3</a>Courses with the new-course panel · desktop</div>
+<div style="width:1280px;height:800px;border-radius:14px;overflow:hidden;display:flex;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1),0 30px 60px -24px rgba(30,26,29,.28)">
+<div style="flex:none;width:232px;box-sizing:border-box;padding:24px 14px 16px;display:flex;flex-direction:column;border-right:1px solid #E8E1D5;background:#F3EFE7">
+<div style="display:flex;align-items:center;gap:10px;padding:0 10px 22px"><span style="width:30px;height:30px;border-radius:9px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:21px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="display:flex;flex-direction:column;gap:2px;font-size:15px;font-weight:500;color:#5C5458">
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">home</span>Today</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;background:#FFFEFB;color:var(--ac,#62295A);font-weight:600;box-shadow:0 0 0 1px #E8E1D5"><span style="font:400 21px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">calendar_month</span>Courses</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">group</span>Students</div>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px"><span style="flex:none;width:32px;height:32px;border-radius:50%;background:#E8E1D5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#5C5458">LB</span><div><div style="font-size:14px;font-weight:600">Lena Brunner</div><div style="font-size:12px;color:#766D71">Account</div></div></div>
+</div>
+<div style="flex:1;min-width:0;box-sizing:border-box;padding:40px 40px 0">
+<div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:'Newsreader',serif;font-size:42px;line-height:1.1;letter-spacing:-.025em">Courses</div><span style="font-size:15px;color:#766D71">6 courses · 49 students</span></div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:28px">
+<div style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:16px"><div style="flex:none;width:54px;height:52px;border-radius:11px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700">TUE</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">19:00</span></div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Salsa Beginners</div><div style="font-size:14px;color:#5C5458;margin-top:2px">12 students · Studio 2</div></div><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#FBF0D6;color:#8A5A00;font-size:12px;font-weight:600">3 to renew</span><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:12px;font-weight:600">Today</span></div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:16px"><div style="flex:none;width:54px;height:52px;border-radius:11px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700">TUE</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">20:15</span></div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Bachata Intermediate</div><div style="font-size:14px;color:#5C5458;margin-top:2px">8 students · Studio 2</div></div><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:12px;font-weight:600">Today</span></div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:16px"><div style="flex:none;width:54px;height:52px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">THU</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">18:30</span></div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Kizomba Basics</div><div style="font-size:14px;color:#5C5458;margin-top:2px">9 students · Studio 1</div></div><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#FBF0D6;color:#8A5A00;font-size:12px;font-weight:600">1 to renew</span><span style="font-size:13px;color:#766D71">Next Thu 12 Nov</span></div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:16px"><div style="flex:none;width:54px;height:52px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">THU</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">19:45</span></div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Salsa Improvers</div><div style="font-size:14px;color:#5C5458;margin-top:2px">14 students · Studio 1</div></div><span style="font-size:13px;color:#766D71">Next Thu 12 Nov</span></div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:16px"><div style="flex:none;width:54px;height:52px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">SAT</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">11:00</span></div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Lindy Hop Open Level</div><div style="font-size:14px;color:#5C5458;margin-top:2px">6 students · Volkshaus</div></div><span style="font-size:13px;color:#766D71">Next Sat 14 Nov</span></div>
+<div style="display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;background:#FFFEFB;border:1px solid #E8E1D5;border-radius:16px"><div style="flex:none;width:54px;height:52px;border-radius:11px;background:#F1ECE3;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:11px;font-weight:700;color:#766D71">SAT</span><span style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums">14:00</span></div><div style="flex:1;min-width:0"><div style="font-size:16px;font-weight:600">Tango Foundations</div><div style="font-size:14px;color:#5C5458;margin-top:2px">No students yet · Studio 2</div></div><span style="display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;box-shadow:inset 0 0 0 1px #D9D0C2;color:#5C5458;font-size:12px;font-weight:600">Starts 9 Jan</span></div>
+</div>
+</div>
+<div style="flex:none;width:432px;box-sizing:border-box;display:flex;flex-direction:column;background:#FFFEFB;border-left:1px solid #E8E1D5;box-shadow:-24px 0 48px -32px rgba(30,26,29,.25)">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:26px 20px 0 32px"><div style="font-family:'Newsreader',serif;font-size:28px;letter-spacing:-.02em">New course</div><span style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center"><span style="font:300 22px/1 'Material Symbols Rounded'">close</span></span></div>
+<div style="flex:1;padding:20px 32px 0">
+<div style="font-size:13px;font-weight:600;color:#5C5458">Course name</div>
+<div style="margin-top:6px;height:46px;box-sizing:border-box;padding:0 14px;display:flex;align-items:center;border:1.5px solid var(--ac,#62295A);border-radius:12px;background:#fff;font-size:15px;box-shadow:0 0 0 4px var(--ac-s,#F3E9F1)">Salsa Beginners<span style="width:1.5px;height:20px;background:var(--ac,#62295A);margin-left:1px"></span></div>
+<div style="margin-top:16px;font-size:13px;font-weight:600;color:#5C5458">Weekday</div>
+<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:14px;font-weight:600">
+<span style="width:46px;height:42px;border-radius:11px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Mo</span><span style="width:46px;height:42px;border-radius:11px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center">Tu</span><span style="width:46px;height:42px;border-radius:11px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">We</span><span style="width:46px;height:42px;border-radius:11px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Th</span><span style="width:46px;height:42px;border-radius:11px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Fr</span><span style="width:46px;height:42px;border-radius:11px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Sa</span><span style="width:46px;height:42px;border-radius:11px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Su</span>
+</div>
+<div style="display:flex;gap:12px;margin-top:16px">
+<div style="flex:none;width:112px"><div style="font-size:13px;font-weight:600;color:#5C5458">Starts at</div><div style="margin-top:6px;height:46px;box-sizing:border-box;padding:0 10px 0 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:12px;font-size:15px;font-variant-numeric:tabular-nums">19:00<span style="font:300 19px/1 'Material Symbols Rounded';color:#766D71">schedule</span></div></div>
+<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#5C5458">Duration, minutes</div><div style="display:flex;gap:6px;margin-top:6px;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums"><span style="flex:1;height:46px;border-radius:12px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">45</span><span style="flex:1;height:46px;border-radius:12px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center">60</span><span style="flex:1;height:46px;border-radius:12px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">75</span><span style="flex:1;height:46px;border-radius:12px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">90</span></div></div>
+</div>
+<div style="margin-top:16px;font-size:13px;font-weight:600;color:#5C5458">Location</div>
+<div style="margin-top:6px;height:46px;box-sizing:border-box;padding:0 14px 0 10px;display:flex;align-items:center;gap:8px;border:1px solid #D9D0C2;border-radius:12px;font-size:15px"><span style="font:300 19px/1 'Material Symbols Rounded';color:#766D71">location_on</span>Studio 2, Tanzraum Wipkingen</div>
+<div style="display:flex;gap:12px;margin-top:16px">
+<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#5C5458">First lesson</div><div style="margin-top:6px;height:46px;box-sizing:border-box;padding:0 10px 0 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:12px;font-size:15px">Tue 17 Nov<span style="font:300 19px/1 'Material Symbols Rounded';color:#766D71">calendar_today</span></div></div>
+<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#5C5458">Last lesson <span style="font-weight:400;color:#766D71">optional</span></div><div style="margin-top:6px;height:46px;box-sizing:border-box;padding:0 10px 0 14px;display:flex;align-items:center;justify-content:space-between;border:1px solid #D9D0C2;border-radius:12px;font-size:15px;color:#766D71">No end date<span style="font:300 19px/1 'Material Symbols Rounded'">calendar_today</span></div></div>
+</div>
+<div style="margin-top:16px;font-size:13px;font-weight:600;color:#5C5458">Description <span style="font-weight:400;color:#766D71">optional</span></div>
+<div style="margin-top:6px;height:76px;box-sizing:border-box;padding:12px 14px;border:1px solid #D9D0C2;border-radius:12px;font-size:15px;color:#766D71">Level, what to bring, partner needed…</div>
+</div>
+<div style="flex:none;padding:16px 32px 24px;border-top:1px solid #E8E1D5">
+<div style="display:flex;align-items:center;gap:6px;font-size:14px;color:#5C5458"><span style="font:300 18px/1 'Material Symbols Rounded'">repeat</span>Every Tuesday, 19:00–20:00, from 17 Nov</div>
+<div style="display:flex;gap:10px;margin-top:14px"><span style="flex:none;height:48px;padding:0 18px;border-radius:14px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:15px;font-weight:600">Cancel</span><span style="flex:1;height:48px;border-radius:14px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Create course</span></div>
+</div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;max-width:760px;font-size:14px;line-height:1.5;color:#5C5458">On desktop the form opens as a side panel, so the course list stays in view. With the panel closed the list widens to the full content column.</p>
+</div>
+</div>
+</section>
+<section id="sec-e" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">E</span><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Course details</h2><span style="font-size:17px;color:#5C5458">Who is in the course and how many lessons each has left. Adding a pass is one tap from any row.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="e1" data-screen-label="E1 Course details — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#e1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">E1</a>Course · mobile</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:02" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 10px"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">arrow_back</span></span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">more_horiz</span></span></div>
+<div style="flex:1;min-height:0;overflow:hidden;padding:4px 20px 0">
+<div style="font-family:'Newsreader',serif;font-size:32px;line-height:1.1;letter-spacing:-.02em">Salsa Beginners</div>
+<div style="margin-top:6px;font-size:15px;color:#5C5458">Tuesdays · 19:00–20:00 · Studio 2</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
+<div style="padding:12px 14px;border-radius:16px;background:#FFFEFB;border:1px solid #E8E1D5"><div style="font-size:12px;font-weight:600;color:var(--ac,#62295A)">Next lesson</div><div style="margin-top:4px;font-size:16px;font-weight:600">Today, 19:00</div><div style="margin-top:2px;font-size:13px;color:#5C5458">Check-in not opened</div></div>
+<div style="padding:12px 14px;border-radius:16px;background:#FFFEFB;border:1px solid #E8E1D5"><div style="font-size:12px;font-weight:600;color:#766D71">Previous</div><div style="margin-top:4px;font-size:16px;font-weight:600">Tue 3 Nov</div><div style="margin-top:2px;font-size:13px;color:#5C5458">10 of 12 present</div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px;margin-top:2px;font-size:14px;font-weight:600;color:var(--ac,#62295A)"><span>All lessons</span><span style="font:300 20px/1 'Material Symbols Rounded'">chevron_right</span></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px"><span style="font-size:15px;font-weight:600">Students <span style="font-weight:400;color:#766D71">12</span></span><span style="display:flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:14px;font-weight:600"><span style="font:400 19px/1 'Material Symbols Rounded'">person_add</span>Add</span></div>
+<div style="margin-top:10px;border-radius:20px 20px 0 0;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 12px 0 14px">
+<div style="display:flex;justify-content:flex-end;padding:10px 60px 0 0;font-size:12px;font-weight:600;color:#766D71">Lessons left</div>
+<div style="display:flex;align-items:center;gap:12px;height:58px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">AM</span><div style="flex:1;font-size:16px;font-weight:500">Anna Meier</div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#F1ECE3">7</span><span style="width:48px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:58px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">CR</span><div style="flex:1;font-size:16px;font-weight:500">Chiara Rossi</div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#F1ECE3">9</span><span style="width:48px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:58px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">DR</span><div style="flex:1"><div style="font-size:16px;font-weight:500">David Roth</div><div style="font-size:13px;color:#A8321F">Owes 1 lesson</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBE8E3;color:#A8321F">−1</span><span style="width:48px;height:36px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">+10</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:58px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">EB</span><div style="flex:1"><div style="font-size:16px;font-weight:500">Elias Baumann</div><div style="font-size:13px;color:#8A5A00">Last lesson on this pass</div></div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#FBF0D6;color:#8A5A00">1</span><span style="width:48px;height:36px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">+10</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:58px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">JW</span><div style="flex:1;font-size:16px;font-weight:500">Jonas Weber</div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#F1ECE3">6</span><span style="width:48px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:58px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">LH</span><div style="flex:1;font-size:16px;font-weight:500">Lara Huber</div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#F1ECE3">8</span><span style="width:48px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:58px"><span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#5C5458">LB</span><div style="flex:1;font-size:16px;font-weight:500">Luca Bianchi</div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;background:#F1ECE3">3</span><span style="width:48px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">chevron_right</span></div>
+</div>
+</div>
+<div style="flex:none;height:84px;box-sizing:border-box;padding:8px 12px 30px;display:flex;background:#FFFEFB;border-top:1px solid #E8E1D5;font-size:11px">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">home</span>Today</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ac,#62295A);font-weight:700"><span style="font:400 24px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">calendar_month</span>Courses</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">group</span>Students</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#766D71;font-weight:500"><span style="font:300 24px/1 'Material Symbols Rounded'">person</span>Account</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Alphabetical so a name is always where you expect it. Colour does the flagging, and +10 only appears on rows that need it.</p>
+</div>
+<div id="e2" data-screen-label="E2 Add credits sheet — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#e2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">E2</a>Add credits</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:02" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;position:relative;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 10px"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">arrow_back</span></span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">more_horiz</span></span></div>
+<div style="padding:4px 20px 0">
+<div style="font-family:'Newsreader',serif;font-size:32px;line-height:1.1;letter-spacing:-.02em">Salsa Beginners</div>
+<div style="margin-top:6px;font-size:15px;color:#5C5458">Tuesdays · 19:00–20:00 · Studio 2</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
+<div style="padding:12px 14px;border-radius:16px;background:#FFFEFB;border:1px solid #E8E1D5"><div style="font-size:12px;font-weight:600;color:var(--ac,#62295A)">Next lesson</div><div style="margin-top:4px;font-size:16px;font-weight:600">Today, 19:00</div><div style="margin-top:2px;font-size:13px;color:#5C5458">Check-in not opened</div></div>
+<div style="padding:12px 14px;border-radius:16px;background:#FFFEFB;border:1px solid #E8E1D5"><div style="font-size:12px;font-weight:600;color:#766D71">Previous</div><div style="margin-top:4px;font-size:16px;font-weight:600">Tue 3 Nov</div><div style="margin-top:2px;font-size:13px;color:#5C5458">10 of 12 present</div></div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px;margin-top:2px;font-size:14px;font-weight:600;color:var(--ac,#62295A)"><span>All lessons</span><span style="font:300 20px/1 'Material Symbols Rounded'">chevron_right</span></div>
+<div style="margin-top:6px;font-size:15px;font-weight:600">Students <span style="font-weight:400;color:#766D71">12</span></div>
+<div style="margin-top:16px;height:200px;border-radius:20px 20px 0 0;background:#FFFEFB;border:1px solid #E8E1D5"></div>
+</div>
+<div style="position:absolute;inset:0;background:rgba(30,26,29,.44)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;box-sizing:border-box;padding:10px 24px 46px;border-radius:28px 28px 0 0;background:#FFFEFB;box-shadow:0 -20px 40px -20px rgba(30,26,29,.4)">
+<div style="width:36px;height:4px;border-radius:2px;background:#D9D0C2;margin:0 auto"></div>
+<div style="display:flex;align-items:center;gap:12px;margin-top:18px"><span style="flex:none;width:44px;height:44px;border-radius:50%;background:#F1ECE3;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#5C5458">DR</span><div style="flex:1"><div style="font-size:19px;font-weight:600">David Roth</div><div style="font-size:14px;color:#5C5458">Add lessons to his pass</div></div><span style="width:44px;height:44px;margin-right:-10px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">close</span></span></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:26px;margin-top:22px;padding:18px 0 16px;border-radius:18px;background:#F7F4EE">
+<div style="text-align:center"><div style="font-family:'Newsreader',serif;font-size:48px;line-height:1;font-variant-numeric:lining-nums;color:#A8321F">−1</div><div style="margin-top:4px;font-size:13px;color:#5C5458">now</div></div>
+<span style="font:300 26px/1 'Material Symbols Rounded';color:#766D71">arrow_forward</span>
+<div style="text-align:center"><div style="font-family:'Newsreader',serif;font-size:48px;line-height:1;font-variant-numeric:lining-nums">9</div><div style="margin-top:4px;font-size:13px;color:#5C5458">after</div></div>
+</div>
+<div style="display:flex;justify-content:center;gap:8px;margin-top:16px"><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:16px;height:16px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span></div>
+<div style="margin-top:10px;text-align:center;font-size:13px;color:#5C5458">The lesson he owes comes off the new pass.</div>
+<div style="display:flex;gap:8px;margin-top:22px;font-size:15px;font-weight:600">
+<span style="flex:1.3;height:52px;border-radius:14px;border:1.5px solid var(--ac,#62295A);background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);box-sizing:border-box;display:flex;align-items:center;justify-content:center">10 lessons</span>
+<span style="flex:1;height:52px;border-radius:14px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">5</span>
+<span style="flex:1;height:52px;border-radius:14px;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center">Other</span>
+</div>
+<div style="margin-top:14px;height:54px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Add 10 lessons</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Tapping +10 opens this with a full pass already selected, so the usual case is two taps. Before and after are spelled out, including a negative balance.</p>
+</div>
+<div id="e3" data-screen-label="E3 Course details — desktop" style="flex:none;width:1280px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#e3" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">E3</a>Course · desktop</div>
+<div style="width:1280px;height:800px;border-radius:14px;overflow:hidden;display:flex;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1),0 30px 60px -24px rgba(30,26,29,.28)">
+<div style="flex:none;width:232px;box-sizing:border-box;padding:24px 14px 16px;display:flex;flex-direction:column;border-right:1px solid #E8E1D5;background:#F3EFE7">
+<div style="display:flex;align-items:center;gap:10px;padding:0 10px 22px"><span style="width:30px;height:30px;border-radius:9px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:21px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="display:flex;flex-direction:column;gap:2px;font-size:15px;font-weight:500;color:#5C5458">
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">home</span>Today</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;background:#FFFEFB;color:var(--ac,#62295A);font-weight:600;box-shadow:0 0 0 1px #E8E1D5"><span style="font:400 21px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">calendar_month</span>Courses</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">group</span>Students</div>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px"><span style="flex:none;width:32px;height:32px;border-radius:50%;background:#E8E1D5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#5C5458">LB</span><div><div style="font-size:14px;font-weight:600">Lena Brunner</div><div style="font-size:12px;color:#766D71">Account</div></div></div>
+</div>
+<div style="flex:1;min-width:0;box-sizing:border-box;padding:28px 48px 0">
+<div style="display:flex;align-items:center;gap:6px;font-size:14px;color:#766D71"><span style="color:var(--ac,#62295A);font-weight:600">Courses</span><span style="font:300 18px/1 'Material Symbols Rounded'">chevron_right</span>Salsa Beginners</div>
+<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:10px"><div><div style="font-family:'Newsreader',serif;font-size:40px;line-height:1.1;letter-spacing:-.025em">Salsa Beginners</div><div style="margin-top:4px;font-size:15px;color:#5C5458">Tuesdays · 19:00–20:00 · Studio 2, Tanzraum Wipkingen</div></div><div style="display:flex;gap:8px"><span style="display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 12px;border-radius:12px;border:1px solid #D9D0C2;background:#FFFEFB;font-size:14px;font-weight:600"><span style="font:300 19px/1 'Material Symbols Rounded'">edit</span>Edit course</span><span style="display:flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 12px;border-radius:12px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);font-size:14px;font-weight:600"><span style="font:400 19px/1 'Material Symbols Rounded'">person_add</span>Add student</span></div></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;margin-top:24px">
+<div style="border-radius:18px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 8px 0 18px">
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:40px;font-size:12px;font-weight:600;color:#766D71;border-bottom:1px solid #E8E1D5"><span>Student</span><span>Lessons left</span><span>Last here</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Anna Meier</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">7</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:84px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Chiara Rossi</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">9</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:108px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">David Roth</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums;color:#A8321F">−1</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#F1C9BE 0 10px,transparent 10px 12px)"></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span style="justify-self:end;height:30px;padding:0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:13px;font-weight:600">+10</span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Elias Baumann</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums;color:#8A5A00">1</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:12px;height:8px;background:repeating-linear-gradient(90deg,#D9982B 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span style="justify-self:end;height:30px;padding:0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:13px;font-weight:600">+10</span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Jonas Weber</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">6</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:72px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 27 Oct</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Lara Huber</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">8</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:96px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Luca Bianchi</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">3</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:36px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Mia Schneider</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">5</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:60px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Nina Graf</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">4</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:48px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Noah Frei</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums;color:#A8321F">0</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#F1C9BE 0 10px,transparent 10px 12px)"></span></span><span style="font-size:14px;color:#5C5458">Tue 3 Nov</span><span style="justify-self:end;height:30px;padding:0 10px;border-radius:999px;background:var(--ac-s,#F3E9F1);color:var(--ac,#62295A);display:flex;align-items:center;font-size:13px;font-weight:600">+10</span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="font-weight:500">Sofia Keller</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">10</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span><span style="font-size:14px;color:#766D71">New</span><span></span></div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 190px 120px 64px;align-items:center;height:44px;font-size:15px"><span style="font-weight:500">Tim Vogel</span><span style="display:flex;align-items:center;gap:12px"><b style="width:22px;font-weight:600;font-variant-numeric:tabular-nums">3</b><span style="width:118px;height:8px;background:repeating-linear-gradient(90deg,#E8E1D5 0 10px,transparent 10px 12px)"><span style="display:block;width:36px;height:8px;background:repeating-linear-gradient(90deg,var(--ac,#62295A) 0 10px,transparent 10px 12px)"></span></span></span><span style="font-size:14px;color:#5C5458">Tue 20 Oct</span><span></span></div>
+</div>
+<div>
+<div style="padding:18px;border-radius:18px;background:#FFFEFB;border:1px solid #E8E1D5"><div style="font-size:12px;font-weight:600;color:var(--ac,#62295A)">Next lesson</div><div style="margin-top:6px;font-family:'Newsreader',serif;font-size:26px;letter-spacing:-.01em;font-variant-numeric:lining-nums">Today, 19:00</div><div style="margin-top:2px;font-size:14px;color:#5C5458">Check-in not opened yet</div><div style="margin-top:14px;height:44px;border-radius:12px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Open lesson</div></div>
+<div style="margin-top:10px;padding:18px;border-radius:18px;background:#FFFEFB;border:1px solid #E8E1D5"><div style="font-size:12px;font-weight:600;color:#766D71">Previous lesson</div><div style="margin-top:6px;font-size:17px;font-weight:600">Tue 3 Nov</div><div style="margin-top:2px;font-size:14px;color:#5C5458">10 of 12 present</div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 6px;font-size:14px;font-weight:600;color:var(--ac,#62295A)"><span>All lessons</span><span style="font:300 20px/1 'Material Symbols Rounded'">chevron_right</span></div>
+</div>
+</div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;max-width:760px;font-size:14px;line-height:1.5;color:#5C5458">Here a table earns its place: twelve students fit without scrolling and the ten-segment bar makes balances comparable at a glance.</p>
+</div>
+</div>
+</section>
+<section id="sec-f" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">F</span><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Lesson and attendance register</h2><span style="font-size:17px;color:#5C5458">Rows are not switches. A row opens, you choose, it closes. Nothing else can change by accident.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="f1" data-screen-label="F1 Lesson before check-in — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#f1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">F1</a>Before check-in</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:02" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 10px"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">arrow_back</span></span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">more_horiz</span></span></div>
+<div style="flex:1;min-height:0;overflow:hidden;padding:4px 20px 0">
+<div style="font-size:14px;font-weight:500;color:#766D71">Tue 10 Nov · 19:00–20:00</div>
+<div style="margin-top:2px;font-family:'Newsreader',serif;font-size:32px;line-height:1.1;letter-spacing:-.02em">Salsa Beginners</div>
+<div style="margin-top:14px;font-size:15px;color:#5C5458"><b style="font-weight:600;color:#1E1A1D">0 of 12</b> present · check-in not opened yet</div>
+<div style="margin-top:16px;border-radius:20px 20px 0 0;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 6px 0 14px">
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Anna Meier</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Chiara Rossi</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="margin:0 -6px 0 -14px;padding:0 14px 14px;background:#F7F4EE;box-shadow:inset 0 1px 0 #E8E1D5,inset 0 -1px 0 #E8E1D5">
+<div style="display:flex;align-items:center;gap:12px;height:56px"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:600">David Roth</div><span style="min-width:36px;height:28px;padding:0 10px;box-sizing:border-box;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:#FBE8E3;color:#A8321F">−1</span></div>
+<div style="display:flex;gap:8px;font-size:15px;font-weight:600"><span style="flex:1;height:48px;border-radius:14px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font:400 20px/1 'Material Symbols Rounded';color:#2E8660">check</span>Present</span><span style="flex:1;height:48px;border-radius:14px;background:#FFFEFB;border:1px solid #D9D0C2;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:6px"><span style="font:400 20px/1 'Material Symbols Rounded';color:#766D71">remove</span>Absent</span></div>
+<div style="margin-top:10px;font-size:13px;line-height:1.4;color:#5C5458">Present uses 1 lesson. David would then owe 2.</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Elias Baumann</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Jonas Weber</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Lara Huber</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Luca Bianchi</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Mia Schneider</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1;font-size:16px;font-weight:500">Nina Graf</div><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+</div>
+</div>
+<div style="flex:none;padding:14px 20px 40px;background:#FFFEFB;border-top:1px solid #E8E1D5">
+<div style="height:54px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><span style="font:400 22px/1 'Material Symbols Rounded'">qr_code_2</span>Open check-in</div>
+<div style="margin-top:10px;text-align:center;font-size:13px;color:#5C5458">Shows a QR code for 10 minutes</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">The primary action stays in thumb reach. Marking by hand works without ever opening check-in, and the row says what it will cost before you tap.</p>
+</div>
+<div id="f2" data-screen-label="F2 Lesson with check-in open — mobile" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#f2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">F2</a>Check-in open</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:04" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden;position:relative">
+<div style="display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 10px"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">arrow_back</span></span><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">more_horiz</span></span></div>
+<div style="flex:1;min-height:0;overflow:hidden;padding:4px 20px 0">
+<div style="font-size:14px;font-weight:500;color:#766D71">Tue 10 Nov · 19:00–20:00</div>
+<div style="margin-top:2px;font-family:'Newsreader',serif;font-size:32px;line-height:1.1;letter-spacing:-.02em">Salsa Beginners</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px"><span style="font-size:15px;color:#5C5458"><b style="font-weight:600;color:#1E1A1D">9 of 12</b> present</span><span style="display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:999px;background:#E5F1EA;color:#256B4D;font-size:13px;font-weight:600">{{ liveDot }}Open · {{ countdown }}</span></div>
+<div style="display:flex;gap:3px;margin-top:10px"><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#E8E1D5"></span><span style="flex:1;height:6px;border-radius:3px;background:#E8E1D5"></span><span style="flex:1;height:6px;border-radius:3px;background:#E8E1D5"></span></div>
+<div style="margin-top:16px;border-radius:20px 20px 0 0;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 6px 0 14px">
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Anna Meier</div><div style="font-size:13px;color:#766D71">20:02 · QR</div></div><span style="font-size:13px;color:#766D71">6 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Chiara Rossi</div><div style="font-size:13px;color:#766D71">20:03 · QR</div></div><span style="font-size:13px;color:#766D71">8 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1"><div style="font-size:16px;font-weight:500">David Roth</div><div style="font-size:13px;color:#766D71">Not yet</div></div><span style="font-size:13px;font-weight:600;color:#A8321F">−1</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Elias Baumann</div><div style="font-size:13px;color:#766D71">20:02 · QR</div></div><span style="font-size:13px;font-weight:600;color:#A8321F">0 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Jonas Weber</div><div style="font-size:13px;color:#766D71">20:03 · QR</div></div><span style="font-size:13px;color:#766D71">5 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Lara Huber</div><div style="font-size:13px;color:#766D71">20:02 · QR</div></div><span style="font-size:13px;color:#766D71">7 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Luca Bianchi</div><div style="font-size:13px;color:#766D71">20:04 · by you</div></div><span style="font-size:13px;font-weight:600;color:#8A5A00">2 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Mia Schneider</div><div style="font-size:13px;color:#766D71">20:03 · QR</div></div><span style="font-size:13px;color:#766D71">4 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px;border-bottom:1px solid #F1ECE3"><span style="flex:none;width:26px;height:26px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 17px/1 'Material Symbols Rounded'">check</span></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Nina Graf</div><div style="font-size:13px;color:#766D71">20:02 · QR</div></div><span style="font-size:13px;color:#766D71">3 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+<div style="display:flex;align-items:center;gap:12px;height:56px"><span style="flex:none;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><div style="flex:1"><div style="font-size:16px;font-weight:500">Noah Frei</div><div style="font-size:13px;color:#766D71">Not yet</div></div><span style="font-size:13px;font-weight:600;color:#A8321F">0 left</span><span style="width:44px;display:flex;justify-content:center;font:300 22px/1 'Material Symbols Rounded';color:#766D71">expand_more</span></div>
+</div>
+</div>
+<div style="position:absolute;left:14px;right:14px;bottom:136px;display:flex;align-items:center;gap:12px;height:52px;padding:0 8px 0 16px;border-radius:16px;background:#1E1A1D;color:#F7F4EE;font-size:15px;box-shadow:0 14px 30px -12px rgba(30,26,29,.5)"><span style="font:400 20px/1 'Material Symbols Rounded';color:#8FD1B0">check</span><span style="flex:1">Luca B. marked present</span><span style="height:36px;padding:0 12px;border-radius:10px;display:flex;align-items:center;font-weight:600;color:#fff;background:rgba(255,255,255,.12)">Undo</span></div>
+<div style="flex:none;display:flex;gap:10px;padding:14px 20px 40px;background:#FFFEFB;border-top:1px solid #E8E1D5">
+<span style="flex:none;height:54px;padding:0 18px;border-radius:16px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:16px;font-weight:600">Close</span>
+<span style="flex:1;height:54px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;font-weight:600"><span style="font:400 22px/1 'Material Symbols Rounded'">qr_code_2</span>Show QR code</span>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Twelve segments, one per student. Every manual change is confirmed by a toast with Undo, and each row shows how it was recorded.</p>
+</div>
+<div id="f3" data-screen-label="F3 Lesson register — desktop" style="flex:none;width:1280px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#f3" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">F3</a>Lesson · desktop</div>
+<div style="width:1280px;height:800px;border-radius:14px;overflow:hidden;display:flex;background:#F7F4EE;box-shadow:0 0 0 1px rgba(30,26,29,.1),0 30px 60px -24px rgba(30,26,29,.28)">
+<div style="flex:none;width:232px;box-sizing:border-box;padding:24px 14px 16px;display:flex;flex-direction:column;border-right:1px solid #E8E1D5;background:#F3EFE7">
+<div style="display:flex;align-items:center;gap:10px;padding:0 10px 22px"><span style="width:30px;height:30px;border-radius:9px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:21px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="display:flex;flex-direction:column;gap:2px;font-size:15px;font-weight:500;color:#5C5458">
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px;background:#FFFEFB;color:var(--ac,#62295A);font-weight:600;box-shadow:0 0 0 1px #E8E1D5"><span style="font:400 21px/1 'Material Symbols Rounded';font-variation-settings:'FILL' 1">home</span>Today</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">calendar_month</span>Courses</div>
+<div style="display:flex;align-items:center;gap:12px;height:40px;padding:0 10px;border-radius:10px"><span style="font:300 21px/1 'Material Symbols Rounded'">group</span>Students</div>
+</div>
+<div style="margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px"><span style="flex:none;width:32px;height:32px;border-radius:50%;background:#E8E1D5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#5C5458">LB</span><div><div style="font-size:14px;font-weight:600">Lena Brunner</div><div style="font-size:12px;color:#766D71">Account</div></div></div>
+</div>
+<div style="flex:1;min-width:0;box-sizing:border-box;padding:28px 48px 0">
+<div style="display:flex;align-items:center;gap:6px;font-size:14px;color:#766D71"><span style="color:var(--ac,#62295A);font-weight:600">Today</span><span style="font:300 18px/1 'Material Symbols Rounded'">chevron_right</span>Salsa Beginners · Tue 10 Nov</div>
+<div style="margin-top:10px;font-family:'Newsreader',serif;font-size:40px;line-height:1.1;letter-spacing:-.025em">Salsa Beginners</div>
+<div style="margin-top:4px;font-size:15px;color:#5C5458">Tuesday 10 November · 19:00–20:00 · Studio 2</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:32px;margin-top:24px">
+<div>
+<div style="display:flex;align-items:center;gap:14px"><span style="font-size:15px;color:#5C5458"><b style="font-weight:600;color:#1E1A1D">9 of 12</b> present</span><div style="flex:1;display:flex;gap:3px"><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#2E8660"></span><span style="flex:1;height:6px;border-radius:3px;background:#E8E1D5"></span><span style="flex:1;height:6px;border-radius:3px;background:#E8E1D5"></span><span style="flex:1;height:6px;border-radius:3px;background:#E8E1D5"></span></div></div>
+<div style="margin-top:14px;border-radius:18px;background:#FFFEFB;border:1px solid #E8E1D5;padding:0 10px 0 16px">
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:36px;font-size:12px;font-weight:600;color:#766D71;border-bottom:1px solid #E8E1D5"><span></span><span>Student</span><span>Checked in</span><span>Left</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Anna Meier</span><span style="font-size:14px;color:#5C5458">20:02 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">6</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Chiara Rossi</span><span style="font-size:14px;color:#5C5458">20:03 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">8</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><span style="font-weight:500">David Roth</span><span style="font-size:14px;color:#766D71">Not yet</span><span style="font-size:14px;font-weight:600;color:#A8321F">−1</span><span style="justify-self:end;height:30px;padding:0 11px;border-radius:9px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:13px;font-weight:600">Mark present</span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Elias Baumann</span><span style="font-size:14px;color:#5C5458">20:02 · QR</span><span style="font-size:14px;font-weight:600;color:#A8321F">0</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Jonas Weber</span><span style="font-size:14px;color:#5C5458">20:03 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">5</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Lara Huber</span><span style="font-size:14px;color:#5C5458">20:02 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">7</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3;margin:0 -10px 0 -16px;padding:0 10px 0 16px;background:#F7F4EE"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Luca Bianchi</span><span style="font-size:14px;color:#5C5458">20:04 · by you</span><span style="font-size:14px;font-weight:600;color:#8A5A00">2</span><span style="justify-self:end;height:30px;padding:0 11px;border-radius:9px;display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--ac,#62295A)"><span style="font:400 17px/1 'Material Symbols Rounded'">undo</span>Mark absent</span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Mia Schneider</span><span style="font-size:14px;color:#5C5458">20:03 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">4</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Nina Graf</span><span style="font-size:14px;color:#5C5458">20:02 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">3</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><span style="font-weight:500">Noah Frei</span><span style="font-size:14px;color:#766D71">Not yet</span><span style="font-size:14px;font-weight:600;color:#A8321F">0</span><span style="justify-self:end;height:30px;padding:0 11px;border-radius:9px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:13px;font-weight:600">Mark present</span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px;border-bottom:1px solid #F1ECE3"><span style="width:22px;height:22px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 15px/1 'Material Symbols Rounded'">check</span></span><span style="font-weight:500">Sofia Keller</span><span style="font-size:14px;color:#5C5458">20:03 · QR</span><span style="font-size:14px;font-variant-numeric:tabular-nums">9</span><span></span></div>
+<div style="display:grid;grid-template-columns:34px minmax(0,1fr) 130px 70px 124px;align-items:center;height:42px;font-size:15px"><span style="width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:1.5px dashed #D9D0C2"></span><span style="font-weight:500">Tim Vogel</span><span style="font-size:14px;color:#766D71">Not yet</span><span style="font-size:14px;font-variant-numeric:tabular-nums">3</span><span style="justify-self:end;height:30px;padding:0 11px;border-radius:9px;border:1px solid #D9D0C2;display:flex;align-items:center;font-size:13px;font-weight:600">Mark present</span></div>
+</div>
+</div>
+<div style="padding:20px;border-radius:20px;background:#FFFEFB;border:1px solid #E8E1D5;box-shadow:0 14px 30px -20px rgba(30,26,29,.25)">
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:999px;background:#E5F1EA;color:#256B4D;font-size:13px;font-weight:600">{{ liveDot }}Check-in open</span><span style="display:flex;align-items:center;gap:5px;font-size:15px;font-weight:600"><span style="font:300 19px/1 'Material Symbols Rounded';color:#766D71">timer</span>{{ countdown }}</span></div>
+<div style="margin-top:16px;padding:22px;border-radius:14px;background:#fff;border:1px solid #E8E1D5;aspect-ratio:1;box-sizing:border-box">{{ qr }}</div>
+<div style="margin-top:14px;text-align:center;font-size:14px;color:#5C5458">Scan to confirm your attendance</div>
+<div style="margin-top:16px;height:46px;border-radius:13px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:600"><span style="font:400 21px/1 'Material Symbols Rounded'">fullscreen</span>Present full screen</div>
+<div style="margin-top:8px;height:46px;border-radius:13px;border:1px solid #D9D0C2;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Close check-in</div>
+</div>
+</div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;max-width:760px;font-size:14px;line-height:1.5;color:#5C5458">On a laptop the register and the live QR sit side by side. Actions appear only on rows where they apply; the hovered row shows the reverse action for a manual mark.</p>
+</div>
+</div>
+</section>
+<section id="sec-g" style="width:2820px;box-sizing:border-box;padding:72px 80px;border-bottom:1px solid rgba(30,26,29,.1)">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">G</span><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">QR check-in display</h2><span style="font-size:17px;color:#5C5458">The signature moment. Nothing on screen but the code, what it is for, and how long it lasts.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="g1" data-screen-label="G1 QR display — phone" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#g1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">G1</a>QR · phone</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:04" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding:54px 24px 40px;display:flex;flex-direction:column;align-items:center;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;text-align:center">
+<div style="align-self:stretch;display:flex;align-items:center;justify-content:space-between;height:48px;margin:0 -10px"><span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><span style="font:300 24px/1 'Material Symbols Rounded'">close</span></span><span style="display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 12px;border-radius:999px;background:#E5F1EA;color:#256B4D;font-size:13px;font-weight:600">{{ liveDot }}Check-in open</span><span style="width:44px"></span></div>
+<div style="margin-top:18px;font-family:'Newsreader',serif;font-size:34px;line-height:1.1;letter-spacing:-.02em">Salsa Beginners</div>
+<div style="margin-top:6px;font-size:15px;color:#5C5458">Tue 10 Nov · 19:00–20:00</div>
+<div style="margin-top:26px;width:330px;box-sizing:border-box;padding:38px;border-radius:30px;background:#fff;box-shadow:0 0 0 1px #E8E1D5,0 30px 50px -30px rgba(30,26,29,.35);aspect-ratio:1">{{ qr }}</div>
+<div style="margin-top:24px;font-size:19px;font-weight:600">Scan to confirm your attendance</div>
+<div style="display:flex;align-self:stretch;margin-top:22px;border-radius:18px;background:#FFFEFB;border:1px solid #E8E1D5">
+<div style="flex:1;padding:12px 0"><div style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">9 <span style="color:#766D71;font-weight:400">of 12</span></div><div style="font-size:13px;color:#5C5458">checked in</div></div>
+<div style="width:1px;background:#E8E1D5"></div>
+<div style="flex:1;padding:12px 0"><div style="font-size:22px;font-weight:600">{{ countdown }}</div><div style="font-size:13px;color:#5C5458">until it closes</div></div>
+</div>
+<div style="margin-top:auto;align-self:stretch;height:54px;border-radius:16px;border:1px solid #D9D0C2;background:#FFFEFB;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Close check-in</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Pure white card, ink modules, a quiet zone of more than four modules. Closing is deliberately the quiet button, and it asks for confirmation.</p>
+</div>
+<div id="g2" data-screen-label="G2 QR display — full screen" style="flex:none;width:1280px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#g2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">G2</a>Full-screen presentation · laptop, tablet or projector</div>
+<div style="width:1280px;height:720px;border-radius:14px;overflow:hidden;box-sizing:border-box;padding:56px 72px 40px;display:flex;flex-direction:column;background:var(--qs-bg,#F7F4EE);color:var(--qs-fg,#1E1A1D);box-shadow:0 0 0 1px rgba(30,26,29,.1),0 30px 60px -24px rgba(30,26,29,.28)">
+<div style="flex:1;display:flex;align-items:center;gap:80px">
+<div style="flex:none;width:500px;box-sizing:border-box;padding:56px;border-radius:40px;background:#fff;box-shadow:0 40px 70px -40px rgba(0,0,0,.45);aspect-ratio:1">{{ qr }}</div>
+<div style="flex:1;min-width:0">
+<span style="display:inline-flex;align-items:center;gap:9px;height:34px;padding:0 15px;border-radius:999px;background:#E5F1EA;color:#256B4D;font-size:16px;font-weight:600">{{ liveDot }}Check-in open</span>
+<div style="margin-top:22px;font-family:'Newsreader',serif;font-size:76px;line-height:1;letter-spacing:-.035em">Salsa Beginners</div>
+<div style="margin-top:14px;font-size:22px;color:var(--qs-mut,#5C5458)">Tuesday 10 November · 19:00–20:00</div>
+<div style="margin-top:36px;font-size:30px;font-weight:600;letter-spacing:-.01em">Scan to confirm your attendance</div>
+<div style="display:flex;gap:56px;margin-top:40px;padding-top:28px;border-top:1px solid var(--qs-line,#D9D0C2)">
+<div><div style="font-size:52px;font-weight:600;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">9 <span style="font-weight:400;color:var(--qs-mut,#5C5458)">/ 12</span></div><div style="margin-top:8px;font-size:17px;color:var(--qs-mut,#5C5458)">checked in</div></div>
+<div><div style="font-size:52px;font-weight:600;line-height:1;letter-spacing:-.02em">{{ countdown }}</div><div style="margin-top:8px;font-size:17px;color:var(--qs-mut,#5C5458)">until it closes</div></div>
+</div>
+<div style="display:flex;gap:10px;margin-top:26px"><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;border-radius:50%;background:#2E8660"></span><span style="width:18px;height:18px;box-sizing:border-box;border-radius:50%;border:2px solid var(--qs-line,#D9D0C2)"></span><span style="width:18px;height:18px;box-sizing:border-box;border-radius:50%;border:2px solid var(--qs-line,#D9D0C2)"></span><span style="width:18px;height:18px;box-sizing:border-box;border-radius:50%;border:2px solid var(--qs-line,#D9D0C2)"></span></div>
+</div>
+</div>
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;font-size:15px;color:var(--qs-mut,#5C5458)">
+<div style="display:flex;align-items:center;gap:9px"><span style="width:26px;height:26px;border-radius:8px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:19px;font-weight:500;color:var(--qs-fg,#1E1A1D)">TanzHaken</span></div>
+<div style="display:flex;align-items:center;gap:18px"><span>Esc to leave full screen</span><span style="height:42px;padding:0 18px;border-radius:12px;border:1px solid var(--qs-line,#D9D0C2);color:var(--qs-fg,#1E1A1D);display:flex;align-items:center;font-weight:600">Close check-in</span></div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;max-width:760px;font-size:14px;line-height:1.5;color:#5C5458">Built for the back of the room: a 500 px code, 76 px title, and one dot per student filling in as people scan. No names are shown. Switch “QR stage” to Night in Tweaks for dim studios and projectors.</p>
+</div>
+</div>
+</section>
+<section id="sec-h" style="width:2820px;box-sizing:border-box;padding:72px 80px 96px">
+<div style="display:flex;align-items:baseline;gap:18px;margin-bottom:40px"><span style="font-family:'Newsreader',serif;font-size:44px;font-style:italic;color:var(--ac,#62295A)">H</span><h2 style="margin:0;font-family:'Newsreader',serif;font-weight:400;font-size:44px;letter-spacing:-.02em">Student check-in</h2><span style="font-size:17px;color:#5C5458">Scan, tap your name, confirm. No account, no app, no teacher navigation.</span></div>
+<div style="display:flex;gap:56px;align-items:flex-start">
+<div id="h1" data-screen-label="H1 Student check-in — choose name" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#h1" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">H1</a>Choose your name</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:04" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding-top:54px;display:flex;flex-direction:column;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;overflow:hidden">
+<div style="flex:1;min-height:0;padding:14px 20px 0">
+<div style="display:flex;align-items:center;gap:8px"><span style="width:26px;height:26px;border-radius:8px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:18px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="margin-top:22px;font-family:'Newsreader',serif;font-size:32px;line-height:1.1;letter-spacing:-.02em">Salsa Beginners</div>
+<div style="margin-top:6px;font-size:15px;color:#5C5458">with Lena Brunner · Tue 10 Nov, 19:00</div>
+<div style="margin-top:26px;font-size:17px;font-weight:600">Tap your name</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:16px;font-weight:500">
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Anna M.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Chiara R.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">David R.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Elias B.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Jonas W.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Lara H.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Luca B.</span>
+<span style="height:52px;padding:0 12px 0 16px;border-radius:14px;background:var(--ac-s,#F3E9F1);border:1.5px solid var(--ac,#62295A);color:var(--ac,#62295A);font-weight:600;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between">Mia S.<span style="width:24px;height:24px;border-radius:50%;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:600 16px/1 'Material Symbols Rounded'">check</span></span></span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Nina G.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Noah F.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Sofia K.</span>
+<span style="height:52px;padding:0 16px;border-radius:14px;background:#FFFEFB;border:1px solid #E8E1D5;box-sizing:border-box;display:flex;align-items:center">Tim V.</span>
+</div>
+<div style="margin-top:16px;font-size:14px;line-height:1.45;color:#5C5458">Not on the list? Ask Lena to add you.</div>
+</div>
+<div style="flex:none;padding:14px 20px 40px;background:#FFFEFB;border-top:1px solid #E8E1D5">
+<div style="text-align:center;font-size:14px;color:#5C5458">Checking in as <b style="font-weight:600;color:#1E1A1D">Mia S.</b></div>
+<div style="margin-top:10px;height:56px;border-radius:16px;background:var(--ac,#62295A);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Confirm attendance</div>
+</div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">First name and initial only, no balances, no one else's status. A two-column grid fits a class of twelve without scrolling; a search field appears above sixteen names.</p>
+</div>
+<div id="h2" data-screen-label="H2 Student check-in — success" style="flex:none;width:402px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#h2" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">H2</a>Confirmed</div>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" time="20:04" hint-size="402px,874px">
+<div style="height:874px;box-sizing:border-box;padding:54px 24px 40px;display:flex;flex-direction:column;align-items:center;background:#F7F4EE;font-family:'Figtree',system-ui,sans-serif;color:#1E1A1D;text-align:center">
+<div style="align-self:flex-start;display:flex;align-items:center;gap:8px;margin-top:14px"><span style="width:26px;height:26px;border-radius:8px;background:var(--ac,#62295A);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round"></path></svg></span><span style="font-family:'Newsreader',serif;font-size:18px;font-weight:500">Tanz<i style="color:var(--ac,#62295A)">Haken</i></span></div>
+<div style="margin-top:64px;width:104px;height:104px;border-radius:50%;background:#2E8660;box-shadow:0 0 0 14px #E5F1EA;display:flex;align-items:center;justify-content:center"><svg width="56" height="56" viewBox="0 0 24 24"><path d="M5 13l4.5 4.5L19.5 6.5" style="fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"></path></svg></div>
+<div style="margin-top:40px;font-family:'Newsreader',serif;font-size:36px;line-height:1.08;letter-spacing:-.025em">You're checked in, Mia.</div>
+<div style="margin-top:10px;font-size:16px;color:#5C5458">Salsa Beginners · Tue 10 Nov, 19:00</div>
+<div style="align-self:stretch;margin-top:36px;padding:22px 22px 24px;border-radius:22px;background:#FFFEFB;border:1px solid #E8E1D5;box-shadow:0 14px 30px -22px rgba(30,26,29,.3)">
+<div style="font-size:13px;font-weight:600;color:#766D71">Your pass</div>
+<div style="margin-top:6px;display:flex;align-items:baseline;justify-content:center;gap:10px"><span style="font-family:'Newsreader',serif;font-size:60px;line-height:1;font-variant-numeric:lining-nums">4</span><span style="font-size:18px;font-weight:500">lessons left</span></div>
+<div style="display:flex;justify-content:center;gap:9px;margin-top:18px"><span style="width:20px;height:20px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:20px;height:20px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:20px;height:20px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:20px;height:20px;border-radius:50%;background:var(--ac,#62295A)"></span><span style="width:20px;height:20px;border-radius:50%;background:#2E8660;color:#fff;display:flex;align-items:center;justify-content:center"><span style="font:700 14px/1 'Material Symbols Rounded'">check</span></span><span style="width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span><span style="width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span><span style="width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span><span style="width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span><span style="width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:1.5px solid #D9D0C2"></span></div>
+<div style="margin-top:14px;font-size:14px;color:#5C5458">Tonight's lesson is the one with the tick.</div>
+</div>
+<div style="margin-top:auto;font-size:15px;color:#5C5458">You can close this page. <span style="color:var(--ac,#62295A);font-weight:600">Not Mia? Undo</span></div>
+</div>
+</x-import>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">The tick is the whole brand in one image. The balance comes straight after, because it is the only other thing a student wants to know. Undo covers a wrong tap for a few minutes.</p>
+</div>
+<div id="h3" data-screen-label="H3 Pass states after check-in" style="flex:none;width:354px">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:#5C5458"><a href="#h3" style="font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;background:#1E1A1D;color:#fff">H3</a>Pass card, other states</div>
+<div style="display:flex;flex-direction:column;gap:16px;text-align:center">
+<div style="padding:22px 22px 20px;border-radius:22px;background:#FFFEFB;border:1px solid #EFD9A6;box-shadow:0 14px 30px -22px rgba(30,26,29,.3)">
+<div style="font-size:13px;font-weight:600;color:#766D71">Your pass</div>
+<div style="margin-top:6px;display:flex;align-items:baseline;justify-content:center;gap:10px"><span style="font-family:'Newsreader',serif;font-size:60px;line-height:1;font-variant-numeric:lining-nums;color:#8A5A00">1</span><span style="font-size:18px;font-weight:500">lesson left</span></div>
+<div style="margin-top:16px;padding:10px 14px;border-radius:12px;background:#FBF0D6;color:#8A5A00;font-size:14px;line-height:1.4">Nearly used up. Ask Lena about a new pass next time.</div>
+</div>
+<div style="padding:22px 22px 20px;border-radius:22px;background:#FFFEFB;border:1px solid #F1C9BE;box-shadow:0 14px 30px -22px rgba(30,26,29,.3)">
+<div style="font-size:13px;font-weight:600;color:#766D71">Your pass</div>
+<div style="margin-top:6px;display:flex;align-items:baseline;justify-content:center;gap:10px"><span style="font-family:'Newsreader',serif;font-size:60px;line-height:1;font-variant-numeric:lining-nums;color:#A8321F">0</span><span style="font-size:18px;font-weight:500">lessons left</span></div>
+<div style="margin-top:16px;padding:10px 14px;border-radius:12px;background:#FBE8E3;color:#A8321F;font-size:14px;line-height:1.4">That was the last lesson on your pass. Time for a new one.</div>
+</div>
+<div style="padding:22px 22px 20px;border-radius:22px;background:#FFFEFB;border:1px solid #F1C9BE;box-shadow:0 14px 30px -22px rgba(30,26,29,.3)">
+<div style="font-size:13px;font-weight:600;color:#766D71">Your pass</div>
+<div style="margin-top:6px;display:flex;align-items:baseline;justify-content:center;gap:10px"><span style="font-family:'Newsreader',serif;font-size:60px;line-height:1;font-variant-numeric:lining-nums;color:#A8321F">−1</span><span style="font-size:18px;font-weight:500">lesson owed</span></div>
+<div style="margin-top:16px;padding:10px 14px;border-radius:12px;background:#FBE8E3;color:#A8321F;font-size:14px;line-height:1.4">You're still checked in. This lesson comes off your next pass.</div>
+</div>
+</div>
+<p style="display:var(--th-notes,block);margin:18px 0 0;font-size:14px;line-height:1.5;color:#5C5458;text-wrap:pretty">Check-in never fails because of the balance. The card just tells the truth, kindly.</p>
+</div>
+</div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#62295A&quot;,&quot;options&quot;:[&quot;#62295A&quot;,&quot;#1F4E5F&quot;,&quot;#26211F&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;qrStage&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Paper&quot;,&quot;options&quot;:[&quot;Paper&quot;,&quot;Night&quot;],&quot;tsType&quot;:&quot;'Paper' | 'Night'&quot;,&quot;section&quot;:&quot;QR presentation&quot;},&quot;showNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Canvas&quot;}}">
+class Component extends DCLogic {
+  state = { qrTick: 0 };
+  clock = { deadline: Date.now() + 522000, span: 600 };
+  static THEMES = {
+    '#62295a': ['#4E1F48', '#F3E9F1', '#E3CFE0'],
+    '#1f4e5f': ['#173C49', '#E6EEF0', '#C9DADF'],
+    '#26211f': ['#0F0D0C', '#EFEBE4', '#DCD5C9'],
+  };
+  static Countdown = function Countdown(props) {
+    const clock = props.clock;
+    const calc = () => {
+      let left = Math.ceil((clock.deadline - Date.now()) / 1000);
+      if (left <= 0) { clock.deadline = Date.now() + clock.span * 1000; left = clock.span; }
+      return left;
+    };
+    const [left, setLeft] = React.useState(calc);
+    React.useEffect(() => {
+      const id = setInterval(() => setLeft(calc()), 1000);
+      return () => clearInterval(id);
+    }, []);
+    const mm = String(Math.floor(left / 60)).padStart(2, '0');
+    const ss = String(left % 60).padStart(2, '0');
+    return React.createElement('span', { style: { fontVariantNumeric: 'tabular-nums' } }, mm + ':' + ss);
+  };
+  componentDidMount() {
+    this.applyTheme();
+    let n = 0;
+    this._poll = setInterval(() => {
+      n++;
+      if (window.qrcode) { clearInterval(this._poll); this._qrEl = null; this.setState({ qrTick: 1 }); }
+      else if (n > 60) clearInterval(this._poll);
+    }, 150);
+  }
+  componentDidUpdate() { this.applyTheme(); }
+  componentWillUnmount() { clearInterval(this._poll); }
+  applyTheme() {
+    const p = this.props || {};
+    const ac = p.accent ?? '#62295A';
+    const t = Component.THEMES[String(ac).toLowerCase()];
+    const s = document.documentElement.style;
+    s.setProperty('--ac', ac);
+    s.setProperty('--ac-d', t ? t[0] : 'color-mix(in srgb, ' + ac + ' 80%, #000)');
+    s.setProperty('--ac-s', t ? t[1] : 'color-mix(in srgb, ' + ac + ' 10%, #fff)');
+    s.setProperty('--ac-b', t ? t[2] : 'color-mix(in srgb, ' + ac + ' 24%, #fff)');
+    const night = (p.qrStage ?? 'Paper') === 'Night';
+    s.setProperty('--qs-bg', night ? '#1B171A' : '#F7F4EE');
+    s.setProperty('--qs-fg', night ? '#F7F4EE' : '#1E1A1D');
+    s.setProperty('--qs-mut', night ? '#B9B0B4' : '#5C5458');
+    s.setProperty('--qs-line', night ? '#3A3338' : '#D9D0C2');
+    s.setProperty('--qs-ok', night ? '#8FD1B0' : '#256B4D');
+    s.setProperty('--th-notes', (p.showNotes ?? true) ? 'block' : 'none');
+  }
+  fallbackMatrix() {
+    const n = 29, m = Array.from({ length: n }, () => Array(n).fill(false));
+    let seed = 20261110;
+    const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) m[r][c] = rnd() > 0.52;
+    const finder = (R, C) => {
+      for (let r = -1; r <= 7; r++) for (let c = -1; c <= 7; c++) {
+        const y = R + r, x = C + c;
+        if (y < 0 || x < 0 || y >= n || x >= n) continue;
+        const out = r < 0 || c < 0 || r > 6 || c > 6;
+        const ring = r === 0 || r === 6 || c === 0 || c === 6;
+        const core = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+        m[y][x] = !out && (ring || core);
+      }
+    };
+    finder(0, 0); finder(0, n - 7); finder(n - 7, 0);
+    for (let i = 8; i < n - 8; i++) m[6][i] = m[i][6] = i % 2 === 0;
+    for (let r = -2; r <= 2; r++) for (let c = -2; c <= 2; c++) m[22 + r][22 + c] = Math.max(Math.abs(r), Math.abs(c)) !== 1;
+    return m;
+  }
+  matrix() {
+    try {
+      if (window.qrcode) {
+        const q = window.qrcode(0, 'M');
+        q.addData('https://tanzhaken.ch/c/K7M2-9XQA');
+        q.make();
+        const n = q.getModuleCount(), m = [];
+        for (let r = 0; r < n; r++) { const row = []; for (let c = 0; c < n; c++) row.push(q.isDark(r, c)); m.push(row); }
+        return m;
+      }
+    } catch (e) {}
+    return this.fallbackMatrix();
+  }
+  qrEl() {
+    if (this._qrEl) return this._qrEl;
+    const m = this.matrix(), n = m.length;
+    let d = '';
+    for (let r = 0; r < n; r++) {
+      let c = 0;
+      while (c < n) {
+        if (m[r][c]) { let e = c; while (e < n && m[r][e]) e++; d += 'M' + c + ' ' + r + 'h' + (e - c) + 'v1h' + (c - e) + 'z'; c = e; }
+        else c++;
+      }
+    }
+    this._qrEl = React.createElement('svg', {
+      viewBox: '0 0 ' + n + ' ' + n, shapeRendering: 'crispEdges', role: 'img', 'aria-label': 'Check-in QR code',
+      style: { display: 'block', width: '100%', height: 'auto' },
+    }, React.createElement('path', { d: d, fill: '#1E1A1D' }));
+    return this._qrEl;
+  }
+  renderVals() {
+    return {
+      qr: this.qrEl(),
+      countdown: React.createElement(Component.Countdown, { clock: this.clock }),
+      liveDot: React.createElement('span', { style: { display: 'inline-block', flex: 'none', width: 9, height: 9, borderRadius: '50%', background: '#2E8660', animation: 'thPulse 1.8s ease-out infinite' } }),
+    };
+  }
+}
+</script>
+</body>
+</html>
