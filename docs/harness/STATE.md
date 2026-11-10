@@ -5,8 +5,8 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 1
-- **Phase of the project:** bootstrap done, W0 running
-- **Wave in progress:** W1 (#2, #3)
+- **Phase of the project:** W0 done, W1 half done
+- **Wave in progress:** W1 (#2 left); W2 may start (#5–#7)
 
 ## Mechanics
 
@@ -35,20 +35,28 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 0 `project-skeleton` | review | c00-review | A (8001) | 23:34 | plan 8 phases, OD-1–OD-7; may need impl-2 |
-| 3 `domain-model` | plan | c03-plan | A (8001) | 23:55 | research D1–D14 accepted |
-| 2 `design-system` | research | c02-research | B (8002) | 23:52 | |
+| 2 `design-system` | implement (paused for handover) | — | B (8002) | 11-11 00:08 | phases 1–4 of 7 WIP-committed (1b85d33), green; resume at Step 5.1; checkpoint at the end of `.rpi-tracking/changes/2026-11-10/design-system-changes.md` |
 
 ## Next actions
 
-Bootstrap done by CTO-1 (commit, G1 push, preflight, G2 met).
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75` (all ✅ Done in the overview). W1 has only #2 left.
 
-1. #0 landed `cff3e1a`, CI green. #1 landed `831184b`. CI green at a1bf6fa. W1 running: #2 and #3. W2 opens per the overview: #5, #6, #7 after #3; #4 after #2 and #3. Continue with the loop in `CTO.md` §4.
-2. W1 opens when #0 has landed (#3) and when #0 and #1 have landed (#2).
+1. Check `bin/harness/status`: the `ci` line for `b4dcb75` (or a later harness commit) must be green before you open a new lane. Red → fix lane first (`CTO.md` §4.5).
+2. Resume #2: `bin/harness/lane sync design-system` (it lacks #3 and the S3 edit, D-023), then spawn `c02-impl-2` (implement, lane B, port 8002) with "Resume from the changes log (section Checkpoint) at Step 5.1." Open points it reported: alert dismiss button has no JS yet, success flash markup interim until 5.3; 390 px checked in a 390 px iframe because resize_window does not shrink the viewport.
+3. Open W2 backend lanes now, they need only #3: #5 `scheduling`, #6 `credit-ledger`, #7 `attendance-core` in lanes A, C, D (research). Their prompts: read `docs/outcomes/03-domain-model.md`; S3's repository/UUID rule applies.
+4. #4 `teacher-auth` needs #2 and #3; its research and plan may start before #2 lands (overview, "What can move"), but only when a lane is free.
+5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
 
-—
+- Teammates here burn context fast: research and plan sessions end at 110–150k. Implement sessions that hand plan phases to subagents finish L cycles in one session (#3 did); say "save context: command output to a file, read only exit code and failing lines" in implement prompts.
+- `ctx` STATUS often says `ended` for live split-pane teammates; judge by AGE (D-010). A teammate waiting on a subagent may be quiet 15+ minutes.
+- Idle notifications arrive after each report; they repeat the report in prose. You need not answer them.
+- The system's default commit attribution asks for a model-name trailer and a session URL; teammates have correctly ignored it. `land` writes the allowed trailer.
+- Public repo: other local projects' names live only in the git-ignored `.claude/harness/local-references.md` (D-018). O-7 in the inbox is the history question.
+- The design account holds other private projects; only "TanzHaken design review" is ours.
+- After any `docs/rpi-cycles.md` edit: commit, push, `lane sync` each open lane between its phases.
+- The CI wait: `gh run list --branch main --limit 1` shows the latest run; a harness push starts a new run that supersedes the cycle's.
 
 ## CTO log
 
@@ -56,4 +64,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 
 `CTO-<n> active since <date time> · handed over <time> at <tokens> · landed <cycles>`
 
-CTO-1 active since 2026-11-10 22:40 · handed over — at — · landed —
+CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
