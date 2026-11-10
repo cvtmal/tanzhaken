@@ -74,8 +74,8 @@ Size is a guess for budgeting sessions: S under 60k tokens for the whole cycle's
 
 | # | Slug | Wave | Requirements | Depends on | Schema | Gate | Start at | Size | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | `project-skeleton` | W0 | TEC-1–TEC-4, TEC-6, OPS-3, OPS-4 | — | — | G1 | Research | L | Open |
-| 1 | `design-reference` | W0 | UI-1–UI-4 (source) | — | — | G2 | Research | M | Open |
+| 0 | `project-skeleton` | W0 | TEC-1–TEC-4, TEC-6, OPS-3, OPS-4 | — | — | G1 | Research | L | ✅ Done |
+| 1 | `design-reference` | W0 | UI-1–UI-4 (source) | — | — | G2 | Research | M | ✅ Done |
 | 2 | `design-system` | W1 | UI-1–UI-5, A11Y-1 (base) | 0, 1 | — | — | Research | L | Open |
 | 3 | `domain-model` | W1 | PRD §6, TEC-3, PERF-1 (indexes) | 0 | creates all nine tables | — | Research | L | Open |
 | 4 | `teacher-auth` | W2 | ACC-1, ACC-2, ACC-5, SEC-1, SEC-2 (guard) | 2, 3 | `teacher` (add-only) | — | Research | M | Open |
