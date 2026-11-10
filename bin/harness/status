@@ -1,0 +1,201 @@
+#!/usr/bin/env python3
+"""status - one cheap snapshot of the harness for the lead session.
+
+Usage: status [--help]
+
+Prints, in under ~60 lines:
+  repo     main checkout path
+  main     its branch + HEAD (git log -1 --oneline), tracked-file changes
+  trunk    origin/main with a remote, else main (and how far local main lags)
+  recent   last 5 commits on the trunk
+  cycles   basenames of docs/outcomes/*.md on the trunk
+  lanes    `lane list`
+  context  `ctx` (truncated to fit; run ctx for everything)
+  ci       latest GitHub workflow run on main - only with a GitHub remote and
+           an authenticated gh, silently omitted otherwise
+
+Read-only and network-free except for the optional gh call. Never fails on a
+missing repository, commit, remote or docs directory: it says so and goes on.
+"""
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+MAX_LINES = 58
+
+
+def run(cmd, cwd=None, timeout=20, env=None):
+    """-> (returncode, stdout, stderr); never raises."""
+    try:
+        res = subprocess.run(
+            cmd, cwd=cwd, env=env, timeout=timeout, stdin=subprocess.DEVNULL,
+            capture_output=True, text=True, errors="replace",
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        return 127, "", str(exc)
+    return res.returncode, res.stdout, res.stderr
+
+
+def git(root, *args):
+    code, out, _ = run(["git", "-C", root] + list(args))
+    return out.rstrip("\n") if code == 0 else None
+
+
+def main_checkout(start):
+    out = git(start, "worktree", "list", "--porcelain")
+    for line in (out or "").splitlines():
+        if line.startswith("worktree "):
+            return line[len("worktree "):]
+    return None
+
+
+class Report:
+    def __init__(self):
+        self.lines = []
+
+    def add(self, label, text=""):
+        self.lines.append(("%-8s %s" % (label, text)).rstrip())
+
+    def block(self, label, body, limit=None, more_hint=""):
+        rows = [r.rstrip() for r in body.splitlines() if r.strip()]
+        if limit is not None and len(rows) > limit:
+            hidden = len(rows) - max(limit - 1, 1)
+            rows = rows[: max(limit - 1, 1)] + ["... %d more row(s)%s" % (hidden, more_hint)]
+        self.lines.append(label)
+        self.lines.extend("  " + r for r in rows)
+
+
+def git_section(rep, root):
+    """Everything that needs commits; returns the trunk ref (or None)."""
+    branch = git(root, "symbolic-ref", "-q", "--short", "HEAD") or "(detached)"
+    head = git(root, "log", "-1", "--oneline")
+    changed = git(root, "status", "--porcelain", "--untracked-files=no") or ""
+    dirty = len([c for c in changed.splitlines() if c.strip()])
+    rep.add("main", "%s @ %s%s" % (
+        branch, head or "no commits yet",
+        "  [%d uncommitted tracked change(s)]" % dirty if dirty else "",
+    ))
+
+    has_origin = git(root, "remote", "get-url", "origin") is not None
+    trunk = None
+    if has_origin and git(root, "rev-parse", "--verify", "--quiet", "refs/remotes/origin/main^{commit}"):
+        trunk = "origin/main"
+    elif git(root, "rev-parse", "--verify", "--quiet", "refs/heads/main^{commit}"):
+        trunk = "main"
+    if trunk is None:
+        rep.add("trunk", "no main branch yet" + (" (origin has none either)" if has_origin else ""))
+        rep.add("recent", "no commits on main yet")
+        rep.add("cycles", "0 (no docs/outcomes on main yet)")
+        return None
+
+    lag = ""
+    if trunk == "origin/main":
+        counts = git(root, "rev-list", "--left-right", "--count", "origin/main...refs/heads/main")
+        if counts is None:
+            lag = "  (no local main)"
+        else:
+            behind, ahead = (counts.split() + ["0", "0"])[:2]
+            parts = []
+            if behind != "0":
+                parts.append("%s behind - git pull --ff-only" % behind)
+            if ahead != "0":
+                parts.append("%s ahead, unpushed" % ahead)
+            if parts:
+                lag = "  (local main: %s)" % "; ".join(parts)
+    elif has_origin:
+        lag = "  (origin has no main yet)"
+    rep.add("trunk", trunk + lag)
+
+    log = (git(root, "log", "-5", "--oneline", trunk) or "").splitlines()
+    for i, line in enumerate(log or ["(none)"]):
+        rep.add("recent" if i == 0 else "", line[:110])
+
+    tree = git(root, "ls-tree", "--name-only", trunk, "docs/outcomes/") or ""
+    cycles = sorted(os.path.basename(p) for p in tree.splitlines() if p.endswith(".md"))
+    if cycles:
+        rep.add("cycles", "%d: %s" % (len(cycles), ", ".join(cycles)))
+    else:
+        rep.add("cycles", "0 (no docs/outcomes/*.md on %s yet)" % trunk)
+    return trunk
+
+
+def ci_line(root):
+    """Latest workflow run on main, or None (no GitHub remote / gh missing / not authenticated)."""
+    remotes = git(root, "remote", "-v") or ""
+    if "github.com" not in remotes or not shutil.which("gh"):
+        return None
+    env = dict(os.environ, GH_PROMPT_DISABLED="1", GH_NO_UPDATE_NOTIFIER="1", NO_COLOR="1")
+    fields = "status,conclusion,workflowName,displayTitle,headSha,createdAt"
+    code, out, _ = run(
+        ["gh", "run", "list", "--branch", "main", "--limit", "1", "--json", fields],
+        cwd=root, timeout=15, env=env,
+    )
+    if code != 0:
+        return None
+    try:
+        runs = json.loads(out)
+    except ValueError:
+        return None
+    if not isinstance(runs, list) or not runs or not isinstance(runs[0], dict):
+        return None
+    last = runs[0]
+    state = last.get("conclusion") or last.get("status") or "?"
+    title = " ".join(str(last.get("displayTitle") or "").split())[:60]
+    return "%s  %s  %s  %s  %s" % (
+        state, last.get("workflowName") or "?", str(last.get("headSha") or "")[:7],
+        last.get("createdAt") or "", title,
+    )
+
+
+def main(argv):
+    if any(a in ("-h", "--help") for a in argv):
+        print(__doc__.strip())
+        return 0
+    if argv:
+        print("status: takes no arguments (see status --help)", file=sys.stderr)
+        return 2
+    try:
+        sys.stdout.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
+    fallback = os.path.realpath(os.path.join(HERE, "..", ".."))
+    root = main_checkout(os.getcwd()) or main_checkout(fallback)
+    rep = Report()
+    if root is None:
+        root = fallback
+        rep.add("repo", "%s - not a git repository yet" % root)
+        rep.add("lanes", "n/a (not a git repository yet)")
+    else:
+        rep.add("repo", root)
+        git_section(rep, root)
+        code, out, err = run([os.path.join(HERE, "lane"), "list"], cwd=root)
+        if code == 0 and out.strip():
+            rep.block("lanes", out)
+        else:
+            reason = (err.strip().splitlines() or ["lane list failed"])[-1]
+            rep.add("lanes", "unavailable (%s)" % reason)
+
+    ci = ci_line(root)
+    code, out, err = run([os.path.join(HERE, "ctx")], cwd=root, timeout=60)
+    room = MAX_LINES - len(rep.lines) - 1 - (1 if ci else 0)
+    if out.strip():
+        rep.block("context", out, limit=max(room, 4), more_hint=" - run ctx for all")
+    else:
+        reason = (err.strip().splitlines() or ["ctx printed nothing"])[-1]
+        rep.add("context", reason[:120])
+    if ci:
+        rep.add("ci", ci)
+    print("\n".join(rep.lines))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except BrokenPipeError:
+        sys.exit(0)

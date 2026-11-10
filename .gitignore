@@ -1,0 +1,12 @@
+# Agent harness: local, never committed
+/.claude/worktrees/
+/.claude/harness/
+/.claude/settings.local.json
+/.rpi-tracking/
+.lane.env
+
+# Editors and OS
+/.idea/
+.DS_Store
+
+# Cycle #0 appends Symfony's entries below (var/, vendor/, .env.local, ...)

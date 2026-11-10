@@ -1,0 +1,446 @@
+#!/usr/bin/env bash
+# land - land one cycle as ONE commit on main (bash 3.2 compatible)
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+land - land one cycle as ONE commit on main
+
+Usage (inside the lane worktree, or with --slug from anywhere in the repo):
+  land -m "<subject>" [-F <body-file>] [--slug <slug>]
+       [--no-review-check] [--no-gates] [--no-trailer]
+
+Steps:
+  a  refuse on the main checkout / on branch main
+  b  review check: newest <worktree>/.rpi-tracking/reviews/*/<slug>-review.md
+     must say "Complete" (and not "Needs Rework"/"Blocked" on that line) under
+     "## Overall Status"; without that heading any such line counts
+  c  git add -A + temporary commit "wip: <slug>"
+  d  fetch + rebase onto the base (origin/main with a remote, else main)
+  e  squash everything into ONE commit: subject, optional body, and the
+     trailer "Co-Authored-By: Claude <noreply@anthropic.com>"
+  f  gates: each line of $HARNESS_GATES (default: `make lint`, `make test`
+     when the Makefile has those targets)
+  g  publish: `git push origin HEAD:main` (remote) or `git merge --ff-only`
+     in the main checkout (no remote). If main moved meanwhile, d-g are
+     repeated up to 3 times. Never force-pushes, never rewrites main.
+  h  stdout: landed=<sha> and subject=<subject>
+
+Re-running is safe: after a conflict (exit 3) resolve the files, `git add`
+them and run the same land command again - it continues the rebase itself.
+
+Exit codes: 0 landed, 1 error, 2 usage / refused (main checkout, branch main),
+  3 rebase conflict (left in progress; conflict=<file> lines on stdout),
+  5 review missing or not Complete, 6 nothing to land,
+  7 gate failed or gates left changes (commit stays local),
+  8 main checkout blocks the fast-forward (dirty tracked files / not on main),
+  9 push rejected (not a race, or still racing after 3 retries)
+EOF
+}
+
+note() { printf 'land: %s\n' "$*" >&2; }
+die() {
+  note "$1"
+  exit "${2:-1}"
+}
+
+TRAILER='Co-Authored-By: Claude <noreply@anthropic.com>'
+MAIN=""
+WT=""
+BASE=""
+MSG=""
+SLUG=""
+BRANCH=""
+SUBJECT=""
+BODY_FILE=""
+OPT_REVIEW=1
+OPT_GATES=1
+OPT_TRAILER=1
+
+cleanup() {
+  if [ -n "$MSG" ]; then rm -f "$MSG"; fi
+}
+trap cleanup EXIT
+
+# A stopped rebase can delete the directory we were started in (it may exist
+# only in the lane's own commits): re-enter the nearest directory that exists.
+recover_cwd() {
+  local dir=${PWD:-/}
+  while [ -n "$dir" ] && [ ! -d "$dir" ]; do
+    dir=${dir%/*}
+  done
+  cd "${dir:-/}" 2>/dev/null || die "cannot enter a working directory"
+}
+
+has_origin() { git remote get-url origin >/dev/null 2>&1; }
+
+has_ref() { git rev-parse --verify --quiet "$1^{commit}" >/dev/null 2>&1; }
+
+rebase_in_progress() {
+  local dir
+  for dir in rebase-merge rebase-apply; do
+    if [ -d "$(git rev-parse --git-path "$dir")" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# branch of the worktree, also while a rebase has HEAD detached
+current_branch() {
+  local name dir file
+  if name=$(git symbolic-ref -q --short HEAD); then
+    printf '%s\n' "$name"
+    return 0
+  fi
+  for dir in rebase-merge rebase-apply; do
+    file="$(git rev-parse --git-path "$dir")/head-name"
+    if [ -f "$file" ]; then
+      name=$(cat "$file")
+      printf '%s\n' "${name#refs/heads/}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+conflict_exit() {
+  note "rebase onto ${BASE:-the base} stopped on conflicts (left in progress in $WT)"
+  note "resolve the files, 'git add' them, then re-run the same land command"
+  git diff --name-only --diff-filter=U | sed 's/^/conflict=/'
+  exit 3
+}
+
+# Finish a rebase that an earlier run (or lane sync) left in progress.
+finish_rebase() {
+  local guard=0
+  while rebase_in_progress; do
+    guard=$((guard + 1))
+    [ "$guard" -le 200 ] || die "the rebase makes no progress - inspect $WT by hand"
+    if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+      conflict_exit
+    fi
+    if GIT_EDITOR=true git rebase --continue >&2; then
+      continue
+    fi
+    rebase_in_progress || die "git rebase --continue failed"
+    if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+      conflict_exit # the next commit conflicts too
+    fi
+    if git diff --cached --quiet && git diff --quiet; then
+      # the resolution left nothing: this commit is already upstream
+      git rebase --skip >&2 || true
+      continue
+    fi
+    note "the rebase cannot continue: 'git add' your resolution, then re-run land"
+    exit 3
+  done
+}
+
+resolve_base() {
+  if has_origin; then
+    git fetch --quiet origin >&2 || die "git fetch origin failed"
+    if has_ref refs/remotes/origin/main; then
+      BASE=origin/main
+      return 0
+    fi
+    note "origin has no main branch yet - this landing will create it"
+  fi
+  has_ref refs/heads/main || die "branch 'main' not found (no commits yet?)"
+  BASE=main
+}
+
+# b: 0 when the review file says Complete
+review_complete() {
+  awk '
+    function clean(l) {
+      return l ~ /(^|[^[:alnum:]_])Complete([^[:alnum:]_]|$)/ && l !~ /Needs Rework/ && l !~ /Blocked/
+    }
+    /^#+[[:space:]]*Overall Status/ { scoped = 1; insec = 1; next }
+    insec && /^#/ { insec = 0 }
+    insec && clean($0) { sec_ok = 1 }
+    clean($0) { any_ok = 1 }
+    END { exit ((scoped ? sec_ok : any_ok) ? 0 : 1) }
+  ' "$1"
+}
+
+review_check() {
+  local file newest=""
+  for file in "$WT"/.rpi-tracking/reviews/*/"$SLUG"-review.md; do
+    if [ -f "$file" ]; then newest=$file; fi # globs sort, so the last date dir wins
+  done
+  if [ -z "$newest" ]; then
+    note "review check failed: no $WT/.rpi-tracking/reviews/<date>/$SLUG-review.md"
+  elif review_complete "$newest"; then
+    note "review ok: ${newest#"$WT"/}"
+    return 0
+  else
+    note "review check failed: ${newest#"$WT"/} is not 'Complete' (Needs Rework / Blocked / unfilled?)"
+  fi
+  note "hint: run /rpi-review $SLUG until its Overall Status is Complete, or pass --no-review-check"
+  exit 5
+}
+
+# g (no remote) precondition, also checked up front so we fail before touching the lane
+check_main_checkout() {
+  local head changed
+  head=$(git -C "$MAIN" symbolic-ref -q --short HEAD || true)
+  if [ "$head" != main ]; then
+    note "main checkout $MAIN is on '${head:-a detached HEAD}', not on main - cannot fast-forward main"
+    exit 8
+  fi
+  changed=$(git -C "$MAIN" status --porcelain --untracked-files=no)
+  if [ -n "$changed" ]; then
+    note "main checkout $MAIN has uncommitted changes to tracked files - commit or stash them first:"
+    printf '%s\n' "$changed" | head -n 10 >&2
+    exit 8
+  fi
+}
+
+build_message() {
+  local kept
+  case "$SUBJECT" in
+    *$'\n'*) die "the subject must be a single line (put details in -F <body-file>)" 2 ;;
+  esac
+  {
+    printf '%s\n' "$SUBJECT"
+    if [ -n "$BODY_FILE" ]; then
+      # attribution that must never reach main: session URLs, model names, tool adverts.
+      # The one allowed trailer is (re)added below.
+      kept=$(grep -v -i -E '^[[:space:]]*(claude-session:|co-authored-by:.*<noreply@anthropic\.com>)|generated with \[claude code\]|claude\.ai/code/session_' "$BODY_FILE" || true)
+      printf '\n%s\n' "$kept"
+    fi
+  } >"$MSG"
+  if [ "$OPT_TRAILER" = 1 ]; then
+    git interpret-trailers --in-place --if-exists addIfDifferent --trailer "$TRAILER" "$MSG"
+  fi
+}
+
+# d: fetch + rebase onto the base
+sync_onto_base() {
+  resolve_base
+  if git rebase "$BASE" >&2; then
+    return 0
+  fi
+  if rebase_in_progress; then
+    conflict_exit
+  fi
+  die "git rebase $BASE failed"
+}
+
+# e: collapse everything on top of the base into one commit
+squash() {
+  local before
+  before=$(git rev-parse HEAD)
+  git reset -q --soft "$BASE"
+  if git diff --cached --quiet; then
+    note "nothing to land: '$BRANCH' has no changes on top of $BASE"
+    exit 6
+  fi
+  if ! git commit -q --cleanup=whitespace -F "$MSG" >&2; then
+    git reset -q --soft "$before"
+    die "git commit failed (hook? identity?) - '$BRANCH' restored to $(git rev-parse --short "$before")"
+  fi
+}
+
+makefile_has_target() {
+  grep -Eq "^([^#:=[:space:]]+[[:space:]]+)*$2([[:space:]]+[^#:=[:space:]]+)*[[:space:]]*:([^=]|\$)" "$1"
+}
+
+# f
+run_gates() {
+  local list="${HARNESS_GATES:-}" line makefile="" candidate target left
+  if [ "$OPT_GATES" = 0 ]; then
+    note "gates skipped (--no-gates)"
+    return 0
+  fi
+  if [ -z "$list" ]; then
+    for candidate in GNUmakefile makefile Makefile; do
+      if [ -f "$candidate" ]; then
+        makefile=$candidate
+        break
+      fi
+    done
+    if [ -z "$makefile" ]; then
+      note "warning: no Makefile and no HARNESS_GATES - landing WITHOUT gates"
+      return 0
+    fi
+    for target in lint test; do
+      if makefile_has_target "$makefile" "$target"; then
+        list="$list${list:+$'\n'}make $target"
+      fi
+    done
+    if [ -z "$list" ]; then
+      note "warning: $makefile has no lint or test target - landing WITHOUT gates"
+      return 0
+    fi
+  fi
+  while IFS= read -r line; do
+    case "$line" in *[![:space:]]*) ;; *) continue ;; esac
+    note "gate: $line"
+    if ! "${BASH:-bash}" -c "$line" </dev/null >&2; then
+      note "gate FAILED: $line"
+      note "the commit stays local on '$BRANCH' (nothing was published); fix it and re-run land"
+      exit 7
+    fi
+  done <<EOF
+$list
+EOF
+  left=$(git status --porcelain)
+  if [ -n "$left" ]; then
+    note "the gates left uncommitted changes (auto-fixer? build output?):"
+    printf '%s\n' "$left" | head -n 10 >&2
+    note "gitignore them or keep them, then re-run land - nothing was published"
+    exit 7
+  fi
+}
+
+# g: 0 = published, 1 = main moved (retry); exits on anything else
+publish() {
+  local out rc=0
+  if has_origin; then
+    out=$(git push --porcelain origin HEAD:refs/heads/main 2>&1) || rc=$?
+    printf '%s\n' "$out" >&2
+    if [ "$rc" = 0 ]; then
+      return 0
+    fi
+    if grep -Eq '^[[:space:]]*!.*\[rejected\].*\((fetch first|non-fast-forward)\)' <<<"$out"; then
+      return 1
+    fi
+    note "git push failed (not a moved-main race) - the commit stays local"
+    exit 9
+  fi
+  check_main_checkout
+  if git -C "$MAIN" merge --ff-only "$BRANCH" >&2; then
+    return 0
+  fi
+  if ! git merge-base --is-ancestor main HEAD; then
+    return 1
+  fi
+  note "could not fast-forward main in $MAIN (untracked files in the way?) - the commit stays local"
+  exit 8
+}
+
+main() {
+  local slug_arg="" attempt=0 listing top marker
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -h | --help)
+        usage
+        exit 0
+        ;;
+      -m | --message)
+        [ $# -ge 2 ] || die "$1 needs a subject" 2
+        SUBJECT=$2
+        shift 2
+        ;;
+      -F | --file)
+        [ $# -ge 2 ] || die "$1 needs a file" 2
+        BODY_FILE=$2
+        shift 2
+        ;;
+      --slug)
+        [ $# -ge 2 ] || die "--slug needs a value" 2
+        slug_arg=$2
+        shift 2
+        ;;
+      --slug=*)
+        slug_arg=${1#--slug=}
+        shift
+        ;;
+      --no-review-check)
+        OPT_REVIEW=0
+        shift
+        ;;
+      --no-gates)
+        OPT_GATES=0
+        shift
+        ;;
+      --no-trailer)
+        OPT_TRAILER=0
+        shift
+        ;;
+      *) die "unknown argument '$1' (see land --help)" 2 ;;
+    esac
+  done
+  case "$SUBJECT" in
+    *[![:space:]]*) ;;
+    *) die "missing -m \"<subject>\" (see land --help)" 2 ;;
+  esac
+  if [ -n "$BODY_FILE" ]; then
+    [ -f "$BODY_FILE" ] || die "body file not found: $BODY_FILE" 2
+    case "$BODY_FILE" in /*) ;; *) BODY_FILE="$PWD/$BODY_FILE" ;; esac
+  fi
+
+  recover_cwd
+  listing=$(git worktree list --porcelain 2>/dev/null) || die "not inside a git repository"
+  MAIN=$(printf '%s\n' "$listing" | sed -n '1s/^worktree //p')
+  if [ -n "$slug_arg" ]; then
+    WT="$MAIN/.claude/worktrees/$slug_arg"
+    [ -d "$WT" ] || die "no worktree for '$slug_arg' (expected $WT)" 2
+  else
+    WT=$(git rev-parse --show-toplevel)
+  fi
+  cd "$WT"
+
+  # a
+  top=$(git rev-parse --show-toplevel)
+  if [ "$top" = "$MAIN" ]; then
+    die "refusing to land from the main checkout - run land inside a lane worktree or pass --slug <slug>" 2
+  fi
+  BRANCH=$(current_branch) || die "$WT is on a detached HEAD - check out the lane branch first"
+  if [ "$BRANCH" = main ]; then
+    die "refusing to land from branch main" 2
+  fi
+  if [ -n "$slug_arg" ] && [ "$BRANCH" != "$slug_arg" ]; then
+    die "$WT is on branch '$BRANCH', expected '$slug_arg'" 2
+  fi
+  SLUG=$BRANCH
+  for marker in MERGE_HEAD CHERRY_PICK_HEAD REVERT_HEAD BISECT_LOG; do
+    if [ -e "$(git rev-parse --git-path "$marker")" ]; then
+      die "an unfinished merge/cherry-pick/revert/bisect ($marker) is in progress in $WT - finish or abort it first"
+    fi
+  done
+
+  # b
+  if [ "$OPT_REVIEW" = 1 ]; then
+    review_check
+  else
+    note "review check skipped (--no-review-check)"
+  fi
+  if ! has_origin; then
+    check_main_checkout
+  fi
+
+  MSG="$(git rev-parse --absolute-git-dir)/LAND_MSG.$$"
+  build_message
+
+  # an earlier run stopped on conflicts: carry on from there
+  finish_rebase
+
+  # c
+  git add -A
+  if ! git diff --cached --quiet; then
+    git commit -q --no-verify -m "wip: $SLUG" >&2 || die "could not create the temporary commit (git identity configured?)"
+  fi
+
+  while :; do
+    sync_onto_base # d
+    squash         # e
+    run_gates      # f
+    if publish; then # g
+      break
+    fi
+    attempt=$((attempt + 1))
+    if [ "$attempt" -gt 3 ]; then
+      note "main kept moving: still rejected after 3 retries - the commit stays local, re-run land"
+      exit 9
+    fi
+    note "main moved while landing - retry $attempt/3 (rebase, gates, publish)"
+  done
+
+  # h
+  printf 'landed=%s\nsubject=%s\n' "$(git rev-parse HEAD)" "$SUBJECT"
+}
+
+main "$@"

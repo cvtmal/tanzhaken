@@ -1,0 +1,46 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "iterm2",
+  "enabledMcpjsonServers": ["claude_design"],
+  "permissions": {
+    "allow": [
+      "Bash(bin/harness/*)",
+      "Bash(claude --bg *)",
+      "Bash(claude stop *)",
+      "Bash(claude rm *)",
+      "Bash(claude agents*)",
+      "Bash(claude logs *)",
+      "Bash(make *)",
+      "Bash(composer *)",
+      "Bash(symfony *)",
+      "Bash(php bin/console *)",
+      "Bash(php bin/phpunit *)",
+      "Bash(vendor/bin/*)",
+      "Bash(git status*)",
+      "Bash(git log *)",
+      "Bash(git diff*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git fetch*)",
+      "Bash(git pull --ff-only*)",
+      "Bash(git rebase *)",
+      "Bash(git switch *)",
+      "Bash(git worktree *)",
+      "Bash(git push origin HEAD:main)",
+      "Bash(git push origin HEAD:refs/heads/*)",
+      "Bash(gh run *)",
+      "Bash(gh pr *)",
+      "Bash(gh repo view*)"
+    ],
+    "deny": [
+      "Bash(bin/harness/land --no-gates*)",
+      "Bash(bin/harness/land * --no-gates*)",
+      "Bash(bin/harness/land --no-review-check*)",
+      "Bash(bin/harness/land * --no-review-check*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh repo edit*)"
+    ]
+  }
+}

@@ -1,0 +1,548 @@
+#!/usr/bin/env bash
+# lane - git worktree lanes for harness teammates (bash 3.2 compatible)
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+lane - git worktree lanes for harness teammates
+
+Usage:
+  lane open <slug> [--lane A|B|C|D] [--no-install]
+  lane list
+  lane sync <slug>
+  lane close <slug> [--force]
+
+A lane is a worktree <repo>/.claude/worktrees/<slug> on branch <slug>, with a
+letter A-D and a port 8001-8004 (registry: <repo>/.claude/harness/lanes.tsv).
+Base = origin/main when a remote "origin" exists, else local main.
+Works from the main checkout or from inside any worktree.
+
+  open   creates (or reuses) worktree + branch from the base, assigns the first
+         free lane, writes <worktree>/.lane.env (HARNESS_SLUG/LANE/PORT), copies
+         .env.local and .env.*.local from the repo root, runs
+         `composer install` if composer.json exists (--no-install skips it).
+         stdout: path= branch= lane= port= base=
+  list   SLUG LANE PORT AHEAD/BEHIND DIRTY LAST-COMMIT NOTE, then a summary
+         line. NOTE flags registry rows whose worktree is gone.
+  sync   fetch (if remote) + `git rebase <base>` in the worktree.
+         stdout: head= base=            conflict: conflict=<file> lines, exit 3
+  close  archives <worktree>/.rpi-tracking/ into <repo>/.rpi-tracking/, removes
+         the worktree, deletes the branch, drops the registry row. Refuses
+         (exit 4) when the worktree is dirty or the branch is not landed in
+         the base, unless --force.
+
+open also keeps a block of local ignore rules in .git/info/exclude (.lane.env,
+/.claude/worktrees/, /.claude/harness/, .env.local, .env.*.local,
+.rpi-tracking/) so harness files never show up as changes or get committed.
+
+Exit codes: 0 ok, 1 error, 2 usage, 3 rebase conflict (left in progress),
+            4 refused (dirty / not landed), 5 lane(s) busy, 6 composer failed
+EOF
+}
+
+note() { printf 'lane: %s\n' "$*" >&2; }
+die() {
+  note "$1"
+  exit "${2:-1}"
+}
+
+MAIN=""
+BASE=""
+REG_DIR=""
+REG=""
+LOCKED=0
+SLUG_RE='^[a-z0-9][a-z0-9-]*$'
+
+# A stopped rebase can delete the directory we were started in (it may exist
+# only in the lane's own commits): re-enter the nearest directory that exists.
+recover_cwd() {
+  local dir=${PWD:-/}
+  while [ -n "$dir" ] && [ ! -d "$dir" ]; do
+    dir=${dir%/*}
+  done
+  cd "${dir:-/}" 2>/dev/null || die "cannot enter a working directory"
+}
+
+find_main() {
+  local listing
+  recover_cwd
+  listing=$(git worktree list --porcelain 2>/dev/null) || die "not inside a git repository"
+  MAIN=$(printf '%s\n' "$listing" | sed -n '1s/^worktree //p')
+  if [ -z "$MAIN" ] || [ ! -d "$MAIN" ]; then
+    die "cannot locate the main checkout"
+  fi
+  REG_DIR="$MAIN/.claude/harness"
+  REG="$REG_DIR/lanes.tsv"
+}
+
+has_origin() { git -C "$MAIN" remote get-url origin >/dev/null 2>&1; }
+
+has_ref() { git -C "$MAIN" rev-parse --verify --quiet "$1^{commit}" >/dev/null 2>&1; }
+
+# resolve_base <fetch-mode>   fetch-mode: none | try (warn on failure) | must
+resolve_base() {
+  BASE=""
+  if has_origin; then
+    if [ "$1" != none ] && ! git -C "$MAIN" fetch --quiet origin >&2; then
+      [ "$1" = try ] || die "git fetch origin failed"
+      note "warning: git fetch origin failed - using the last known origin/main"
+    fi
+    if has_ref refs/remotes/origin/main; then
+      BASE=origin/main
+      return 0
+    fi
+    note "warning: origin has no main branch yet - using local main as base"
+  fi
+  has_ref refs/heads/main || return 1
+  BASE=main
+}
+
+need_base() { resolve_base "$1" || die "branch 'main' not found (no commits yet?)"; }
+
+check_slug() {
+  [ -n "$1" ] || die "missing <slug> (see lane --help)" 2
+  [[ $1 =~ $SLUG_RE ]] || die "invalid slug '$1' (must match $SLUG_RE)" 2
+  [ "$1" != main ] || die "slug 'main' is reserved for the trunk" 2
+}
+
+lock() {
+  local tries=0 owner
+  mkdir -p "$REG_DIR"
+  while ! mkdir "$REG_DIR/.lock" 2>/dev/null; do
+    owner=$(cat "$REG_DIR/.lock/pid" 2>/dev/null || true)
+    if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then
+      rm -rf "$REG_DIR/.lock" # owner died
+      continue
+    fi
+    tries=$((tries + 1))
+    [ "$tries" -le 300 ] || die "lane registry is locked (pid ${owner:-?}); remove $REG_DIR/.lock if stale"
+    sleep 0.2
+  done
+  LOCKED=1
+  echo "$$" >"$REG_DIR/.lock/pid"
+}
+
+unlock() {
+  if [ "$LOCKED" = 1 ]; then
+    rm -rf "$REG_DIR/.lock"
+    LOCKED=0
+  fi
+}
+trap unlock EXIT
+
+reg_init() {
+  mkdir -p "$REG_DIR"
+  [ -f "$REG" ] || printf '#slug\tlane\tport\tcreated\n' >"$REG"
+}
+
+# reg_get <slug> -> "lane<TAB>port<TAB>created" (exit 1 if absent)
+reg_get() {
+  [ -f "$REG" ] || return 1
+  awk -F'\t' -v s="$1" '!/^#/ && $1 == s { print $2 "\t" $3 "\t" $4; found = 1; exit } END { exit found ? 0 : 1 }' "$REG"
+}
+
+reg_lane_owner() {
+  [ -f "$REG" ] || return 0
+  awk -F'\t' -v l="$1" '!/^#/ && $2 == l { print $1; exit }' "$REG"
+}
+
+reg_drop() {
+  [ -f "$REG" ] || return 0
+  local tmp
+  tmp=$(mktemp "$REG.XXXXXX")
+  awk -F'\t' -v s="$1" '/^#/ || $1 != s' "$REG" >"$tmp"
+  mv "$tmp" "$REG"
+}
+
+port_of() {
+  case "$1" in
+    A) echo 8001 ;;
+    B) echo 8002 ;;
+    C) echo 8003 ;;
+    D) echo 8004 ;;
+    *) return 1 ;;
+  esac
+}
+
+# is_worktree <path>: registered with git and present on disk
+is_worktree() {
+  local listing
+  [ -d "$1" ] || return 1
+  listing=$(git -C "$MAIN" worktree list --porcelain)
+  grep -Fxq "worktree $1" <<<"$listing"
+}
+
+rebase_in_progress() {
+  local dir
+  for dir in rebase-merge rebase-apply; do
+    if [ -d "$(git -C "$1" rev-parse --git-path "$dir")" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+print_conflicts() {
+  git -C "$1" diff --name-only --diff-filter=U | sed 's/^/conflict=/'
+}
+
+dirty_count() { git -C "$1" status --porcelain | wc -l | tr -d ' '; }
+
+# Local ignore rules for files the harness creates; shared by all worktrees.
+ensure_excludes() {
+  local file pattern
+  file=$(git -C "$MAIN" rev-parse --git-common-dir)
+  case "$file" in /*) ;; *) file="$MAIN/$file" ;; esac
+  file="$file/info/exclude"
+  mkdir -p "$(dirname "$file")"
+  [ -f "$file" ] || : >"$file"
+  for pattern in .lane.env /.claude/worktrees/ /.claude/harness/ .env.local '.env.*.local' .rpi-tracking/; do
+    if ! grep -Fxq -- "$pattern" "$file"; then
+      if ! grep -Fxq -- '# harness (bin/harness/lane): local files, never committed' "$file"; then
+        printf '%s\n' '# harness (bin/harness/lane): local files, never committed' >>"$file"
+      fi
+      printf '%s\n' "$pattern" >>"$file"
+    fi
+  done
+}
+
+# is_landed <ref>: nothing on <ref> that the base lacks
+is_landed() {
+  [ "$(git -C "$MAIN" rev-list --count "$BASE..$1")" = 0 ] && return 0
+  [ "$(git -C "$MAIN" rev-parse "$1^{tree}")" = "$(git -C "$MAIN" rev-parse "$BASE^{tree}")" ] && return 0
+  # squash/cherry-pick landing: every patch has an equivalent upstream
+  local pending
+  pending=$(git -C "$MAIN" cherry "$BASE" "$1")
+  case "$pending" in
+    +* | *$'\n'+*) return 1 ;;
+  esac
+  return 0
+}
+
+fmt_age() {
+  local secs=$1
+  if [ "$secs" -lt 0 ]; then secs=0; fi
+  if [ "$secs" -lt 60 ]; then
+    echo "${secs}s"
+  elif [ "$secs" -lt 3600 ]; then
+    echo "$((secs / 60))m"
+  elif [ "$secs" -lt 172800 ]; then
+    echo "$((secs / 3600))h"
+  else
+    echo "$((secs / 86400))d"
+  fi
+}
+
+fmt_table() {
+  awk -F'\t' '
+    { n[NR] = NF; for (i = 1; i <= NF; i++) { cell[NR, i] = $i; if (length($i) > w[i]) w[i] = length($i) } }
+    END {
+      for (r = 1; r <= NR; r++) {
+        line = ""
+        for (i = 1; i <= n[r]; i++) line = line sprintf("%-" w[i] "s  ", cell[r, i])
+        sub(/ +$/, "", line)
+        print line
+      }
+    }'
+}
+
+cmd_open() {
+  local slug="" want="" install=1
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --lane)
+        [ $# -ge 2 ] || die "--lane needs a letter A-D" 2
+        want=$2
+        shift 2
+        ;;
+      --lane=*)
+        want=${1#--lane=}
+        shift
+        ;;
+      --no-install)
+        install=0
+        shift
+        ;;
+      -*) die "open: unknown option '$1'" 2 ;;
+      *)
+        [ -z "$slug" ] || die "open: unexpected argument '$1'" 2
+        slug=$1
+        shift
+        ;;
+    esac
+  done
+  check_slug "$slug"
+  if [ -n "$want" ]; then
+    port_of "$want" >/dev/null || die "invalid lane '$want' (use A, B, C or D)" 2
+  fi
+  need_base try
+
+  local wt="$MAIN/.claude/worktrees/$slug" lane="" port row owner letter
+  lock
+  reg_init
+  if row=$(reg_get "$slug"); then
+    IFS=$'\t' read -r lane port _ <<<"$row"
+    if [ -n "$want" ] && [ "$want" != "$lane" ]; then
+      die "'$slug' already holds lane $lane - close it before moving it to lane $want" 5
+    fi
+    note "reusing lane $lane (port $port) already registered for '$slug'"
+  else
+    if [ -n "$want" ]; then
+      owner=$(reg_lane_owner "$want")
+      [ -z "$owner" ] || die "lane $want is busy (slug '$owner')" 5
+      lane=$want
+    else
+      for letter in A B C D; do
+        if [ -z "$(reg_lane_owner "$letter")" ]; then
+          lane=$letter
+          break
+        fi
+      done
+      [ -n "$lane" ] || die "all lanes busy (A-D) - close one first (lane list)" 5
+    fi
+    port=$(port_of "$lane")
+  fi
+
+  git -C "$MAIN" worktree prune
+  if is_worktree "$wt"; then
+    note "reusing existing worktree $wt"
+  elif has_ref "refs/heads/$slug"; then
+    note "reusing existing branch '$slug'"
+    git -C "$MAIN" worktree add "$wt" "$slug" >&2 || die "git worktree add failed for existing branch '$slug'"
+  else
+    git -C "$MAIN" worktree add "$wt" -b "$slug" "$BASE" >&2 || die "git worktree add failed"
+  fi
+  if ! reg_get "$slug" >/dev/null; then
+    printf '%s\t%s\t%s\t%s\n' "$slug" "$lane" "$port" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" >>"$REG"
+  fi
+  ensure_excludes
+  unlock
+
+  printf 'HARNESS_SLUG=%s\nHARNESS_LANE=%s\nHARNESS_PORT=%s\n' "$slug" "$lane" "$port" >"$wt/.lane.env"
+  local src name
+  for src in "$MAIN"/.env.local "$MAIN"/.env.*.local; do
+    [ -f "$src" ] || continue
+    name=$(basename "$src")
+    if [ ! -e "$wt/$name" ]; then
+      cp "$src" "$wt/$name"
+      note "copied $name"
+    fi
+  done
+
+  local rc=0
+  if [ "$install" = 1 ] && [ -f "$wt/composer.json" ]; then
+    if command -v composer >/dev/null 2>&1; then
+      note "composer install ..."
+      if ! (cd "$wt" && composer install --no-interaction --quiet) >&2; then
+        note "composer install failed in $wt - fix it and re-run: lane open $slug"
+        rc=6
+      fi
+    else
+      note "warning: composer.json found but composer is not installed - skipped"
+    fi
+  fi
+
+  printf 'path=%s\nbranch=%s\nlane=%s\nport=%s\nbase=%s\n' "$wt" "$slug" "$lane" "$port" "$BASE"
+  return "$rc"
+}
+
+# list_row <slug> <lane> <port> <registered:0|1>
+list_row() {
+  local slug=$1 lane=$2 port=$3 wt="$MAIN/.claude/worktrees/$1"
+  local ab="-" dirty="-" age="-" flags="" ref counts branch stamp
+  if is_worktree "$wt"; then
+    ref=HEAD
+    branch=$(git -C "$wt" symbolic-ref -q --short HEAD || true)
+    if rebase_in_progress "$wt"; then
+      flags="rebase in progress"
+    elif [ "$branch" != "$slug" ]; then
+      flags="on branch ${branch:-(detached)}"
+    fi
+    counts=""
+    if [ -n "$BASE" ]; then
+      counts=$(git -C "$wt" rev-list --left-right --count "$BASE...$ref" 2>/dev/null || true)
+    fi
+    if [ -n "$counts" ]; then
+      ab="${counts##*[[:space:]]}/${counts%%[[:space:]]*}"
+    fi
+    dirty=$(dirty_count "$wt")
+    stamp=$(git -C "$wt" log -1 --format=%ct "$ref" 2>/dev/null || true)
+    if [ -n "$stamp" ]; then
+      age=$(fmt_age $(($(date +%s) - stamp)))
+    fi
+  else
+    flags="WORKTREE MISSING - run: lane close $slug"
+  fi
+  if [ "$4" = 0 ]; then
+    flags="${flags:+$flags; }unregistered"
+  fi
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$slug" "$lane" "$port" "$ab" "$dirty" "$age" "${flags:--}"
+}
+
+cmd_list() {
+  [ $# -eq 0 ] || die "list takes no arguments" 2
+  resolve_base none || note "warning: no main branch yet - AHEAD/BEHIND unavailable"
+  local rows="" slug lane port busy="" free="" letter path count=0
+  if [ -f "$REG" ]; then
+    while IFS=$'\t' read -r slug lane port _; do
+      case "$slug" in '' | '#'*) continue ;; esac
+      rows="$rows$(list_row "$slug" "$lane" "$port" 1)"$'\n'
+      busy="$busy$lane"
+      count=$((count + 1))
+    done <"$REG"
+  fi
+  # worktrees under .claude/worktrees/ that the registry does not know
+  while IFS= read -r path; do
+    case "$path" in
+      "worktree $MAIN/.claude/worktrees/"*)
+        slug=${path#"worktree $MAIN/.claude/worktrees/"}
+        if ! reg_get "$slug" >/dev/null; then
+          rows="$rows$(list_row "$slug" - - 0)"$'\n'
+        fi
+        ;;
+    esac
+  done <<EOF
+$(git -C "$MAIN" worktree list --porcelain)
+EOF
+  if [ -n "$rows" ]; then
+    printf 'SLUG\tLANE\tPORT\tAHEAD/BEHIND\tDIRTY\tLAST-COMMIT\tNOTE\n%s' "$rows" | fmt_table
+  fi
+  for letter in A B C D; do
+    case "$busy" in *"$letter"*) ;; *) free="$free${free:+,}$letter" ;; esac
+  done
+  printf 'lanes: %s/4 busy, free: %s, base: %s\n' "$count" "${free:-none}" "${BASE:-none}"
+}
+
+cmd_sync() {
+  [ $# -eq 1 ] || die "usage: lane sync <slug>" 2
+  local slug=$1 wt
+  check_slug "$slug"
+  wt="$MAIN/.claude/worktrees/$slug"
+  is_worktree "$wt" || die "no worktree for '$slug' (expected $wt)"
+  if rebase_in_progress "$wt"; then
+    note "a rebase is already in progress in $wt - resolve, 'git add' the files, then 'git rebase --continue'"
+    print_conflicts "$wt"
+    exit 3
+  fi
+  need_base must
+  if [ -n "$(git -C "$wt" status --porcelain --untracked-files=no)" ]; then
+    die "'$slug' has uncommitted changes - commit them first (land squashes all commits anyway)" 4
+  fi
+  if git -C "$wt" rebase "$BASE" >&2; then
+    printf 'head=%s\nbase=%s\n' "$(git -C "$wt" rev-parse --short HEAD)" "$BASE"
+    return 0
+  fi
+  if rebase_in_progress "$wt"; then
+    note "rebase onto $BASE stopped on conflicts (left in progress in $wt)"
+    note "resolve, 'git add' the files, then 'git rebase --continue' (or 'git rebase --abort')"
+    print_conflicts "$wt"
+    exit 3
+  fi
+  die "git rebase $BASE failed in $wt"
+}
+
+cmd_close() {
+  local slug="" force=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --force | -f)
+        force=1
+        shift
+        ;;
+      -*) die "close: unknown option '$1'" 2 ;;
+      *)
+        [ -z "$slug" ] || die "close: unexpected argument '$1'" 2
+        slug=$1
+        shift
+        ;;
+    esac
+  done
+  check_slug "$slug"
+  local wt="$MAIN/.claude/worktrees/$slug" have_wt=0 have_branch=0 dirty ahead
+  cd "$MAIN"
+  git worktree prune
+  if is_worktree "$wt"; then have_wt=1; fi
+  if has_ref "refs/heads/$slug"; then have_branch=1; fi
+  if [ "$have_wt" = 0 ] && [ "$have_branch" = 0 ] && ! reg_get "$slug" >/dev/null; then
+    die "nothing to close: no worktree, branch or registry row for '$slug'"
+  fi
+
+  if [ "$force" = 0 ]; then
+    if [ "$have_wt" = 1 ]; then
+      if rebase_in_progress "$wt"; then
+        die "refusing to close '$slug': a rebase is in progress (finish it, or use --force)" 4
+      fi
+      dirty=$(dirty_count "$wt")
+      if [ "$dirty" != 0 ]; then
+        die "refusing to close '$slug': $dirty uncommitted change(s) in the worktree (land them, or use --force)" 4
+      fi
+    fi
+    if [ "$have_branch" = 1 ]; then
+      need_base none
+      if ! is_landed "refs/heads/$slug"; then
+        ahead=$(git rev-list --count "$BASE..refs/heads/$slug")
+        die "refusing to close '$slug': $ahead commit(s) not in $BASE (land them, or use --force)" 4
+      fi
+    fi
+  fi
+
+  if [ "$have_wt" = 1 ]; then
+    if [ -d "$wt/.rpi-tracking" ]; then
+      mkdir -p "$MAIN/.rpi-tracking"
+      cp -R "$wt/.rpi-tracking/." "$MAIN/.rpi-tracking/"
+      note "archived .rpi-tracking/ to $MAIN/.rpi-tracking/"
+    fi
+    if [ "$force" = 1 ]; then
+      git worktree remove --force "$wt" >&2 || die "git worktree remove --force failed for $wt"
+    else
+      git worktree remove "$wt" >&2 || die "git worktree remove failed for $wt (untracked files? try --force)"
+    fi
+  else
+    note "worktree $wt is already gone"
+  fi
+  if [ "$have_branch" = 1 ]; then
+    if [ "$force" = 1 ]; then
+      git branch -q -D "$slug" >&2 || die "could not delete branch '$slug'"
+    elif ! git branch -q -d "$slug" >/dev/null 2>&1; then
+      # is_landed passed above, but git only trusts ancestry of HEAD/upstream:
+      # a squash-landed (or landed-on-origin-only) branch needs -D
+      git branch -q -D "$slug" >&2 || die "could not delete branch '$slug'"
+    fi
+  fi
+  lock
+  reg_drop "$slug"
+  unlock
+  printf 'closed=%s\n' "$slug"
+}
+
+main() {
+  [ $# -gt 0 ] || {
+    usage >&2
+    exit 2
+  }
+  local cmd=$1
+  shift
+  case "$cmd" in
+    -h | --help | help)
+      usage
+      exit 0
+      ;;
+  esac
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      -h | --help)
+        usage
+        exit 0
+        ;;
+    esac
+  done
+  case "$cmd" in
+    open | list | sync | close) ;;
+    *) die "unknown command '$cmd' (see lane --help)" 2 ;;
+  esac
+  find_main
+  "cmd_$cmd" "$@"
+}
+
+main "$@"

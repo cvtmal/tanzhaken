@@ -1,0 +1,561 @@
+#!/usr/bin/env python3
+"""ctx - context-token meter for the Claude Code sessions of this repo.
+
+Reads Claude Code transcripts ($CLAUDE_CONFIG_DIR/projects/<slug>/*.jsonl and
+their subagents/agent-*.jsonl) and reports, per session / agent, the context
+size of the LAST assistant turn:
+
+    input_tokens + cache_creation_input_tokens + cache_read_input_tokens
+    + output_tokens
+
+Usage:
+    ctx                 table of all sessions + agents of this repo (last 24h)
+    ctx --self          only the current session ($CLAUDE_CODE_SESSION_ID)
+    ctx <query>         rows whose name contains, or whose id starts with, <query>
+                        (an exact name/id match wins over partial matches)
+
+Options:
+    --role teammate|cto threshold set for every row. Default: teammate, except
+                        that a session whose name starts with "cto" is judged
+                        as cto.
+    --all               no age limit            --hours N   age limit (default 24)
+    --json              JSON array (tokens as int, plus transcript path)
+
+Verdicts (override with plain-integer env vars):
+    teammate  OK < 150000 <= WARN < 180000 <= RECYCLE
+              HARNESS_TEAMMATE_WARN / HARNESS_TEAMMATE_RECYCLE
+    cto       OK < 220000 <= WARN < 250000 <= HANDOVER
+              HARNESS_CTO_WARN / HARNESS_CTO_HANDOVER
+
+Columns: NAME KIND(session|agent) STATUS TOKENS VERDICT AGE WHERE ID
+    STATUS  session: busy|idle from the live registry, "ended" if no live process
+            agent:   busy (running), idle (turn finished, resumable), stopped,
+                     "ended" if the parent session is gone
+    AGE     time since the transcript was last written
+    WHERE   cwd relative to the repo root ("." = root)
+    ID      first 8 chars of the session id (agent rows: of the agent id)
+
+Exit codes: single-row result (--self or a unique query): 0 OK, 10 WARN,
+    20 RECYCLE/HANDOVER. Otherwise 0. 1 = query/--self matched nothing,
+    2 = usage error or --self without CLAUDE_CODE_SESSION_ID.
+
+Note: inside a subagent/in-process teammate CLAUDE_CODE_SESSION_ID is the
+PARENT session, so --self reports the parent. Teammates query themselves with
+`ctx <own name or agent id>`.
+"""
+
+import argparse
+import glob
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+
+USAGE_KEYS = (
+    "input_tokens",
+    "cache_creation_input_tokens",
+    "cache_read_input_tokens",
+    "output_tokens",
+)
+NAME_LINES = {"custom-title": "customTitle", "agent-name": "agentName", "ai-title": "aiTitle"}
+NAME_BUDGET = 256 * 1024  # how far back from EOF to look for title lines
+CHUNK = 64 * 1024
+THRESHOLDS = {
+    "HARNESS_TEAMMATE_WARN": 150000,
+    "HARNESS_TEAMMATE_RECYCLE": 180000,
+    "HARNESS_CTO_WARN": 220000,
+    "HARNESS_CTO_HANDOVER": 250000,
+}
+EXIT_BY_VERDICT = {"OK": 0, "WARN": 10, "RECYCLE": 20, "HANDOVER": 20}
+
+
+def die(msg, code=2):
+    print("ctx: " + msg, file=sys.stderr)
+    sys.exit(code)
+
+
+def git(args, cwd=None):
+    try:
+        res = subprocess.run(
+            ["git"] + args, cwd=cwd, capture_output=True, text=True, timeout=10
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return res.stdout if res.returncode == 0 else None
+
+
+def repo_root():
+    """Main checkout of the repo around cwd; else <script dir>/../.. ."""
+    top = git(["rev-parse", "--show-toplevel"])
+    if top and top.strip():
+        root = top.strip()
+        # inside a linked worktree: report against the MAIN checkout
+        listing = git(["worktree", "list", "--porcelain"]) or ""
+        for line in listing.splitlines():
+            if line.startswith("worktree "):
+                root = line[len("worktree "):]
+                break
+        return os.path.realpath(root)
+    here = os.path.dirname(os.path.realpath(__file__))
+    return os.path.realpath(os.path.join(here, "..", ".."))
+
+
+def project_slugs(path):
+    """Claude Code's project dir name for a cwd ('/' and '.' -> '-').
+
+    Newer versions replace every non-alphanumeric char; accept both forms."""
+    return {path.replace("/", "-").replace(".", "-"), re.sub(r"[^A-Za-z0-9]", "-", path)}
+
+
+def is_under(path, root):
+    if not path:
+        return False
+    path = os.path.realpath(path)
+    return path == root or path.startswith(root.rstrip("/") + "/")
+
+
+def rlines(path):
+    """Yield the lines of a file from last to first, reading CHUNK bytes at a time."""
+    with open(path, "rb") as fh:
+        fh.seek(0, os.SEEK_END)
+        pos = fh.tell()
+        parts = []  # fragments of the line being assembled, latest fragment first
+        while pos > 0:
+            size = min(CHUNK, pos)
+            pos -= size
+            fh.seek(pos)
+            segs = fh.read(size).split(b"\n")
+            if len(segs) == 1:
+                parts.append(segs[0])
+                continue
+            parts.append(segs[-1])
+            line = b"".join(reversed(parts))
+            if line:
+                yield line
+            for seg in reversed(segs[1:-1]):
+                if seg:
+                    yield seg
+            parts = [segs[0]]
+        line = b"".join(reversed(parts))
+        if line:
+            yield line
+
+
+def usage_total(usage):
+    total = 0
+    for key in USAGE_KEYS:
+        val = usage.get(key)
+        if isinstance(val, (int, float)) and not isinstance(val, bool):
+            total += int(val)
+    return total
+
+
+def scan_transcript(path, is_agent):
+    """Find the last real assistant usage (and title lines) reading backwards."""
+    info = {"tokens": None, "names": {}}
+    seen = 0
+    for line in rlines(path):
+        seen += len(line) + 1
+        if info["tokens"] is None and b'"usage"' in line and b"assistant" in line:
+            try:
+                obj = json.loads(line)
+            except ValueError:
+                obj = None
+            if isinstance(obj, dict) and obj.get("type") == "assistant":
+                msg = obj.get("message")
+                usage = msg.get("usage") if isinstance(msg, dict) else None
+                sidechain = obj.get("isSidechain") is True and not is_agent
+                total = usage_total(usage) if isinstance(usage, dict) else 0
+                # zero-usage lines are synthetic (API errors etc.), not real turns
+                if total > 0 and not sidechain:
+                    info["tokens"] = total
+                    for key in ("cwd", "timestamp", "sessionId", "agentId", "agentName", "teamName"):
+                        if isinstance(obj.get(key), str):
+                            info[key] = obj[key]
+        elif not is_agent and len(line) < 8192 and (b'-title"' in line or b'"agent-name"' in line):
+            try:
+                obj = json.loads(line)
+            except ValueError:
+                obj = None
+            if isinstance(obj, dict) and obj.get("type") in NAME_LINES:
+                key = NAME_LINES[obj["type"]]
+                val = obj.get(key)
+                if isinstance(val, str) and val.strip():
+                    info["names"].setdefault(key, val.strip())
+        if info["tokens"] is not None and (
+            is_agent or seen > NAME_BUDGET or len(info["names"]) == len(NAME_LINES)
+        ):
+            break
+    return info
+
+
+def read_json(path):
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+            obj = json.load(fh)
+    except (OSError, ValueError):
+        return {}
+    return obj if isinstance(obj, dict) else {}
+
+
+def parse_lstart(text):
+    try:
+        return time.mktime(time.strptime(" ".join(str(text).split()), "%a %b %d %H:%M:%S %Y"))
+    except (ValueError, OverflowError):
+        return None
+
+
+def pid_alive(pid, proc_start):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        pass  # exists, owned by someone else
+    except OSError:
+        return False
+    want = parse_lstart(proc_start) if proc_start else None
+    if want is not None:
+        # pid-reuse guard: the registry stores `ps -o lstart` (UTC, C locale)
+        try:
+            out = subprocess.run(
+                ["ps", "-o", "lstart=", "-p", str(pid)],
+                env=dict(os.environ, LC_ALL="C", TZ="UTC"),
+                capture_output=True, text=True, timeout=3,
+            ).stdout
+        except (OSError, subprocess.SubprocessError):
+            return True
+        got = parse_lstart(out)
+        if got is not None and abs(got - want) > 2:
+            return False
+    return True
+
+
+def live_registry(cfg):
+    """sessionId -> registry entry, for sessions whose process is alive."""
+    live = {}
+    for path in glob.glob(os.path.join(glob.escape(cfg), "sessions", "*.json")):
+        entry = read_json(path)
+        pid, sid = entry.get("pid"), entry.get("sessionId")
+        if not isinstance(pid, int) or isinstance(pid, bool) or not isinstance(sid, str):
+            continue
+        if not pid_alive(pid, entry.get("procStart")):
+            continue
+        old = live.get(sid)
+        if old is None or (entry.get("updatedAt") or 0) >= (old.get("updatedAt") or 0):
+            live[sid] = entry
+    return live
+
+
+def fmt_tokens(num):
+    if num < 1000:
+        return str(num)
+    if num < 999950:
+        return "%.1fk" % (num / 1000.0)
+    return "%.2fM" % (num / 1000000.0)
+
+
+def fmt_age(secs):
+    secs = max(0, int(secs))
+    if secs < 60:
+        return "%ds" % secs
+    if secs < 3600:
+        return "%dm" % (secs // 60)
+    if secs < 172800:
+        return "%dh" % (secs // 3600)
+    return "%dd" % (secs // 86400)
+
+
+def one_line(text, limit=None):
+    text = " ".join(str(text).split())
+    if limit and len(text) > limit:
+        text = text[: limit - 2] + ".."
+    return text
+
+
+class Meter:
+    def __init__(self, root, cfg, role, thresholds):
+        self.root = root
+        self.cfg = cfg
+        self.forced_role = role
+        self.th = thresholds
+        self.live = live_registry(cfg)
+        self.now = time.time()
+
+    def verdict(self, tokens, role):
+        if role == "cto":
+            warn, top, word = self.th["HARNESS_CTO_WARN"], self.th["HARNESS_CTO_HANDOVER"], "HANDOVER"
+        else:
+            warn, top, word = self.th["HARNESS_TEAMMATE_WARN"], self.th["HARNESS_TEAMMATE_RECYCLE"], "RECYCLE"
+        if tokens >= top:
+            return word
+        return "WARN" if tokens >= warn else "OK"
+
+    def where(self, cwd):
+        if not cwd:
+            return "?"
+        real = os.path.realpath(cwd)
+        if is_under(real, self.root):
+            return os.path.relpath(real, self.root)
+        home = os.path.expanduser("~")
+        return "~" + real[len(home):] if real.startswith(home + "/") else real
+
+    def row(self, path, kind, name, status, info, cwd, session_id, agent_id, extra=None):
+        try:
+            mtime = os.path.getmtime(path)
+        except OSError:
+            mtime = self.now
+        tokens = info["tokens"] or 0
+        role = self.forced_role
+        if role is None:
+            role = "cto" if kind == "session" and re.match(r"cto", name or "", re.I) else "teammate"
+        age = self.now - mtime
+        row = {
+            "name": one_line(name) or "-",
+            "kind": kind,
+            "status": status,
+            "tokens": tokens,
+            "verdict": self.verdict(tokens, role),
+            "age": fmt_age(age),
+            "where": self.where(cwd),
+            "id": (agent_id or session_id or "")[:8],
+            "transcript": path,
+            "role": role,
+            "session_id": session_id,
+            "agent_id": agent_id,
+            "cwd": cwd,
+            "age_seconds": int(max(0, age)),
+            "last_usage_at": info.get("timestamp"),
+            "_mtime": mtime,
+        }
+        if extra:
+            row.update(extra)
+        return row
+
+    def session_row(self, path):
+        sid = os.path.basename(path)[: -len(".jsonl")]
+        info = scan_transcript(path, is_agent=False)
+        reg = self.live.get(sid)
+        names = info["names"]
+        side = read_json(os.path.join(path[: -len(".jsonl")], "custom-title.json")).get("customTitle")
+        name = (
+            (reg or {}).get("name")
+            or (side if isinstance(side, str) else None)
+            or names.get("customTitle")
+            or names.get("agentName")
+            or info.get("agentName")
+            or names.get("aiTitle")
+            or sid[:8]
+        )
+        status = str(reg.get("status") or "live") if reg else "ended"
+        # the last turn's cwd is where it works now; the registry cwd is the fallback
+        cwd = info.get("cwd")
+        if not cwd and reg and isinstance(reg.get("cwd"), str):
+            cwd = reg["cwd"]
+        if info["tokens"] is None and not reg:
+            return None  # never produced a turn and is not running: nothing to meter
+        return self.row(path, "session", name, status, info, cwd, sid, None)
+
+    def agent_rows(self, session_dir, parent_cwd=None):
+        sid = os.path.basename(session_dir)
+        pattern = os.path.join(glob.escape(session_dir), "subagents", "**", "agent-*.jsonl")
+        for path in sorted(glob.glob(pattern, recursive=True)):
+            agent_id = os.path.basename(path)[len("agent-"): -len(".jsonl")]
+            info = scan_transcript(path, is_agent=True)
+            if info["tokens"] is None:
+                continue
+            meta = read_json(path[: -len(".jsonl")] + ".meta.json")
+            agent_type = meta.get("agentType") if isinstance(meta.get("agentType"), str) else None
+            name = meta.get("name") or info.get("agentName") or meta.get("description") or agent_type or agent_id
+            if sid not in self.live:
+                status = "ended"
+            elif meta.get("stoppedByUser") is True:
+                status = "stopped"
+            elif meta.get("finished") is True:
+                status = "idle"
+            else:
+                status = "busy"
+            extra = {"agent_type": agent_type}
+            if info.get("teamName"):
+                extra["team"] = info["teamName"]
+            yield self.row(path, "agent", str(name), status, info, info.get("cwd") or parent_cwd, sid, agent_id, extra)
+
+    def collect(self):
+        """All session + agent rows that belong to self.root."""
+        rows, seen = [], set()
+        projects = os.path.join(self.cfg, "projects")
+        slugs = project_slugs(self.root)
+        try:
+            dirs = sorted(os.listdir(projects))
+        except OSError:
+            dirs = []
+
+        def add_session(path, exact):
+            sid = os.path.basename(path)[: -len(".jsonl")]
+            if sid in seen:
+                return
+            row = self.session_row(path)
+            if row and (exact or is_under(row["cwd"], self.root)):
+                rows.append(row)
+            seen.add(sid)
+            # agents are judged by their own cwd (they may sit in a worktree)
+            parent_cwd = row["cwd"] if row else None
+            for arow in self.agent_rows(path[: -len(".jsonl")], parent_cwd):
+                if exact or is_under(arow["cwd"], self.root):
+                    rows.append(arow)
+
+        for name in dirs:
+            exact = name in slugs
+            if not exact and not any(name.startswith(s + "-") for s in slugs):
+                continue
+            pdir = os.path.join(projects, name)
+            for path in sorted(glob.glob(os.path.join(glob.escape(pdir), "*.jsonl"))):
+                add_session(path, exact)
+            # agent dirs whose parent transcript is gone
+            for sub in sorted(glob.glob(os.path.join(glob.escape(pdir), "*", "subagents"))):
+                sdir = os.path.dirname(sub)
+                if os.path.basename(sdir) not in seen:
+                    seen.add(os.path.basename(sdir))
+                    for arow in self.agent_rows(sdir):
+                        if exact or is_under(arow["cwd"], self.root):
+                            rows.append(arow)
+        # live sessions that moved into the repo from elsewhere
+        for sid, reg in self.live.items():
+            if sid not in seen and is_under(reg.get("cwd"), self.root):
+                for path in self.find_transcripts(sid)[:1]:
+                    add_session(path, True)
+        return rows
+
+    def find_transcripts(self, sid):
+        pattern = os.path.join(glob.escape(self.cfg), "projects", "*", glob.escape(sid) + ".jsonl")
+        paths = glob.glob(pattern)
+        paths.sort(key=lambda p: os.path.getmtime(p) if os.path.exists(p) else 0, reverse=True)
+        return paths
+
+
+def select(rows, query):
+    needle = query.lower()
+
+    def ident(row):
+        return (row["agent_id"] if row["kind"] == "agent" else row["session_id"]) or ""
+
+    exact = [r for r in rows if r["name"].lower() == needle or ident(r).lower() == needle]
+    if exact:
+        return exact
+    return [r for r in rows if needle in r["name"].lower() or ident(r).lower().startswith(needle)]
+
+
+def print_table(rows, color):
+    cols = ("name", "kind", "status", "tokens", "verdict", "age", "where", "id")
+    cells = []
+    for row in rows:
+        cells.append(
+            [
+                one_line(row["name"], 28),
+                row["kind"],
+                row["status"],
+                fmt_tokens(row["tokens"]),
+                row["verdict"],
+                row["age"],
+                one_line(row["where"], 34),
+                row["id"],
+            ]
+        )
+    widths = [max([len(c.upper())] + [len(r[i]) for r in cells]) for i, c in enumerate(cols)]
+    right = {3, 5}
+
+    def fmt(vals, paint=None):
+        out = []
+        for i, val in enumerate(vals):
+            cell = val.rjust(widths[i]) if i in right else val.ljust(widths[i])
+            if paint and i == 4:
+                cell = paint + cell + "\033[0m"
+            out.append(cell)
+        return "  ".join(out).rstrip()
+
+    print(fmt([c.upper() for c in cols]))
+    for vals in cells:
+        paint = None
+        if color:
+            paint = {"WARN": "\033[33m", "RECYCLE": "\033[31m", "HANDOVER": "\033[31m"}.get(vals[4])
+        print(fmt(vals, paint))
+
+
+def main(argv):
+    if any(a in ("-h", "--help") for a in argv):
+        print(__doc__.strip())
+        return 0
+    parser = argparse.ArgumentParser(prog="ctx", add_help=False, usage="ctx [--self | <query>] [--role teammate|cto] [--all | --hours N] [--json]")
+    parser.add_argument("query", nargs="?")
+    parser.add_argument("--self", dest="self_only", action="store_true")
+    parser.add_argument("--role", choices=("teammate", "cto"))
+    parser.add_argument("--all", dest="all_ages", action="store_true")
+    parser.add_argument("--hours", type=float, default=24.0)
+    parser.add_argument("--json", dest="as_json", action="store_true")
+    args = parser.parse_args(argv)
+    if args.self_only and args.query:
+        die("--self and a query are mutually exclusive")
+    if args.hours <= 0:
+        die("--hours must be > 0")
+
+    thresholds = {}
+    for key, default in THRESHOLDS.items():
+        raw = os.environ.get(key, "").strip()
+        if raw and not re.fullmatch(r"\d+", raw):
+            die("%s must be a plain integer, got %r" % (key, raw))
+        thresholds[key] = int(raw) if raw else default
+
+    cfg = os.path.realpath(os.path.expanduser(os.environ.get("CLAUDE_CONFIG_DIR") or "~/.claude"))
+    meter = Meter(repo_root(), cfg, args.role, thresholds)
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
+
+    if args.self_only:
+        sid = os.environ.get("CLAUDE_CODE_SESSION_ID", "").strip()
+        if not sid:
+            die("CLAUDE_CODE_SESSION_ID is not set - not running inside a Claude Code session")
+        paths = meter.find_transcripts(sid)
+        row = meter.session_row(paths[0]) if paths else None
+        if row is None:
+            die("no transcript for session %s under %s/projects" % (sid, cfg), 1)
+        rows = [row]
+    else:
+        rows = meter.collect()
+        if not args.all_ages:
+            cutoff = meter.now - args.hours * 3600
+            # a live session is always current, however long it has been quiet
+            rows = [r for r in rows if r["_mtime"] >= cutoff or (r["kind"] == "session" and r["status"] != "ended")]
+        if args.query:
+            rows = select(rows, args.query)
+    rows.sort(key=lambda r: (-r["tokens"], r["name"], r["id"]))
+    for row in rows:
+        row.pop("_mtime", None)
+
+    if args.as_json:
+        json.dump(rows, sys.stdout, indent=1, ensure_ascii=False)
+        sys.stdout.write("\n")
+    elif rows:
+        color = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
+        print_table(rows, color)
+    if not rows:
+        scope = "matching %r " % args.query if args.query else ""
+        window = "" if args.all_ages else " in the last %gh (try --all)" % args.hours
+        print("ctx: no sessions %sfor %s%s" % (scope, meter.root, window), file=sys.stderr)
+        return 1 if args.query else 0
+    if (args.self_only or args.query) and len(rows) == 1:
+        return EXIT_BY_VERDICT.get(rows[0]["verdict"], 0)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main(sys.argv[1:]))
+    except BrokenPipeError:
+        sys.exit(0)
+    except KeyboardInterrupt:
+        sys.exit(130)
