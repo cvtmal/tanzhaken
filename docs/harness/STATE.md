@@ -6,7 +6,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 
 - **CTO generation:** 1
 - **Phase of the project:** bootstrap done, W0 running
-- **Wave in progress:** W0 ending, W1 started (#3)
+- **Wave in progress:** W1 (#2, #3)
 
 ## Mechanics
 
@@ -36,13 +36,14 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
 | 0 `project-skeleton` | review | c00-review | A (8001) | 23:34 | plan 8 phases, OD-1–OD-7; may need impl-2 |
-| 3 `domain-model` | research | c03-research | A (8001) | 23:45 | |
+| 3 `domain-model` | plan | c03-plan | A (8001) | 23:55 | research D1–D14 accepted |
+| 2 `design-system` | research | c02-research | B (8002) | 23:52 | |
 
 ## Next actions
 
 Bootstrap done by CTO-1 (commit, G1 push, preflight, G2 met).
 
-1. #0 landed `cff3e1a`, CI green. #1 landed `831184b`. #3 in research. When CI for 831184b is green: open #2 `design-system`. Continue with the loop in `CTO.md` §4.
+1. #0 landed `cff3e1a`, CI green. #1 landed `831184b`. CI green at a1bf6fa. W1 running: #2 and #3. W2 opens per the overview: #5, #6, #7 after #3; #4 after #2 and #3. Continue with the loop in `CTO.md` §4.
 2. W1 opens when #0 has landed (#3) and when #0 and #1 have landed (#2).
 
 ## Notes for the successor

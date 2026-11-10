@@ -63,7 +63,9 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `templates/course/show.html.twig`, `course/_roster_row.html.twig` | #10 | #12 creates `course/_roster_balance.html.twig`, #15 `course/_export_action.html.twig` |
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
    | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` |
-   | `CLAUDE.md`, `.claude/rules/module-<name>.md` | #0 | append to their own module's rule file; `CLAUDE.md` keeps one pointer per module |
+   | `.env`, `.env.example` | #0 | append their own variables with safe defaults and a one-line comment (#2 adds `APP_BRAND_NAME`) |
+| `templates/placeholder.html.twig`, the placeholder routes test | #0 | #2 puts the placeholder into the layouts and adds `_styleguide` to the expected routes; nobody else |
+| `CLAUDE.md`, `.claude/rules/module-<name>.md` | #0 | append to their own module's rule file; `CLAUDE.md` keeps one pointer per module |
    | `docs/rpi-cycles.md`, `docs/harness/*` | CTO | nothing |
 
 6. **Concurrency.** Four lanes at most. The rebase step and the CTO's attention are the bottleneck beyond that.
