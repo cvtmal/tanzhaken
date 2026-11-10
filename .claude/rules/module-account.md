@@ -19,3 +19,9 @@ paths:
 - **Hotspot slots:** `templates/account/show.html.twig` belongs to #11; #18 creates `account/_delete.html.twig`. `config/packages/security.yaml` belongs to #4.
 
 Namespace `App\Account\<Layer>`. Placeholder actions in `src/Account/Controller/PlaceholderController.php` are deleted by the cycle that ships the real route. Cycles append notes for this module below.
+
+## #3 notes (domain-model)
+
+- `Entity\Teacher(string $name, string $email, string $passwordHash, \DateTimeImmutable $now, string $timezone = Timezones::DEFAULT)` implements `UserInterface`, `PasswordAuthenticatedUserInterface`, `TeacherOwned`, `TeacherAccount`. Roles `['ROLE_TEACHER']`, identifier = email (trimmed, lower-cased; `Teacher::normaliseEmail()`). Intent methods: `rename`, `changeEmail`, `changePasswordHash`, `changeTimezone`.
+- `Repository\TeacherRepository::findOneByEmail(string $email): ?Teacher` (normalises first). Exception: `Exception\InvalidTeacher`.
+- Deleting a teacher (`DELETE FROM teacher`, #18 only) cascades to every table. No firewall or `PasswordUpgraderInterface` yet (#4).

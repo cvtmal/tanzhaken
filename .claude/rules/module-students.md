@@ -18,3 +18,8 @@ paths:
 - **Hotspot slots:** `templates/student/show.html.twig` belongs to #9 and includes, with `ignore missing`, `student/_credits.html.twig` (#12, Credits) and `student/_attendance.html.twig` (#13, Attendance). Those two partials are not Students' files.
 
 Namespace `App\Students\<Layer>`. Placeholder actions in `src/Students/Controller/PlaceholderController.php` are deleted by the cycle that ships the real route. Cycles append notes for this module below.
+
+## #3 notes (domain-model)
+
+- `Entity\Student(Teacher $teacher, string $firstName, string $lastName, \DateTimeImmutable $now, ?string $email = null, ?string $notes = null)`; `changeDetails()`, `archive($now)` (throws when already archived), `restore()`. Email trimmed and lower-cased, empty → null.
+- `Repository\StudentRepository::findOwned(Teacher $teacher, Uuid $id): ?Student`. Exception: `Exception\InvalidStudent`.

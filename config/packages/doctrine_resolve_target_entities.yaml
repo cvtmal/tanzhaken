@@ -1,0 +1,6 @@
+# Shared maps the audit_event -> teacher foreign key against its own interface;
+# Doctrine resolves it to the Account entity here (cycle #3, plan P1).
+doctrine:
+    orm:
+        resolve_target_entities:
+            App\Shared\Security\TeacherAccount: App\Account\Entity\Teacher

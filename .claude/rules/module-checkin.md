@@ -19,3 +19,9 @@ paths:
 - **Hotspot slots:** fills `lesson/_checkin_action.html.twig`. Protocol: `docs/rpi-cycles.md` S8.
 
 Namespace `App\CheckIn\<Layer>`. Placeholder actions in `src/CheckIn/Controller/PlaceholderController.php` are deleted by the cycle that ships the real route. Cycles append notes for this module below.
+
+## #3 notes (domain-model)
+
+- `Entity\CheckInWindow(LessonSession, string $tokenHash, \DateTimeImmutable $openedAt, \DateTimeImmutable $expiresAt)`; `close($now)` (throws when closed), `isActiveAt($now): bool`. `token_hash` CHAR(64), unique; index on `lesson_session_id`.
+- `Repository\CheckInWindowRepository::findOwned(Teacher, Uuid)`, `findOneByTokenHash(string): ?CheckInWindow` (public path; the token is the capability). Exception: `Exception\InvalidCheckInWindow`.
+- **D4:** "at most one active window per lesson" is NOT a DB constraint. #8 enforces it in its transaction (close earlier windows first). Optional add-only design: nullable `active_flag` (1 while open, NULL when closed) + unique `(lesson_session_id, active_flag)`.

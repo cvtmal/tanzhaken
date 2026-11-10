@@ -19,3 +19,8 @@ paths:
 - **Hotspot slots:** fills `student/_credits.html.twig` and `course/_roster_balance.html.twig`.
 
 Namespace `App\Credits\<Layer>`. Cycles append notes for this module below.
+
+## #3 notes (domain-model)
+
+- `Entity\CreditGrant(Enrollment, \DateTimeImmutable $now, int $quantity = CreditGrant::DEFAULT_QUANTITY, ?string $note = null)` (default 10); `void($now)` (throws when already voided). A voided grant stays as a row.
+- `Repository\CreditGrantRepository::findOwned(Teacher, Uuid): ?CreditGrant`. Exception: `Exception\InvalidCreditGrant`. The balance read model is #6 (`ReadModel\Balances`).

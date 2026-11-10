@@ -20,3 +20,8 @@ paths:
 - **Hotspot slots:** `templates/lesson/show.html.twig` belongs to #13 and includes `lesson/_checkin_action.html.twig` (#16, CheckIn). Attendance fills `student/_attendance.html.twig` and `course/_export_action.html.twig`.
 
 Namespace `App\Attendance\<Layer>`. Placeholder actions in `src/Attendance/Controller/PlaceholderController.php` are deleted by the cycle that ships the real route. Cycles append notes for this module below.
+
+## #3 notes (domain-model)
+
+- `Entity\Attendance(LessonSession, Student, AttendanceStatus, AttendanceSource, \DateTimeImmutable $now)`; `change(AttendanceStatus, AttendanceSource, $now)` (sets `updated_at`). Enums: `AttendanceStatus` `present|absent`, `AttendanceSource` `student_qr|teacher`. Unique `(lesson_session_id, student_id)`: change the row, never insert a second.
+- `Repository\AttendanceRepository::findOwned(Teacher, Uuid): ?Attendance`. Exception: `Exception\InvalidAttendance`.
