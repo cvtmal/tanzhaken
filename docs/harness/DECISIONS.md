@@ -8,7 +8,7 @@ Things only the owner can do or approve. The project keeps moving on the default
 
 | # | What is needed | Why | Default we run on | Status |
 |---|---|---|---|---|
-| O-1 | Run `/design-login` once in the CTO session | The design import (#1) reads the Claude Design project through the `claude_design` MCP server | Gate G2 in `docs/rpi-cycles.md` | open |
+| O-1 | Run `/design-login` once in the CTO session | The design import (#1) reads the Claude Design project through the `claude_design` MCP server | Gate G2 in `docs/rpi-cycles.md` | done 2026-11-10: CTO-1 read the project list |
 | O-2 | Confirm product name and domain | `tanzhaken.ch` is unverified (PRD §11) | Gate G3: name from `APP_BRAND_NAME`, no domain in code | open |
 | O-3 | Hosting account and go-live | A production deployment is not ours to do | Gate G4: documented and rehearsed locally only | open |
 | O-4 | Data controller details for the privacy page | Legal content | Gate G5: placeholders from the environment | open |
@@ -29,3 +29,5 @@ Newest last. "Undo" says what it would take to reverse the call.
 | D-006 | 2026-11-10 | setup | PHP 8.4 only, UUIDv7 keys, plain CSS, no Node, module-first folders without a command bus (S1–S3, S6) | PRD §7 asks for the smallest maintainable stack; matches the tools on this machine | Edit the settled decisions before #0 lands |
 | D-007 | 2026-11-10 | setup | Teammates use the default agent type, no custom agent definition | In split-pane mode a definition's body replaces the system prompt | Add `.claude/agents/*.md` and name it at spawn |
 | D-008 | 2026-11-10 | owner | The repository is the existing public `cvtmal/tanzhaken` on GitHub, set up by the owner; the CTO creates nothing and pushes `main` there | Public repositories get unlimited GitHub Actions minutes | The owner changes the visibility (`gh repo edit --visibility private`); what was public may already have been copied |
+| D-009 | 2026-11-10 | CTO-1 | Background sessions (successor CTO, §10 fallback) start with `--settings '{"teammateMode":"in-process"}'` | Preflight: a `claude --bg` session is not inside iTerm2, so with the repository's `teammateMode: iterm2` it cannot spawn; with the override probe2 spawned and answered | Drop the flag from `CTO.md` §9/§10 |
+| D-010 | 2026-11-10 | CTO-1 | Liveness of a split-pane teammate is judged by AGE in `ctx`, not by STATUS | Preflight: `ctx` showed the live probe as `ended` | Fix the status detection in `bin/harness/ctx` |

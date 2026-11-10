@@ -134,7 +134,7 @@ Hand over when `ctx --self` says HANDOVER (250k), at WARN (220k) if a wave is ab
 1. Start no new phase. Let running teammates finish their phase and report; shut each one down. The team cannot be passed on, so no teammate may outlive you. Delete your watchdog job (`CronDelete`): cron jobs belong to the session, and yours would keep waking you beside your successor.
 2. Bring `STATE.md` up to date: the board, the lanes, and § Next actions as an ordered list the successor can execute without asking you anything. Put anything you know that is written nowhere else under § Notes for the successor. Complete your line in § CTO log (handed over, tokens, landed).
 3. Commit the harness files (`chore(harness): handover CTO-<n> → CTO-<n+1>`) and push them with `git push origin HEAD:main` (§4, "Pushing harness files").
-4. Start the successor in the main checkout: `claude --bg --name "CTO-<n+1>" "$(cat docs/harness/successor-prompt.txt)"`. Wait until `STATE.md` shows "CTO-<n+1> active" (a background `until grep … ; do sleep 10; done` with a ten-minute limit).
+4. Start the successor in the main checkout: `claude --bg --name "CTO-<n+1>" --settings '{"teammateMode":"in-process"}' "$(cat docs/harness/successor-prompt.txt)"`. The override is needed because a background session is not inside iTerm2 (D-009); its teammates are then in-process and appear as agent rows in `ctx`. Wait until `STATE.md` shows "CTO-<n+1> active" (a background `until grep … ; do sleep 10; done` with a ten-minute limit).
 5. If it does not appear, send the owner one push notification with the exact command to run by hand (`claude --name "CTO-<n+1>" "/cto"`), and stop.
 6. Once the successor is active, stop. Do nothing further in this session, even if messages arrive.
 
@@ -146,7 +146,7 @@ The starter prompt for a successor is therefore always the same text, `docs/harn
 
 If named teammates cannot be spawned, use background sessions, which are separate processes with their own worktree:
 
-- Start: `cd .claude/worktrees/<slug> && claude --bg --name "c<nn>-<phase>" "<the same prompt>"`.
+- Start: `cd .claude/worktrees/<slug> && claude --bg --name "c<nn>-<phase>" --settings '{"teammateMode":"in-process"}' "<the same prompt>"`.
 - Watch: `bin/harness/ctx` and `claude agents --json` (`status` is `busy` or `idle`); `claude logs <name>` for the last output. The teammate writes its report to `.rpi-tracking/reports/<name>.md` in its lane; read only that file.
 - Stop: `claude stop <id>`, then `claude rm <id>`.
 

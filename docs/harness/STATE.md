@@ -14,9 +14,12 @@ Facts about this machine and this Claude Code version, established by the setup 
 
 - Permission mode comes from the owner's user settings: `auto`. Auto-compaction is off; the model's window is 1M tokens, so the budgets are enforced only by us.
 - Agent teams are switched on for this repository in `.claude/settings.json` (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, `teammateMode: iterm2`). A teammate is spawned by an Agent call that has a `name` and no `isolation`. Teammates load `CLAUDE.md`, skills and MCP servers but not the lead's conversation. They start in the lead's permission mode. No nested teams; the lead cannot change; in-process teammates do not survive a resume of the lead.
-- Verify: how a teammate appears in `bin/harness/ctx` (own session row in split-pane mode, agent row in in-process mode) and whether `ctx --self` works inside it.
-- Verify: teammates can run the `rpi:*` skills through the Skill tool.
-- Verify: a session started with `claude --bg` can itself spawn teammates (preflight step 6). Also verify `CronCreate` (step 7) and whether teammates have the browser tools.
+- Preflight by CTO-1, 2026-11-10 (verified):
+  - A teammate spawned from the CTO in iTerm2 gets **its own session row** in `ctx`, named after it, WHERE = its worktree; a fresh teammate is about 60k. Its STATUS column can read `ended` while it is live: judge liveness by AGE (D-010). `ctx --self` works inside it.
+  - Teammates list the `rpi:*` skills, the `claude-in-chrome` browser tools and the `mcp__claude_design__*` tools (all deferred, loaded via ToolSearch).
+  - A `claude --bg` session **cannot** spawn teammates with `teammateMode: iterm2` (not inside iTerm2). With `--settings '{"teammateMode":"in-process"}'` it can (probe2 answered PONG). `CTO.md` §9/§10 use that flag (D-009).
+  - `CronCreate` works: a one-off job fired on time while the CTO was idle.
+  - G2: the `claude_design` server answers; the project "TanzHaken design review" is listed. Only #1 reads it; other projects in that account are private and none of the project's business.
 - Worktrees under `.claude/worktrees/` can be entered with EnterWorktree and a `path` without a prompt.
 - Tool versions: PHP 8.4.26 (pdo_sqlite, pdo_mysql, intl, sodium, gd), Composer 2.10, Symfony CLI 5.22, SQLite 3.51, git 2.56, gh 2.103 (logged in), Docker 29.8 (for #21 only), no local MariaDB.
 - Fresh-session baseline in this project: about 52k tokens (system prompt, tools, skills, `CLAUDE.md`) before any work. A teammate therefore has roughly 100k of working room before the 150k stop line.
