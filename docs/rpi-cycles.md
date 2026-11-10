@@ -320,7 +320,7 @@ IDs point into the PRD, which holds the wording.
 
 - **Scope:** `PRD_TanzHaken_MVP.md`.
 - **Design:** `docs/design/HANDOFF.md` (the Claude Design handoff, verbatim) and, after #1, the imported files beside it.
-- **The owner's other Symfony projects**, for conventions to copy and trim (`CLAUDE.md`, `.claude/rules/*`, `Makefile`, `tests/Architecture/*`, CI workflow): `../songrequest`, `../hochzeitslocation-symfony`. Both use PostgreSQL, Docker and a command bus; TanzHaken uses none of the three (S1, S2), so take the patterns, not the stack. Read single files there; never read `../hochzeitslocation-symfony/docs/rpi-cycles.md` (it is 660 KB).
+- **The owner's other Symfony projects**, for conventions to copy and trim: listed in `.claude/harness/local-references.md` in the main checkout (git-ignored; from a lane it is `../../harness/local-references.md`). They use PostgreSQL, Docker and a command bus; TanzHaken uses none of the three (S1, S2), so take the patterns, not the stack. Never name them or their paths in a committed file.
 - **Hosting notes:** the `cyon-php-app` skill.
 
 ## W0 Foundation

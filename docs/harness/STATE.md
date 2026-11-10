@@ -5,8 +5,8 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 1
-- **Phase of the project:** set up, nothing built
-- **Wave in progress:** —
+- **Phase of the project:** bootstrap done, W0 running
+- **Wave in progress:** W0
 
 ## Mechanics
 
@@ -35,19 +35,15 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| — | — | — | — | — | — |
+| 0 `project-skeleton` | implement | c00-impl-3 | A (8001) | 23:27 | plan 8 phases, OD-1–OD-7; may need impl-2 |
+| 1 `design-reference` | waiting for review | — | B (8002) | 23:20 | implement done; after #0 lands: `lane sync design-reference`, then spawn c01-review (D-014) |
 
 ## Next actions
 
-Bootstrap, in order (generation 0 → 1):
+Bootstrap done by CTO-1 (commit, G1 push, preflight, G2 met).
 
-0. Set **CTO generation** under § Now to 1 and add your line to § CTO log, before anything else.
-1. `git status`: `origin` is `cvtmal/tanzhaken` and local `main` sits on its first commit (README only). Commit everything present on top of it (`chore: project plan and agent harness`).
-2. Gate G1: `gh api user -q .login` must print `cvtmal`. The repository is **public**, so before the push go through `git ls-files` once and make sure no committed file holds anything private: credentials, real personal data, names or paths of the owner's other work. Then `git push origin HEAD:main`. Create no repository and add no remote. If the push is refused, put G1 in the Owner inbox, send one push notification and stop: this has no default.
-3. Preflight as in `CTO.md` §3. Record the results under § Mechanics.
-4. Gate G2: check that the `claude_design` MCP server answers (list its tools or resources). If it needs a login, send the owner one push notification ("run /design-login in the CTO session") and note the time; the default in G2 says how long #1 waits.
-5. Open the lane for #0 `project-skeleton` and start its research phase. Open #1 `design-reference` as well only if step 4 found the design readable. Otherwise start #1 when access arrives, or with G2's default once #3 has landed.
-6. From here on: the loop in `CTO.md` §4.
+1. W0 running: #0 and #1 in research. Continue with the loop in `CTO.md` §4.
+2. W1 opens when #0 has landed (#3) and when #0 and #1 have landed (#2).
 
 ## Notes for the successor
 
