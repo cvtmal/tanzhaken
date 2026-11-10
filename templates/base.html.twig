@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|default('en') }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block meta %}{% endblock %}
+        <title>{% block title %}{{ 'layout.app_name'|trans }}{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        {% endblock %}
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        {% block body %}
+            <main id="main">{% block main %}{% endblock %}</main>
+        {% endblock %}
+        {% block scripts %}
+            {{ importmap('app') }}
+        {% endblock %}
+    </body>
+</html>

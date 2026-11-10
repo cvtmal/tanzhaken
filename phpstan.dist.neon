@@ -1,0 +1,19 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - tests/Architecture/Fixtures (?)
+        - config/reference.php
+    tmpDir: var/cache/phpstan
+
+# phpat is loaded by phpstan/extension-installer. Architecture rule classes
+# (tests/Architecture/*Test.php) are registered here, tagged phpat.test.
+services:
+    -
+        class: App\Tests\Architecture\ModuleBoundariesTest
+        tags: [phpat.test]
+    -
+        class: App\Tests\Architecture\LayersTest
+        tags: [phpat.test]

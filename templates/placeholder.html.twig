@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'placeholder.title'|trans }}{% endblock %}
+
+{% block main %}
+    <h1>{{ 'placeholder.heading'|trans }}</h1>
+    <p>{{ 'placeholder.body'|trans({route: route}) }}</p>
+    <p><code data-route="{{ route }}">{{ route }}</code></p>
+{% endblock %}

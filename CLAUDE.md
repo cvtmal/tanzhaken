@@ -42,4 +42,49 @@ Commit messages, PR titles and descriptions never contain a Claude Code session 
 
 ## The application
 
-Nothing is built yet. Cycle #0 adds the commands, the module map and the conventions below this line and in `.claude/rules/`.
+Symfony 7.4 on PHP 8.4, SQLite, Twig, AssetMapper. No Node, no Docker. Settled decisions: `docs/rpi-cycles.md` § Settled decisions (S1–S10).
+
+### Commands
+
+| Command | What it does |
+|---|---|
+| `make init` | install vendors and create the dev database (`var/data_dev.db`) |
+| `make serve` / `make serve-stop` | start / stop the local server on `HARNESS_PORT` (from `.lane.env`, default 8000); refuses a port that already listens |
+| `make db-migrate` / `make db-fresh` | run the migrations / delete the dev database and migrate from scratch |
+| `make seed` | load the Foundry story `main` (`tests/Story/MainStory.php`) into the dev database |
+| `make test` | every PHPUnit suite: `Unit`, `Integration`, `Functional`, `Architecture` |
+| `make lint` | cs-check, phpstan (level 8 + phpat), `lint:twig`, `lint:yaml`, `lint:container`; the landing gate |
+| `make cs-fix` | fix the code style |
+
+### Module map
+
+Code lives in `src/<Module>/<Layer>/`, namespace `App\<Module>\<Layer>`. A module may depend only on the modules in its row; phpat enforces it in `make lint` (`tests/Architecture/`).
+
+| Module | Holds | May depend on | Rules |
+|---|---|---|---|
+| `Shared` | clock/timezone helpers, audit, `TeacherOwned`, Twig extensions, SQLite setup, health | — | `.claude/rules/module-shared.md` |
+| `Account` | `Teacher`, registration, login, voter, password reset, settings, deletion | Shared | `.claude/rules/module-account.md` |
+| `Students` | `Student`, directory pages | Account | `.claude/rules/module-students.md` |
+| `Courses` | `Course`, `Enrollment`, `LessonSession`, schedule, course pages | Students, Account | `.claude/rules/module-courses.md` |
+| `Credits` | `CreditGrant`, `Balances` read model, renewal state | Courses, Students, Account | `.claude/rules/module-credits.md` |
+| `Attendance` | `Attendance`, marking, lesson register, CSV export | Credits, Courses, Students, Account | `.claude/rules/module-attendance.md` |
+| `CheckIn` | `CheckInWindow`, tokens, public flow, teacher QR page | Attendance, Credits, Courses, Students, Account | `.claude/rules/module-checkin.md` |
+| `Dashboard` | dashboard page | all of the above | `.claude/rules/module-dashboard.md` |
+
+Every module may use `Shared`; `Shared` uses none. No application code uses `App\Tests`.
+
+### Conventions
+
+- **Layers:** `Controller`, `Entity`, `Repository`, `Service`, `ReadModel`, `Form`, `Security`, `Twig`, `Console`, `Exception`. Cross-cutting rules: `.claude/rules/{architecture,database,security,frontend,i18n}.md`.
+- **Writes:** controller → one `final` service method that validates, checks ownership, changes entities in a transaction and writes the audit event.
+- **Reads:** lists and tables come from a `ReadModel` class with one DBAL query returning `final readonly` view objects. The balance is only ever `App\Credits\ReadModel\Balances`.
+- **Tests:** `tests/Unit/<Module>/` (no kernel), `tests/Integration/<Module>/` (kernel + SQLite), `tests/Functional/<Module>/` (`WebTestCase`, real routes), `tests/Architecture/` (owned by #0). Factories in `tests/Factory/`, stories in `tests/Story/`.
+- **Database in tests:** DAMA wraps each test in a rolled-back transaction; use Foundry's `#[ResetDatabase]` on a class that needs a fresh schema. Demo data: `tests/Story/MainStory.php` (`make seed`).
+- **Migrations:** `migrations/VersionYYYYMMDDHHMMSS.php` from the wall clock when written; run on SQLite and MariaDB; always a `down()`. Only touch the tables your cycle owns.
+- **Placeholders:** every S5 route exists as an action of `src/<Module>/Controller/PlaceholderController.php`; delete the action when you ship the real route.
+- **i18n:** English, ICU catalogues. `messages` holds layout strings only; each module has its own domain (`translations/<domain>+intl-icu.en.yaml`, domain = lower-case module name).
+- **Time:** UTC `datetime_immutable` in the database, `ClockInterface` in code; PHP's default zone is forced to UTC.
+
+### CI
+
+`.github/workflows/ci.yaml` runs `composer install`, `make lint` and `make test` on PHP 8.4 for every push to `main` and every pull request.

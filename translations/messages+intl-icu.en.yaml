@@ -1,0 +1,7 @@
+layout:
+    app_name: TanzHaken
+
+placeholder:
+    title: Not built yet · TanzHaken
+    heading: Not built yet
+    body: This page ({route}) arrives in a later cycle.

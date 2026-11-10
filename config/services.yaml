@@ -1,0 +1,30 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # Every class in src/ is a service, except the kernel and the entities of every module (S2).
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Kernel.php'
+            - '../src/*/Entity/'
+
+when@dev: &dev_and_test
+    services:
+        _defaults:
+            autowire: true
+            autoconfigure: true
+
+        # Foundry stories and factories (dev and test only; seed = make seed).
+        App\Tests\Story\:
+            resource: '../tests/Story/'
+
+        App\Tests\Factory\:
+            resource: '../tests/Factory/'
+
+when@test: *dev_and_test

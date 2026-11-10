@@ -1,0 +1,14 @@
+# Used only by ModuleBoundariesProbeTest: the real rules against two fixture modules.
+parameters:
+    level: 8
+    paths:
+        - ModuleBoundaries
+    tmpDir: ../../../var/cache/phpstan-probe
+
+services:
+    -
+        class: App\Tests\Architecture\ModuleBoundariesTest
+        tags: [phpat.test]
+    -
+        class: App\Tests\Architecture\LayersTest
+        tags: [phpat.test]
