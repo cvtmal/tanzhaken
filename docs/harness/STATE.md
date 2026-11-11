@@ -5,8 +5,8 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 2
-- **Phase of the project:** W0 done, W1 half done
-- **Wave in progress:** W1 (#2 left); W2 may start (#5–#7)
+- **Phase of the project:** W0, W1 done; W2 backend done, #4 left
+- **Wave in progress:** W2 (#4) and W3 (#8 running; #9–#11 research/plan allowed, D-032)
 
 ## Mechanics
 
@@ -36,13 +36,12 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 2 `design-system` | review | c02-review (bg cfb964ec) | B (8002) | 11-11 10:10 | impl done in 3 sessions (150 tests); new importmap entry `alert` |
 | 8 `checkin-core` | research | c08-research (bg 84ada023) | A (8001) | 11-11 10:50 | #7 not landed: `lane sync checkin-core` before implement |
 | 4 `teacher-auth` | plan | c04-plan (bg 0e22ae2a) | C (8003) | 11-11 11:00 | research done (141k); D-028/D-029 hotspot grants; implement only after #2 lands (`lane sync` first) |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2` (all ✅ Done in the overview). W1 has only #2 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70` (all ✅ Done in the overview). W1 has only #2 left.
 
 1. Check `bin/harness/status`: the `ci` line for `b4dcb75` (or a later harness commit) must be green before you open a new lane. Red → fix lane first (`CTO.md` §4.5).
 2. Resume #2: `bin/harness/lane sync design-system` (it lacks #3 and the S3 edit, D-023), then spawn `c02-impl-2` (implement, lane B, port 8002) with "Resume from the changes log (section Checkpoint) at Step 5.1." Open points it reported: alert dismiss button has no JS yet, success flash markup interim until 5.3; 390 px checked in a 390 px iframe because resize_window does not shrink the viewport.

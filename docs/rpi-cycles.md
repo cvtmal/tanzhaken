@@ -56,7 +56,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `src/Shared/*` | #0, #3 | add files; never change an existing signature |
    | `config/packages/*.yaml` | the cycle that creates the file | nothing; a new concern gets a new file (e.g. `rate_limiter_checkin.yaml`) |
    | `config/packages/security.yaml` | #4 | nothing; guard with `#[IsGranted]` and the S4 voter |
-   | `templates/base.html.twig`, `templates/layout/*`, `templates/components/*`, `assets/styles/tokens.css` | #2 (takes them over from #0's stubs) | fill blocks, use components; a missing variant goes into the cycle's own module folder first and into its outcome file; #4 adds one include of `account/_logout_form.html.twig` to the teacher layout's navigation |
+   | `templates/base.html.twig`, `templates/layout/*`, `templates/components/*`, `assets/styles/tokens.css` | #2 (takes them over from #0's stubs) | fill blocks, use components; a missing variant goes into the cycle's own module folder first and into its outcome file; #4 adds one include of `account/_logout_form.html.twig` to the teacher layout's navigation, includes `layout/_flashes.html.twig` in the auth and public layouts, and fixes the stale comment at the top of `layout/teacher.html.twig` |
    | `assets/styles/app.css` (import list) | #2 | append one line for their own file |
    | `translations/messages+intl-icu.en.yaml` (layout strings) | #2 | nothing; each module has its own domain file |
    | `templates/student/show.html.twig` | #9 | #12 creates `student/_credits.html.twig`, #13 creates `student/_attendance.html.twig` (both `ignore missing` includes) |
@@ -78,7 +78,7 @@ Size is a guess for budgeting sessions: S under 60k tokens for the whole cycle's
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | `project-skeleton` | W0 | TEC-1–TEC-4, TEC-6, OPS-3, OPS-4 | — | — | G1 | Research | L | ✅ Done |
 | 1 | `design-reference` | W0 | UI-1–UI-4 (source) | — | — | G2 | Research | M | ✅ Done |
-| 2 | `design-system` | W1 | UI-1–UI-5, A11Y-1 (base) | 0, 1 | — | — | Research | L | Open |
+| 2 | `design-system` | W1 | UI-1–UI-5, A11Y-1 (base) | 0, 1 | — | — | Research | L | ✅ Done |
 | 3 | `domain-model` | W1 | PRD §6, TEC-3, PERF-1 (indexes) | 0 | creates all nine tables | — | Research | L | ✅ Done |
 | 4 | `teacher-auth` | W2 | ACC-1, ACC-2, ACC-5, SEC-1, SEC-2 (guard) | 2, 3 | `teacher` (add-only) | — | Research | M | Open |
 | 5 | `scheduling` | W2 | CRS-2–CRS-7, J-H | 3 | `course`, `lesson_session` (add-only) | — | Research | M | ✅ Done |
@@ -128,7 +128,7 @@ W7  #23 release-verification
 - After W5: feature-complete.
 - After #23: the Definition of done in PRD §10 is met, except the owner's part of G7.
 
-**What can move.** #4's research and plan can start while #2 is still running; only its implementation needs #2's layout. #17 can run any time after #4, #5 and #6 (links to later pages go through S5's placeholders). #18 can run any time after #11. Only #18 waits for #11 directly, but #19–#22 wait for #18. #15 is small and fits a lane that is short of work.
+**What can move.** #4's research and plan can start while #2 is still running; only its implementation needs #2's layout. Likewise #9, #10 and #11 may run research and plan while #4 is still running; their implementation starts after #4 has landed (D-032). #17 can run any time after #4, #5 and #6 (links to later pages go through S5's placeholders). #18 can run any time after #11. Only #18 waits for #11 directly, but #19–#22 wait for #18. #15 is small and fits a lane that is short of work.
 
 **Cut line.** If the owner wants it sooner: #15 and #21 can land after a first release. #20 and #23 then run without them, and #22 writes G8's default sentence into the README, since #21 is not there to own it. The minimum is #0–#14, #16–#20, #22 and #23.
 
@@ -234,7 +234,7 @@ POST sub-routes (archive, enroll, cancel, grant, void, mark, open, close) are th
 
 ### S7. Language and time on screen
 
-- English only, `default_locale: en`. ICU catalogues, one translation domain per module, `messages` for layout strings. No user-facing string in Twig or PHP outside a catalogue, so German is a new file later.
+- English only, `default_locale: en`. ICU catalogues, one translation domain per module, `messages` for layout strings. No user-facing string in Twig or PHP outside a catalogue, so German is a new file later. Components take already-translated strings: the caller translates the parameters it passes to a component (from #2).
 - Dates and times are printed with the intl Twig filters in the course's timezone for lessons and the teacher's timezone elsewhere, and the zone is shown where it could be unclear.
 
 ### S8. Check-in protocol
