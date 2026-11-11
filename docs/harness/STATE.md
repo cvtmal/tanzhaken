@@ -5,7 +5,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3 done; W4: #13, #14, #15 done, #12 in flight; W5: #17, #18 done; #16 waits on #13
+- **Phase of the project:** W0–W2 done; W3 done; W4 done; W5: #17, #18 done; #16 waits on #13
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
@@ -37,13 +37,12 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
 | 16 `checkin-teacher-ui` | implement | c16-impl | A (8001) | 11-11 12:20 | lane synced onto #13 (0e3913b); plan Phase 0 precondition; D-055, D-056 |
-| 12 `credits-ui` | implement | c12-impl | B (8002) | 11-11 11:13 | plan PD1–PD10; D-053 |
 
 ## Next actions
 
 **OWNER STOP (G9, owner instruction 2026-11-11, clarified 11:58):** the stop condition is that **every cycle of W0–W5 (#0–#18) is ✅ Done**, not only W5's. While any W0–W5 cycle is still running, keep going (teammates, lanes, rework). Start no W6 cycle (#19–#23) at any point. When the last W0–W5 cycle has landed and its CI is green: shut down every teammate, close the lanes, delete the watchdog, commit and push the harness files, send the owner one push notification "W0–W5 done, ready for your review", and stop. Resume only when the owner says so.
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511`, #13 `0e3913b` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511`, #13 `0e3913b`, #12 `ae549d3` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
 2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
@@ -53,6 +52,9 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 ## Notes for the successor
 
+- For #19's prompt (c12-review): Credits `addRefusal()` maps refusals by exception message. For #20: `credits_course_open()` uses ORM findBy in Twig; correct page's "owed" line static, tile labels "10 lessons" vs "5"; #10 course page student-name links 19 px high and "Edit" summary 26 px wide (< 44 px).
+- For #20's prompt (from #12): no E1 sub-lines; shared segmented style instead of E2's soft tile; `_pass_dots` aria-label "12 of 10" above 10; `_button` has no danger variant.
+- Browser checks in parallel lanes: cookies on 127.0.0.1 are shared across ports, so sessions clash; give a second lane `localhost:<port>`.
 - For #20's prompt (c13-review): F-m1 "n of m present" can exceed m when a left student kept a present mark; F-m2 re-pressing the current status flashes a change that did not happen.
 - `land` exits 8 while the main checkout has uncommitted tracked changes: commit harness edits before a reviewer lands.
 - Review sessions here can reach 180k fast (c13-review): arm a ctx watcher on reviews too.
