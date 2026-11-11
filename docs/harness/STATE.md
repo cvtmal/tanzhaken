@@ -5,8 +5,8 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 3
-- **Phase of the project:** W0–W2 done; W3 #8 done
-- **Wave in progress:** W3 (#9, #10 implement; #11 plan) and W4 #14 (research)
+- **Phase of the project:** W0–W2 done; W3: #8, #9, #11 done, #10 awaits review; W4: #14 done; W5: #17 awaits review, #18 awaits plan
+- **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
 
@@ -36,25 +36,30 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 17 `dashboard` | implement | c17-impl | D (8004) | 11-11 09:42 | plan 132k; D-044 (no Low rows, no +10) |
-| 18 `data-protection` | research | c18-research | A (8001) | 11-11 09:52 | G5 default; F-m2 purge in scope |
-| 10 `courses-ui` | implement | c10-impl | B (8002) | 11-11 09:05 | L cycle, synced onto #4; D-035, D-036, D-038 |
-| 14 `checkin-public` | review | c14-review | C (8003) | 11-11 09:48 | impl DONE 116k; D-045; rebase conflict in PlaceholderRoutesTest (keep both rows) left to the reviewer |
+| 17 `dashboard` | implement DONE → review next | — | D (8004) | 11-11 10:47 | 446 tests; D-044, D-048; query count asserted equal (3) at 2 vs 20 |
+| 18 `data-protection` | research DONE → plan next | — | A (8001) | 11-11 10:45 | 123k; research applies D-046 (APP_HOSTING_REGION) and D-043 |
+| 10 `courses-ui` | implement DONE → review next | — | B (8002) | 11-11 10:40 | 508 tests; D-047; c10-impl shut down; next: c10-review (keep both sides on list conflicts) |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
-1. Lanes: A #11 plan (c11-plan) → implement (sync first; #4 landed); B #10 implement (c10-impl) → review; C #14 research (c14-research) → plan; D #9 implement (c09-impl) → review. Review prompts: "check D-026/D-027 (+ cycle's D-rows); on Complete, land with bin/harness/land".
-2. Next ready cycles when a lane frees: #12 after #9 + #10; #13 after #9 + #10; #15 after #10.
-3. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them.
-4. #14's prompt carries D-040.
+1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
+2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
+3. #16 after #13; #19–#22 after #14, #16, #18 (see the notes below for each prompt).
+4. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them.
 5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
 
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
+- For #22's prompt (from #18): document APP_OPERATOR_* and APP_HOSTING_REGION.
+- Proposal from c18-research: per-student erasure (FADP data-subject requests) is not in the PRD; decide whether to add it under "Out of scope / proposals" in docs/rpi-cycles.md.
+- For #22's prompt (from #14): the check-in IP limiter needs `trusted_proxies` behind a proxy; also document `DEFAULT_URI`.
+- The owner's 5-hour usage limit hit all sessions at ~09:58 on 11-11; teammates resumed by message after the owner said "limit resetted". After such a stop: message each teammate to continue, and check its lane for half-done subagent work.
+- For #19's prompt (from #10): concurrent double enrolment of one student → 500 (unique-key race unmapped).
+- For #20's prompt (from #10): mobile roster renders one card per student (#2's _table), design E1 is one divided card; Extend on open-ended courses adds 26 weeks per press, flash shows no year.
 - For #19's prompt (c11-review F-m1): reset-link single use is not atomic under two concurrent submits (both pass findValid).
 - For #19's prompt (from #11): equal mail timing for known/unknown emails holds only under PHP-FPM (fastcgi_finish_request).
 - For #20's prompt (from #14): captions show the teacher's full display name (board: first name); board polish items in 14's outcome.
@@ -84,4 +89,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 
 CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
 CTO-2 active since 2026-11-11 07:55 · handed over 2026-11-11 12:30 at 200k · landed #2, #5, #6, #7
-CTO-3 active since 2026-11-11 08:46
+CTO-3 active since 2026-11-11 08:46 · handed over 2026-11-11 10:50 at 215k · landed #4, #8, #9, #11, #14

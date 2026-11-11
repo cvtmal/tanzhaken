@@ -61,7 +61,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `translations/messages+intl-icu.en.yaml` (layout strings) | #2 | nothing; each module has its own domain file |
    | `translations/validators+intl-icu.en.yaml` (constraint messages) | #4 | append only, keys prefixed by module (`account.…`, `students.…`) |
    | `templates/student/show.html.twig` | #9 | #12 creates `student/_credits.html.twig`, #13 creates `student/_attendance.html.twig` (both `ignore missing` includes) |
-   | `templates/course/show.html.twig`, `course/_roster_row.html.twig`, the course card on `course_index` | #10 | #12 creates `course/_roster_balance.html.twig` and `course/_card_badges.html.twig` (the card's `ignore missing` badge slot), #15 `course/_export_action.html.twig` |
+   | `templates/course/show.html.twig`, `course/_roster_row.html.twig`, the course card on `course_index` | #10 | #12 creates `course/_roster_balance.html.twig` and `course/_card_badges.html.twig` (the card's `ignore missing` badge slot), #15 `course/_export_action.html.twig`; #12 may add the one "Lessons left" `<th>` to `course/_roster.html.twig`, and its `_roster_balance` renders its own `<td>` (D-047) |
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
    | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` |
    | `.env`, `.env.example` | #0 | append their own variables with safe defaults and a one-line comment (#2 adds `APP_BRAND_NAME`) |
@@ -91,7 +91,7 @@ Size is a guess for budgeting sessions: S under 60k tokens for the whole cycle's
 | 11 | `account-and-reset` | W3 | ACC-3, ACC-4 | 2, 4 | new `password_reset_request` (the outcome file states the final name for #18 and #21) | G6 | Research | M | ✅ Done |
 | 12 | `credits-ui` | W4 | CRD-1, CRD-4, CRD-5, REG-5, STU-4 (credits), J-A | 6, 9, 10 | — | — | Plan | M | Open |
 | 13 | `attendance-ui` | W4 | REG-1–REG-4, STU-4 (attendance), J-E, J-F | 6, 7, 9, 10 | — | — | Research | M | Open |
-| 14 | `checkin-public` | W4 | QR-2–QR-5, QR-7, SQR-1–SQR-8, UI-4, J-B–J-D | 2, 6, 8 | — | — | Research | M | Open |
+| 14 | `checkin-public` | W4 | QR-2–QR-5, QR-7, SQR-1–SQR-8, UI-4, J-B–J-D | 2, 6, 8 | — | — | Research | M | ✅ Done |
 | 15 | `csv-export` | W4 | REG-6 | 6, 7, 10 | — | — | Plan | S | Open |
 | 16 | `checkin-teacher-ui` | W5 | QR-1, QR-6, TEC-5 | 8, 13 | — | — | Research | M | Open |
 | 17 | `dashboard` | W5 | UI-2 | 4, 5, 6 | — | — | Plan | S | Open |
