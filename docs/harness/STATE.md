@@ -5,7 +5,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3 done; W4: #14, #15 done, #12 #13 in flight; W5: #17, #18 done; #16 waits on #13
+- **Phase of the project:** W0–W2 done; W3 done; W4: #13, #14, #15 done, #12 in flight; W5: #17, #18 done; #16 waits on #13
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
@@ -36,15 +36,14 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 16 `checkin-teacher-ui` | plan DONE → implement after #13 lands | — | A (8001) | 11-11 11:45 | plan Phase 0 = precondition; D-055, D-056; `lane sync` then spawn c16-impl |
+| 16 `checkin-teacher-ui` | implement | c16-impl | A (8001) | 11-11 12:20 | lane synced onto #13 (0e3913b); plan Phase 0 precondition; D-055, D-056 |
 | 12 `credits-ui` | implement | c12-impl | B (8002) | 11-11 11:13 | plan PD1–PD10; D-053 |
-| 13 `attendance-ui` | review ✅ Complete → landing | c13-review-2 | C (8003) | 11-11 12:15 | c13-review hit 180k before land; c13-review-2 runs land only (conflicts over #15) |
 
 ## Next actions
 
 **OWNER STOP (G9, owner instruction 2026-11-11, clarified 11:58):** the stop condition is that **every cycle of W0–W5 (#0–#18) is ✅ Done**, not only W5's. While any W0–W5 cycle is still running, keep going (teammates, lanes, rework). Start no W6 cycle (#19–#23) at any point. When the last W0–W5 cycle has landed and its CI is green: shut down every teammate, close the lanes, delete the watchdog, commit and push the harness files, send the owner one push notification "W0–W5 done, ready for your review", and stop. Resume only when the owner says so.
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511`, #13 `0e3913b` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
 2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
