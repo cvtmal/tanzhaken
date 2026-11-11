@@ -1,0 +1,16 @@
+{# New student (student_new). Variables: form (StudentType view). #}
+{% extends 'layout/teacher.html.twig' %}
+
+{% block title %}{{ 'new.title'|trans({}, 'students') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="students-column">
+        {% include 'components/_page_header.html.twig' with {
+            title: 'new.heading'|trans({}, 'students'),
+            back_href: path('student_index'),
+            back_label: 'new.back'|trans({}, 'students'),
+        } only %}
+
+        {% include 'student/_form.html.twig' with {form: form, submit_label: 'new.submit'|trans({}, 'students'), cancel_href: path('student_index')} only %}
+    </div>
+{% endblock %}

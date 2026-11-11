@@ -1,0 +1,13 @@
+{# Student form body (new and edit). Variables: form (StudentType view), submit_label (string, translated), cancel_href (string).
+   Fields come from the global form theme; email and notes are optional and private to the teacher. #}
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.firstName) }}
+    {{ form_row(form.lastName) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.notes) }}
+    <div class="students-form__actions">
+        {% include 'components/_button.html.twig' with {label: submit_label, type: 'submit', size: 'lg'} only %}
+        {% include 'components/_link_button.html.twig' with {label: 'form.cancel'|trans({}, 'students'), href: cancel_href, variant: 'secondary', size: 'lg'} only %}
+    </div>
+{{ form_end(form) }}

@@ -1,0 +1,96 @@
+{# Student directory (student_index, STU-1): active or archived students, searched by name.
+   Variables: students (list<App\Students\ReadModel\StudentListItem>), count (int, rows of the current filter), query (string, trimmed search), archived (bool).
+   Works without JS: the filter is two links, the search a GET form. #}
+{% extends 'layout/teacher.html.twig' %}
+
+{% block title %}{{ 'index.title'|trans({}, 'students') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="students-column">
+        {% embed 'components/_page_header.html.twig' with {
+            title: 'index.title'|trans({}, 'students'),
+            subtitle: (archived ? 'index.count_archived' : 'index.count')|trans({count: count}, 'students'),
+        } only %}
+            {% block page_actions %}
+                {% include 'components/_link_button.html.twig' with {label: 'index.add'|trans({}, 'students'), href: path('student_new'), icon: 'person-add'} only %}
+            {% endblock %}
+        {% endembed %}
+
+        <div class="students-toolbar">
+            <ul class="students-filter" aria-label="{{ 'index.filter.label'|trans({}, 'students') }}">
+                <li>
+                    {% include 'components/_link_button.html.twig' with {
+                        label: 'index.filter.active'|trans({}, 'students'),
+                        href: path('student_index', query is empty ? {} : {q: query}),
+                        variant: archived ? 'text' : 'soft',
+                        size: 'pill',
+                        attr: archived ? {} : {'aria-current': 'page'},
+                    } only %}
+                </li>
+                <li>
+                    {% include 'components/_link_button.html.twig' with {
+                        label: 'index.filter.archived'|trans({}, 'students'),
+                        href: path('student_index', query is empty ? {archived: 1} : {archived: 1, q: query}),
+                        variant: archived ? 'soft' : 'text',
+                        size: 'pill',
+                        attr: archived ? {'aria-current': 'page'} : {},
+                    } only %}
+                </li>
+            </ul>
+
+            <form class="students-search" method="get" action="{{ path('student_index') }}" role="search">
+                <label class="visually-hidden" for="students-search-q">{{ 'index.search.label'|trans({}, 'students') }}</label>
+                <span class="input-wrap">
+                    <input class="input" id="students-search-q" type="search" name="q" value="{{ query }}"
+                           maxlength="{{ constant('App\\Students\\ReadModel\\StudentList::SEARCH_MAX') }}"
+                           placeholder="{{ 'index.search.placeholder'|trans({}, 'students') }}" autocomplete="off">
+                </span>
+                {% if archived %}<input type="hidden" name="archived" value="{{ 1 }}">{% endif %}
+                {% include 'components/_button.html.twig' with {label: 'index.search.submit'|trans({}, 'students'), type: 'submit', variant: 'secondary', icon: 'search'} only %}
+                {% if query is not empty %}
+                    {% include 'components/_link_button.html.twig' with {label: 'index.search.clear'|trans({}, 'students'), href: path('student_index', archived ? {archived: 1} : {}), variant: 'text'} only %}
+                {% endif %}
+            </form>
+        </div>
+
+        {% if students is not empty %}
+            {% embed 'components/_list.html.twig' with {label: 'index.list_label'|trans({}, 'students'), students: students, archived: archived} only %}
+                {% block list_items %}
+                    {% for s in students %}
+                        {% embed 'components/_list_row.html.twig' with {
+                            title: s.fullName,
+                            href: path('student_show', {id: s.id}),
+                            lead: 'avatar',
+                            initials: s.initials,
+                            meta: 'index.row.courses'|trans({count: s.activeCourseCount}, 'students'),
+                            archived: archived,
+                        } only %}
+                            {% block row_trailing %}
+                                {% if archived %}
+                                    {% include 'components/_status_badge.html.twig' with {label: 'show.archived'|trans({}, 'students'), variant: 'neutral', size: 'sm'} only %}
+                                {% endif %}
+                            {% endblock %}
+                        {% endembed %}
+                    {% endfor %}
+                {% endblock %}
+            {% endembed %}
+        {% elseif query is not empty %}
+            {% include 'components/_empty_state.html.twig' with {
+                title: 'index.empty.no_match.title'|trans({}, 'students'),
+                text: 'index.empty.no_match.text'|trans({query: query}, 'students'),
+                action: {label: 'index.search.clear'|trans({}, 'students'), href: path('student_index', archived ? {archived: 1} : {}), icon: null},
+            } only %}
+        {% elseif archived %}
+            {% include 'components/_empty_state.html.twig' with {
+                title: 'index.empty.archived.title'|trans({}, 'students'),
+                text: 'index.empty.archived.text'|trans({}, 'students'),
+            } only %}
+        {% else %}
+            {% include 'components/_empty_state.html.twig' with {
+                title: 'index.empty.none.title'|trans({}, 'students'),
+                text: 'index.empty.none.text'|trans({}, 'students'),
+                action: {label: 'index.add'|trans({}, 'students'), href: path('student_new'), icon: 'person-add'},
+            } only %}
+        {% endif %}
+    </div>
+{% endblock %}

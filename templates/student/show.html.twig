@@ -1,0 +1,111 @@
+{# Student page (student_show, STU-1, STU-2). Hotspot owned by #9: #12 and #13 fill the two slots below.
+   Variables: student (App\Students\Entity\Student), teacher_timezone (string, IANA),
+   active_courses / earlier_courses (list<App\Students\ReadModel\StudentCourseRow>, split by isActive()).
+   Slot contract: student/_credits.html.twig gets {student, courses: active_courses}; student/_attendance.html.twig gets {student};
+   each renders its own section heading. Archive and restore are POST forms with CSRF (no JS needed). #}
+{% extends 'layout/teacher.html.twig' %}
+
+{% set full_name = student.firstName ~ ' ' ~ student.lastName %}
+
+{% block title %}{{ full_name }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="students-column">
+        {% embed 'components/_page_header.html.twig' with {
+            title: full_name,
+            subtitle: student.archived ? 'show.archived'|trans({}, 'students') : null,
+            back_href: student.archived ? path('student_index', {archived: 1}) : path('student_index'),
+            back_label: (student.archived ? 'show.back_archived' : 'show.back')|trans({}, 'students'),
+            student: student,
+        } only %}
+            {% block page_actions %}
+                <div class="students-actions">
+                    {% include 'components/_link_button.html.twig' with {label: 'show.edit'|trans({}, 'students'), href: path('student_edit', {id: student.id}), variant: 'secondary', icon: 'edit'} only %}
+                    {% if student.archived %}
+                        <form method="post" action="{{ path('student_restore', {id: student.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('student_restore') }}">
+                            {% include 'components/_button.html.twig' with {label: 'show.restore'|trans({}, 'students'), type: 'submit', variant: 'soft', icon: 'undo'} only %}
+                        </form>
+                    {% else %}
+                        <form method="post" action="{{ path('student_archive', {id: student.id}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('student_archive') }}">
+                            {% include 'components/_button.html.twig' with {label: 'show.archive'|trans({}, 'students'), type: 'submit', variant: 'text'} only %}
+                        </form>
+                    {% endif %}
+                </div>
+            {% endblock %}
+        {% endembed %}
+
+        <section class="students-section" aria-labelledby="student-details-heading">
+            <h2 class="students-section__heading" id="student-details-heading">{{ 'show.details.heading'|trans({}, 'students') }}</h2>
+            {% embed 'components/_card.html.twig' with {student: student} only %}
+                {% block card_body %}
+                    {% if student.email is null and student.notes is null %}
+                        <p class="card__meta">{{ 'show.details.none'|trans({}, 'students') }}</p>
+                    {% else %}
+                        <dl class="students-details">
+                            {% if student.email is not null %}
+                                <div>
+                                    <dt>{{ 'show.details.email'|trans({}, 'students') }}</dt>
+                                    <dd><a href="mailto:{{ student.email }}">{{ student.email }}</a></dd>
+                                </div>
+                            {% endif %}
+                            {% if student.notes is not null %}
+                                <div>
+                                    <dt>{{ 'show.details.notes'|trans({}, 'students') }}</dt>
+                                    <dd>{{ student.notes|nl2br }}</dd>
+                                </div>
+                            {% endif %}
+                        </dl>
+                    {% endif %}
+                    <p class="students-details__private">{{ 'show.details.private'|trans({}, 'students') }}</p>
+                {% endblock %}
+            {% endembed %}
+        </section>
+
+        <section class="students-section" aria-labelledby="student-courses-heading">
+            <h2 class="students-section__heading" id="student-courses-heading">{{ 'show.courses.heading'|trans({}, 'students') }}</h2>
+            {% if active_courses is not empty %}
+                {% embed 'components/_list.html.twig' with {label: 'show.courses.heading'|trans({}, 'students'), courses: active_courses} only %}
+                    {% block list_items %}
+                        {% for c in courses %}
+                            {% include 'components/_list_row.html.twig' with {
+                                title: c.name,
+                                href: path('course_show', {id: c.courseId}),
+                                meta: 'show.courses.schedule'|trans({weekday: c.weekday, time: c.localStartTime|format_time('short', timezone: false)}, 'students'),
+                            } only %}
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
+            {% else %}
+                {% include 'components/_empty_state.html.twig' with {
+                    title: 'show.courses.empty.title'|trans({}, 'students'),
+                    text: 'show.courses.empty.text'|trans({}, 'students'),
+                    level: 3,
+                } only %}
+            {% endif %}
+        </section>
+
+        {% if earlier_courses is not empty %}
+            <section class="students-section" aria-labelledby="student-earlier-heading">
+                <h2 class="students-section__heading" id="student-earlier-heading">{{ 'show.courses.earlier'|trans({}, 'students') }}</h2>
+                {% embed 'components/_list.html.twig' with {label: 'show.courses.earlier'|trans({}, 'students'), courses: earlier_courses, tz: teacher_timezone} only %}
+                    {% block list_items %}
+                        {% for c in courses %}
+                            {% include 'components/_list_row.html.twig' with {
+                                title: c.name,
+                                href: path('course_show', {id: c.courseId}),
+                                meta: c.leftAt is not null
+                                    ? 'show.courses.left'|trans({date: c.leftAt|format_date('medium', timezone: tz)}, 'students')
+                                    : 'show.courses.archived'|trans({}, 'students'),
+                            } only %}
+                        {% endfor %}
+                    {% endblock %}
+                {% endembed %}
+            </section>
+        {% endif %}
+
+        {% include 'student/_credits.html.twig' ignore missing with {student: student, courses: active_courses} only %}
+        {% include 'student/_attendance.html.twig' ignore missing with {student: student} only %}
+    </div>
+{% endblock %}

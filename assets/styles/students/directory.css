@@ -1,0 +1,113 @@
+/*
+ * Student directory (#9): the filter and search bar on student_index, the narrow column the
+ * list, form and student page share at 64rem and up, the details list and the section headings
+ * on student_show. Everything else comes from the components. Tokens only; no motion.
+ */
+
+/* One readable column at 64rem and up (D1: a list, not a table) */
+.students-column {
+    max-width: 44rem;
+}
+
+/* Filter (Active / Archived) and search */
+.students-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    margin-bottom: var(--space-20);
+}
+
+.students-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* The pill size is 40 px; the filter links are tap targets, so they get the 44 px minimum */
+.students-filter .btn {
+    --btn-height: var(--control-min);
+}
+
+.students-search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.students-search .input-wrap {
+    flex: 1 1 12rem;
+}
+
+@media (min-width: 64rem) {
+    .students-toolbar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .students-search {
+        flex: 0 1 26rem;
+        flex-wrap: nowrap;
+    }
+}
+
+/* Student page */
+.students-section {
+    margin-top: var(--space-28);
+}
+
+.students-section__heading {
+    margin: 0 0 var(--space-12);
+    font-size: var(--text-17);
+}
+
+.students-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.students-actions form {
+    margin: 0;
+}
+
+.students-details {
+    display: grid;
+    gap: var(--space-14);
+    margin: 0;
+}
+
+.students-details dt {
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}
+
+.students-details dd {
+    margin: var(--space-2) 0 0;
+    overflow-wrap: anywhere;
+}
+
+.students-details a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--control-min);
+}
+
+.students-details__private {
+    margin: var(--space-14) 0 0;
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}
+
+/* Form actions: primary submit and cancel side by side */
+.students-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    margin-top: var(--space-8);
+}

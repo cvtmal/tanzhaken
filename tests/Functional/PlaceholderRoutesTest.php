@@ -25,7 +25,10 @@ final class PlaceholderRoutesTest extends WebTestCase
     private const PUBLIC = ['password_forgot', 'password_reset', 'privacy', 'checkin_public'];
 
     /** S5 routes whose real page has shipped; they are tested by their own cycle's tests. */
-    private const SHIPPED = ['home', 'register', 'login', 'logout'];
+    private const SHIPPED = [
+        'home', 'register', 'login', 'logout',
+        'student_index', 'student_new', 'student_show', 'student_edit', 'student_archive', 'student_restore',
+    ];
 
     /**
      * @return iterable<string, array{string, array<string, string>, string}>
@@ -37,10 +40,6 @@ final class PlaceholderRoutesTest extends WebTestCase
         yield 'account' => ['account', [], '/account'];
         yield 'privacy' => ['privacy', [], '/privacy'];
         yield 'dashboard' => ['dashboard', [], '/dashboard'];
-        yield 'student_index' => ['student_index', [], '/students'];
-        yield 'student_new' => ['student_new', [], '/students/new'];
-        yield 'student_show' => ['student_show', ['id' => 'x'], '/students/x'];
-        yield 'student_edit' => ['student_edit', ['id' => 'x'], '/students/x/edit'];
         yield 'course_index' => ['course_index', [], '/courses'];
         yield 'course_new' => ['course_new', [], '/courses/new'];
         yield 'course_show' => ['course_show', ['id' => 'x'], '/courses/x'];

@@ -1,0 +1,85 @@
+# Domain `students` (S7): the student directory and the student page (#9).
+# Validation messages of the student form live in validators+intl-icu.en.yaml (students.student.*).
+index:
+    title: Students
+    count: '{count, plural, =0 {No students} one {# student} other {# students}}'
+    count_archived: '{count, plural, =0 {No archived students} one {# archived student} other {# archived students}}'
+    add: Add student
+    filter:
+        label: Show
+        active: Active
+        archived: Archived
+    search:
+        label: Search by name
+        placeholder: Search by name
+        submit: Search
+        clear: Clear search
+    list_label: Students
+    row:
+        courses: '{count, plural, =0 {Not in a course} one {# course} other {# courses}}'
+    empty:
+        none:
+            title: No students yet
+            text: Add the people who dance with you. You can enrol them in a course afterwards.
+        no_match:
+            title: No student matches
+            text: 'Nobody is called “{query}”. Check the spelling or search for part of the name.'
+        archived:
+            title: No archived students
+            text: Students you archive show up here. You can restore them at any time.
+
+new:
+    title: New student
+    heading: New student
+    back: Back to students
+    submit: Add student
+
+edit:
+    title: Edit student
+    heading: Edit student
+    back: Back to student
+    submit: Save changes
+
+form:
+    cancel: Cancel
+    first_name:
+        label: First name
+    last_name:
+        label: Last name
+    email:
+        label: Email
+        help: Only you see it.
+    notes:
+        label: Notes
+        help: Only you see them.
+
+show:
+    back: Back to students
+    back_archived: Back to archived students
+    archived: Archived
+    edit: Edit
+    archive: Archive
+    restore: Restore
+    details:
+        heading: Details
+        email: Email
+        notes: Notes
+        none: No email or notes.
+        private: Only you see these details.
+    courses:
+        heading: Courses
+        earlier: Earlier courses
+        schedule: '{weekday, select, 1 {Mondays} 2 {Tuesdays} 3 {Wednesdays} 4 {Thursdays} 5 {Fridays} 6 {Saturdays} other {Sundays}} · {time}'
+        left: 'Left on {date}'
+        archived: Course archived
+        empty:
+            title: Not in a course yet
+            text: Enrol from a course page.
+
+flash:
+    created: '{name} was added.'
+    updated: Changes saved.
+    archived: '{name} was archived.'
+    restored: '{name} was restored.'
+    already_archived: '{name} is already archived.'
+    not_archived: '{name} is not archived.'

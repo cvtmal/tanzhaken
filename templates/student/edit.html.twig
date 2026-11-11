@@ -1,0 +1,17 @@
+{# Edit student (student_edit). Variables: form (StudentType view), student (App\Students\Entity\Student). #}
+{% extends 'layout/teacher.html.twig' %}
+
+{% block title %}{{ 'edit.title'|trans({}, 'students') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="students-column">
+        {% include 'components/_page_header.html.twig' with {
+            title: 'edit.heading'|trans({}, 'students'),
+            subtitle: student.firstName ~ ' ' ~ student.lastName,
+            back_href: path('student_show', {id: student.id}),
+            back_label: 'edit.back'|trans({}, 'students'),
+        } only %}
+
+        {% include 'student/_form.html.twig' with {form: form, submit_label: 'edit.submit'|trans({}, 'students'), cancel_href: path('student_show', {id: student.id})} only %}
+    </div>
+{% endblock %}

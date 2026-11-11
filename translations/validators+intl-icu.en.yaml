@@ -13,3 +13,17 @@ account:
             blank: Choose a password.
             too_short: Use 8 characters or more.
             too_long: This password is too long.
+students:
+    student:
+        first_name:
+            blank: Enter a first name.
+            too_long: This first name is too long.
+        last_name:
+            blank: Enter a last name.
+            too_long: This last name is too long.
+        email:
+            invalid: Enter a full email address.
+            too_long: This email address is too long.
+        notes:
+            too_long: These notes are too long.
+        invalid: Check the name and email and try again.

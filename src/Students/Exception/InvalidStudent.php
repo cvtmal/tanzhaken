@@ -25,4 +25,9 @@ final class InvalidStudent extends \DomainException
     {
         return new self('The student is already archived.');
     }
+
+    public static function notArchived(): self
+    {
+        return new self('The student is not archived.');
+    }
 }
