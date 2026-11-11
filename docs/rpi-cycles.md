@@ -59,6 +59,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `templates/base.html.twig`, `templates/layout/*`, `templates/components/*`, `assets/styles/tokens.css` | #2 (takes them over from #0's stubs) | fill blocks, use components; a missing variant goes into the cycle's own module folder first and into its outcome file; #4 adds one include of `account/_logout_form.html.twig` to the teacher layout's navigation, includes `layout/_flashes.html.twig` in the auth and public layouts, and fixes the stale comment at the top of `layout/teacher.html.twig` |
    | `assets/styles/app.css` (import list) | #2 | append one line for their own file |
    | `translations/messages+intl-icu.en.yaml` (layout strings) | #2 | nothing; each module has its own domain file |
+   | `translations/validators+intl-icu.en.yaml` (constraint messages) | #4 | append only, keys prefixed by module (`account.…`, `students.…`) |
    | `templates/student/show.html.twig` | #9 | #12 creates `student/_credits.html.twig`, #13 creates `student/_attendance.html.twig` (both `ignore missing` includes) |
    | `templates/course/show.html.twig`, `course/_roster_row.html.twig`, the course card on `course_index` | #10 | #12 creates `course/_roster_balance.html.twig` and `course/_card_badges.html.twig` (the card's `ignore missing` badge slot), #15 `course/_export_action.html.twig` |
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
