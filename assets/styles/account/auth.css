@@ -1,0 +1,185 @@
+/*
+ * Auth pages (#4): login (A1 mobile, A3 desktop), register (A2), the A3 brand panel and the
+ * sidebar logout form. Builds on layout.css's auth shell without editing it: at and above 64rem
+ * the body class auth-split turns the centred card into A3's form column + fixed brand panel.
+ * Tokens only; no motion.
+ */
+
+/* Page content (A1/A2) */
+.auth-page__back {
+    margin: 0 0 var(--space-16) calc(var(--space-10) * -1);
+}
+
+.auth-page__title {
+    margin-bottom: var(--space-12);
+}
+
+.auth-page__lede {
+    margin-bottom: var(--space-28);
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+}
+
+.auth-page .alert {
+    margin: 0 0 var(--space-18);
+}
+
+.auth-form__forgot {
+    display: flex;
+    justify-content: flex-end;
+    margin: calc(var(--space-12) * -1) 0 var(--space-12);
+}
+
+.auth-form__forgot a,
+.auth-page__switch a {
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+}
+
+.auth-form__forgot a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--control-min);
+    font-size: var(--text-14);
+}
+
+.auth-page__legal {
+    margin-top: var(--space-16);
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+    text-align: center;
+}
+
+.auth-page__legal a {
+    color: var(--color-ink-2);
+}
+
+/* A1/A2: on a phone the switch line sits at the bottom of the screen, above the footer.
+   On desktop the card does not grow, so it stays under the form. */
+.auth-card:has(> .auth-page) {
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-page {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.auth-page__switch {
+    margin-top: auto;
+    padding-top: var(--space-28);
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+    text-align: center;
+}
+
+/* A3 brand panel: desktop only */
+.auth-brand {
+    display: none;
+}
+
+@media (min-width: 64rem) {
+    .auth-split .auth-shell {
+        width: 44%;
+        max-width: none;
+        margin: 0;
+        justify-content: flex-start;
+        padding: var(--space-40) var(--space-40) 0;
+    }
+
+    .auth-split .auth-card {
+        width: 100%;
+        max-width: 22.5rem;
+        margin: auto;
+        padding: 0;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+    }
+
+    .auth-brand {
+        position: fixed;
+        top: var(--space-12);
+        right: var(--space-12);
+        bottom: var(--space-12);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: calc(56% - var(--space-12));
+        padding: var(--space-56);
+        overflow: hidden;
+        border-radius: var(--radius-20);
+        background: var(--color-accent);
+        color: var(--color-paper);
+    }
+
+    .auth-brand__tagline {
+        max-width: 28rem;
+        font-family: var(--font-serif);
+        font-size: calc(var(--display-44) * 1.35);
+        font-weight: var(--weight-regular);
+        line-height: var(--leading-display);
+        letter-spacing: var(--tracking-display);
+    }
+
+    .auth-brand__pass {
+        align-self: flex-start;
+        padding: var(--space-24);
+        border-radius: var(--radius-20);
+        background: var(--color-paper);
+        box-shadow: var(--shadow-ring), var(--shadow-card-lift);
+        color: var(--color-ink);
+        transform: rotate(-3deg);
+    }
+
+    .auth-brand__pass-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-16);
+        margin-bottom: var(--space-18);
+    }
+
+    .auth-brand__pass-title {
+        font-family: var(--font-serif);
+        font-size: var(--text-22);
+    }
+
+    .auth-brand__pass-name {
+        color: var(--color-ink-2);
+        font-size: var(--text-14);
+    }
+
+    .auth-brand .pass--dots {
+        max-width: calc(5 * 44px + 4 * var(--space-24));
+        gap: var(--space-16) var(--space-24);
+    }
+
+    .auth-brand .pass--dots .pass__unit {
+        width: 44px;
+        height: 44px;
+    }
+
+    .auth-brand__pass-meta {
+        margin-top: var(--space-18);
+        color: var(--color-ink-2);
+        font-size: var(--text-14);
+    }
+
+    .auth-brand__pass-meta strong {
+        color: var(--color-ink);
+        font-weight: var(--weight-semibold);
+    }
+}
+
+/* Sidebar logout (D-029): a full-width text button under the account item */
+.logout-form {
+    margin-top: var(--space-4);
+}
+
+.logout-form .btn {
+    width: 100%;
+    justify-content: flex-start;
+}

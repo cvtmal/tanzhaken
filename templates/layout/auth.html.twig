@@ -8,6 +8,7 @@
             {% include 'components/_wordmark.html.twig' with {size: 'lg', href: path('home')} only %}
         </header>
         <main id="main" class="auth-card" tabindex="-1">
+            {% include 'layout/_flashes.html.twig' %}
             {% block main %}{% endblock %}
         </main>
         {% include 'layout/_footer.html.twig' %}

@@ -1,0 +1,15 @@
+# Domain `validators`: Symfony's validator translates constraint messages here, not in the module domain.
+# Keys carry the module as prefix (account.*, later students.*, …) so modules never collide.
+account:
+    register:
+        name:
+            blank: Enter your name.
+            too_long: This name is too long.
+        email:
+            blank: Enter your email address.
+            invalid: Enter a full email address.
+            too_long: This email address is too long.
+        password:
+            blank: Choose a password.
+            too_short: Use 8 characters or more.
+            too_long: This password is too long.

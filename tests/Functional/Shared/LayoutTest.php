@@ -4,14 +4,23 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Shared;
 
+use App\Tests\Functional\LogsInTeacher;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
+use Zenstruck\Foundry\Attribute\ResetDatabase;
 
+/**
+ * Teacher-layout pages need a logged-in teacher since #4 (ACC-5).
+ */
+#[ResetDatabase]
 final class LayoutTest extends WebTestCase
 {
+    use LogsInTeacher;
+
     public function test_teacher_layout_has_skip_link_navigation_flash_region_and_privacy_link(): void
     {
         $client = self::createClient();
+        $this->logInTeacher($client);
         $crawler = $client->request('GET', '/courses');
 
         self::assertResponseIsSuccessful();
@@ -33,6 +42,7 @@ final class LayoutTest extends WebTestCase
     public function test_lesson_page_marks_courses_as_current(): void
     {
         $client = self::createClient();
+        $this->logInTeacher($client);
         $crawler = $client->request('GET', '/courses/x/lessons/y');
 
         self::assertResponseIsSuccessful();
@@ -66,6 +76,7 @@ final class LayoutTest extends WebTestCase
     public function test_title_carries_the_brand_name(): void
     {
         $client = self::createClient();
+        $this->logInTeacher($client);
         $client->request('GET', '/courses');
 
         self::assertSelectorTextContains('title', 'TanzHaken');

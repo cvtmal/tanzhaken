@@ -1,0 +1,9 @@
+{# Logout (ACC-2, S4): a POST form with the `logout` CSRF token; the firewall handles it and redirects to /login.
+   Renders nothing for an anonymous visitor. No params.
+   Call: {% include 'account/_logout_form.html.twig' %} #}
+{% if app.user %}
+    <form method="post" action="{{ path('logout') }}" class="logout-form">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+        {% include 'components/_button.html.twig' with {label: 'logout.button'|trans({}, 'account'), variant: 'text', size: 'compact', type: 'submit'} only %}
+    </form>
+{% endif %}

@@ -9,6 +9,7 @@
             {% include 'components/_wordmark.html.twig' with {size: 'sm'} only %}
         </header>
         <main id="main" class="public-main" tabindex="-1">
+            {% include 'layout/_flashes.html.twig' %}
             {% block main %}{% endblock %}
         </main>
         {% include 'layout/_footer.html.twig' %}

@@ -1,0 +1,54 @@
+# Domain `account` (S7): login, registration, logout and the A3 brand panel (#4).
+# Validation messages of the registration form live in validators+intl-icu.en.yaml (account.register.*).
+login:
+    title: Log in
+    heading: Welcome back.
+    lede: Your classes and lesson passes, without the paper sheet.
+    email:
+        label: Email
+        placeholder: lena@tanzraum.example
+    password:
+        label: Password
+    forgot: Forgot password?
+    submit: Log in
+    switch:
+        question: 'New to {brand}?'
+        link: Create an account
+    error:
+        invalid: Email or password is wrong.
+        throttled: 'Too many attempts. Try again in {minutes, plural, one {# minute} other {# minutes}}.'
+        expired: The page expired. Please try again.
+
+register:
+    title: Create account
+    back: Back to log in
+    heading: Create your account
+    lede: Set it up once. After that it is just names and ticks.
+    name:
+        label: Your name
+    email:
+        label: Email
+        taken: This email is already registered. Log in instead?
+    password:
+        label: Password
+        help: 8 characters or more
+    submit: Create account
+    legal:
+        before: By creating an account you agree to the
+        link: Privacy Policy
+        after: .
+    switch:
+        question: Already registered?
+        link: Log in
+
+logout:
+    button: Log out
+
+brand_panel:
+    tagline: The attendance sheet,
+    tagline_em: without the sheet.
+    pass:
+        title: 10-lesson pass
+        name: Anna M.
+        left: '{count, plural, one {# lesson left} other {# lessons left}}'
+        hint: one comes off with every tick

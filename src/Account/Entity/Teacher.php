@@ -91,6 +91,14 @@ class Teacher implements UserInterface, PasswordAuthenticatedUserInterface, Teac
         return $this->name;
     }
 
+    /**
+     * The name shown in the teacher layout (sidebar avatar and name) and on public pages.
+     */
+    public function getDisplayName(): string
+    {
+        return $this->name;
+    }
+
     public function getEmail(): string
     {
         return $this->email;

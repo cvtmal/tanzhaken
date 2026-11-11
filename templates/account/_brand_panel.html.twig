@@ -1,0 +1,20 @@
+{# A3 brand panel: accent panel with the tagline and a tilted 10-lesson pass card. Shown only at and above 64rem
+   (account/auth.css, body class auth-split). Decorative demo content, so aria-hidden. No params.
+   Call: {% include 'account/_brand_panel.html.twig' %} #}
+<aside class="auth-brand" aria-hidden="true">
+    <p class="auth-brand__tagline">
+        {{ 'brand_panel.tagline'|trans({}, 'account') }}
+        <em>{{ 'brand_panel.tagline_em'|trans({}, 'account') }}</em>
+    </p>
+    <div class="auth-brand__pass">
+        <div class="auth-brand__pass-head">
+            <span class="auth-brand__pass-title">{{ 'brand_panel.pass.title'|trans({}, 'account') }}</span>
+            <span class="auth-brand__pass-name">{{ 'brand_panel.pass.name'|trans({}, 'account') }}</span>
+        </div>
+        {% include 'components/_pass_dots.html.twig' with {left: 7, total: 10} only %}
+        <p class="auth-brand__pass-meta">
+            <strong>{{ 'brand_panel.pass.left'|trans({count: 7}, 'account') }}</strong>
+            &middot; {{ 'brand_panel.pass.hint'|trans({}, 'account') }}
+        </p>
+    </div>
+</aside>

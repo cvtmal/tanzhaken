@@ -1,0 +1,33 @@
+{# Registration (A2): name, email, password, then straight into the app (RegistrationController).
+   Variables: form (RegistrationType view; a taken email arrives as a translated error on the email field). #}
+{% extends 'layout/auth.html.twig' %}
+
+{% set page_scripts = ['password-toggle'] %}
+
+{% block title %}{{ 'register.title'|trans({}, 'account') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="auth-page">
+        {% include 'components/_icon_button.html.twig' with {icon: 'arrow-back', label: 'register.back'|trans({}, 'account'), href: path('login'), variant: 'plain', attr: {class: 'auth-page__back'}} only %}
+        <h1 class="display-40 auth-page__title">{{ 'register.heading'|trans({}, 'account') }}</h1>
+        <p class="auth-page__lede">{{ 'register.lede'|trans({}, 'account') }}</p>
+
+        {{ form_start(form, {attr: {class: 'auth-form'}}) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.password) }}
+            {% include 'components/_button.html.twig' with {label: 'register.submit'|trans({}, 'account'), type: 'submit', size: 'lg', full_width: true} only %}
+        {{ form_end(form) }}
+
+        <p class="auth-page__legal">
+            {{ 'register.legal.before'|trans({}, 'account') }}
+            <a href="{{ path('privacy') }}">{{ 'register.legal.link'|trans({}, 'account') }}</a>{{ 'register.legal.after'|trans({}, 'account') }}
+        </p>
+
+        <p class="auth-page__switch">
+            {{ 'register.switch.question'|trans({}, 'account') }}
+            <a href="{{ path('login') }}">{{ 'register.switch.link'|trans({}, 'account') }}</a>
+        </p>
+    </div>
+{% endblock %}

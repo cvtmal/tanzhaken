@@ -1,0 +1,37 @@
+{# Login (A1 mobile, A3 desktop). The firewall's form_login handles the POST; this page only renders.
+   Variables: form (LoginType view, unnamed: fields _username, _password, _csrf_token);
+   error ({key, parameters}|null: an `account` key chosen by SecurityController, translated here). #}
+{% extends 'layout/auth.html.twig' %}
+
+{% set page_scripts = ['password-toggle'] %}
+
+{% block body_class 'layout-auth auth-split' %}
+
+{% block title %}{{ 'login.title'|trans({}, 'account') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="auth-page">
+        <h1 class="display-40 auth-page__title">{{ 'login.heading'|trans({}, 'account') }}</h1>
+        <p class="auth-page__lede">{{ 'login.lede'|trans({}, 'account') }}</p>
+
+        {% if error %}
+            {% include 'components/_alert.html.twig' with {variant: 'danger', text: error.key|trans(error.parameters, 'account')} only %}
+        {% endif %}
+
+        {{ form_start(form, {action: path('login'), attr: {class: 'auth-form'}}) }}
+            {{ form_row(form._username) }}
+            {{ form_row(form._password) }}
+            <p class="auth-form__forgot">
+                <a href="{{ path('password_forgot') }}">{{ 'login.forgot'|trans({}, 'account') }}</a>
+            </p>
+            {% include 'components/_button.html.twig' with {label: 'login.submit'|trans({}, 'account'), type: 'submit', size: 'lg', full_width: true} only %}
+        {{ form_end(form) }}
+
+        <p class="auth-page__switch">
+            {{ 'login.switch.question'|trans({brand: brand_name}, 'account') }}
+            <a href="{{ path('register') }}">{{ 'login.switch.link'|trans({}, 'account') }}</a>
+        </p>
+    </div>
+
+    {% include 'account/_brand_panel.html.twig' %}
+{% endblock %}

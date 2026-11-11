@@ -1,11 +1,14 @@
 security:
+    # Passwords use the `auto` hasher (S4).
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    # Our own provider: it normalises the login email like TeacherRepository::findOneByEmail()
+    # and upgrades password hashes (#4 research D1; the entity provider cannot do either).
     providers:
-        users_in_memory: { memory: null }
+        teachers:
+            id: App\Account\Security\TeacherUserProvider
 
     firewalls:
         dev:
@@ -14,18 +17,47 @@ security:
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: teachers
 
-            # Activate different ways to authenticate:
-            # https://symfony.com/doc/current/security.html#the-firewall
+            # ACC-2: email + password login on /login; CSRF on the login form (S4, token id
+            # `authenticate`, stateless in csrf.yaml). Success goes to the dashboard.
+            form_login:
+                login_path: login
+                check_path: login
+                enable_csrf: true
+                default_target_path: dashboard
+                username_parameter: _username
+                password_parameter: _password
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            # ACC-2, S4: logout is a POST with a CSRF token (token id `logout`); back to /login.
+            logout:
+                path: logout
+                target: login
+                enable_csrf: true
 
-    # Note: Only the *first* matching rule is applied
+            # ACC-2, SEC-1: built-in login limiter, 5 failures per email+IP in 5 minutes (#4 D3).
+            login_throttling:
+                max_attempts: 5
+                interval: '5 minutes'
+
+    # Deny by default (ACC-5): only the routes listed here are public; every other path needs a
+    # logged-in teacher. Only the *first* matching rule is applied.
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        # S5 public routes: home redirect, login and registration (#4).
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/(login|register)$, roles: PUBLIC_ACCESS }
+        # Password reset (#11).
+        - { path: ^/forgot-password$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password/, roles: PUBLIC_ACCESS }
+        # Public student check-in (#16).
+        - { path: ^/c/, roles: PUBLIC_ACCESS }
+        # Privacy page (#18) and the health check (#0).
+        - { path: ^/privacy$, roles: PUBLIC_ACCESS }
+        - { path: ^/health$, roles: PUBLIC_ACCESS }
+        # Design-system styleguide and error-page previews (#2).
+        - { path: ^/_(styleguide|error), roles: PUBLIC_ACCESS }
+        # Everything else: teacher screens (ACC-5, S4).
+        - { path: ^/, roles: ROLE_TEACHER }
 
 when@test:
     security:
