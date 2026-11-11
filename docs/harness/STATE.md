@@ -23,6 +23,7 @@ Facts about this machine and this Claude Code version, established by the setup 
 - Worktrees under `.claude/worktrees/` can be entered with EnterWorktree and a `path` without a prompt.
 - Tool versions: PHP 8.4.26 (pdo_sqlite, pdo_mysql, intl, sodium, gd), Composer 2.10, Symfony CLI 5.22, SQLite 3.51, git 2.56, gh 2.103 (logged in), Docker 29.8 (for #21 only), no local MariaDB.
 - Fresh-session baseline in this project: about 52k tokens (system prompt, tools, skills, `CLAUDE.md`) before any work. A teammate therefore has roughly 100k of working room before the 150k stop line.
+- **In-process teammates share the lead's working directory** (I-2, D-025): a `--bg` CTO starts lane teammates as `claude --bg` sessions inside their lane (`CTO.md` §10). Stop one with `claude stop <id>`, then `claude rm <id>`.
 - `bin/harness/ctx --self` identifies the session by `CLAUDE_CODE_SESSION_ID`. Inside an in-process teammate or a subagent that is the parent's id, so `--self` prints the parent's row; such a teammate finds its own row with `bin/harness/ctx <its name>`.
 - GitHub, verified 2026-11-10: the repository is the **public** `cvtmal/tanzhaken`, and `origin` (its HTTPS URL) was added by the owner before the first CTO session. gh's active account is `cvtmal`, with the scopes `repo` and `workflow`. Pushes to `origin` authenticate as `cvtmal` through the owner's git credential setup, and an SSH URL for `cvtmal/` reaches the same account through an `insteadOf` rule; `git ls-remote` answered both ways, a push has not been tried yet. Everything pushed is public.
 - `bin/harness/land` pushes to `origin` and does not move the local `main` of the main checkout; the CTO runs `git pull --ff-only` there after each landing.
@@ -35,7 +36,10 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 2 `design-system` | implement (paused for handover) | — | B (8002) | 11-11 00:08 | phases 1–4 of 7 WIP-committed (1b85d33), green; resume at Step 5.1; checkpoint at the end of `.rpi-tracking/changes/2026-11-10/design-system-changes.md` |
+| 2 `design-system` | implement | c02-impl-2 (bg a298b7fc) | B (8002) | 11-11 08:03 | resumes at Step 5.1; lane synced onto 8f30ea2 |
+| 5 `scheduling` | research | c05-research (bg bc2ef1ad) | A (8001) | 11-11 08:03 | |
+| 6 `credit-ledger` | research | c06-research (bg 8e84b6eb) | C (8003) | 11-11 08:03 | |
+| 7 `attendance-core` | research | c07-research (bg 6abef6ca) | D (8004) | 11-11 08:03 | |
 
 ## Next actions
 

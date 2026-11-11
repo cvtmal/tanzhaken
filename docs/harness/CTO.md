@@ -82,6 +82,8 @@ Cycle #<nn> `<slug>` · phase: <research|plan|implement|review> · lane <A–D> 
 <Optional, at most five lines: decisions or facts the artifacts do not contain yet; for rework, the path of the review to work from.>
 ```
 
+**In-process teammates share the lead's working directory** (`INCIDENTS.md` I-2). A CTO started with `--bg` and `teammateMode: in-process` (every successor, §9) therefore never spawns lane teammates with the Agent tool: the first `EnterWorktree` moves the CTO and every other teammate into that lane. It starts each teammate as a background session inside its lane (§10) with the same prompt plus the line "You run as a background session; your report file is the channel." The Agent-tool route stays for a CTO in iTerm2 mode, where each teammate is its own process.
+
 **Model and effort.** Teammates inherit your model and your effort level; leave both alone. Do not downgrade the model to save cost on research or review; a wrong research line costs more than it saves.
 
 **Shut down** a teammate as soon as you have accepted its report: send it a shutdown request by name. If it does not exit within a minute, `TaskStop` with its name. Never leave idle teammates around: an idle teammate above 180k is the failure this harness exists to prevent.

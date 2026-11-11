@@ -16,3 +16,14 @@ What went wrong in a harness run, why, and what changed so it does not happen ag
 - `CTO.md` §9 step 1: the watchdog is deleted only after every teammate's `ctx` row is idle or ended. Shutdown is confirmed by checking `ctx` with a background wait of at most 2 minutes, then `TaskStop`. A message is not enough. The successor is then started in the same turn.
 
 **Sign for next time.** A CTO turn that ends with "waiting for X" and no armed timer or background command is this incident about to repeat.
+
+## I-2 · 2026-11-11 · In-process teammates moved each other between lanes
+
+**What happened.** CTO-2, a `--bg` session with `teammateMode: in-process`, spawned four teammates with the Agent tool (`c02-impl-2`, `c05/06/07-research`) at 07:58. Each called `EnterWorktree` on its lane. Within two minutes `ctx` showed `c02-impl-2` and `c07-research` working in `.claude/worktrees/scheduling`, and the CTO's own session had been moved into `design-system`, then `credit-ledger`. CTO-2 stopped all four with `TaskStop`. Every lane was still clean: they had only been reading. The four were restarted as background sessions inside their lanes at 08:03.
+
+**Why.** In-process teammates run inside the lead's process and share its working directory; `EnterWorktree` changes it for all of them. CTO-1's preflight had verified `EnterWorktree` only for iTerm2 teammates, which are separate processes, and the in-process probe (`probe2`) only answered PONG.
+
+**What changed.** `CTO.md` §5: a CTO with in-process teammates starts lane teammates as background sessions inside their lanes (§10), not with the Agent tool. D-025.
+
+**Sign for next time.** A teammate's `ctx` WHERE that is not its own lane, or an "Environment update" in the CTO's own context saying its working directory changed.
+
