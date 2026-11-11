@@ -38,7 +38,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 |---|---|---|---|---|---|
 | 2 `design-system` | review | c02-review (bg cfb964ec) | B (8002) | 11-11 10:10 | impl done in 3 sessions (150 tests); new importmap entry `alert` |
 | 8 `checkin-core` | research | c08-research (bg 84ada023) | A (8001) | 11-11 10:50 | #7 not landed: `lane sync checkin-core` before implement |
-| 4 `teacher-auth` | research | c04-research (bg 802fb667) | C (8003) | 11-11 09:55 | #2 not landed: reads its plan; implement only after #2 lands (`lane sync` first) |
+| 4 `teacher-auth` | plan | c04-plan (bg) | C (8003) | 11-11 11:00 | research done (141k); D-028/D-029 hotspot grants; implement only after #2 lands (`lane sync` first) |
 | 7 `attendance-core` | review | c07-review (bg 92ff473c) | D (8004) | 11-11 10:40 | impl green (145 tests, concurrency group 3/3); retry-once branch untested → #8/#23 |
 
 ## Next actions

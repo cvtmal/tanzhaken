@@ -56,7 +56,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `src/Shared/*` | #0, #3 | add files; never change an existing signature |
    | `config/packages/*.yaml` | the cycle that creates the file | nothing; a new concern gets a new file (e.g. `rate_limiter_checkin.yaml`) |
    | `config/packages/security.yaml` | #4 | nothing; guard with `#[IsGranted]` and the S4 voter |
-   | `templates/base.html.twig`, `templates/layout/*`, `templates/components/*`, `assets/styles/tokens.css` | #2 (takes them over from #0's stubs) | fill blocks, use components; a missing variant goes into the cycle's own module folder first and into its outcome file |
+   | `templates/base.html.twig`, `templates/layout/*`, `templates/components/*`, `assets/styles/tokens.css` | #2 (takes them over from #0's stubs) | fill blocks, use components; a missing variant goes into the cycle's own module folder first and into its outcome file; #4 adds one include of `account/_logout_form.html.twig` to the teacher layout's navigation |
    | `assets/styles/app.css` (import list) | #2 | append one line for their own file |
    | `translations/messages+intl-icu.en.yaml` (layout strings) | #2 | nothing; each module has its own domain file |
    | `templates/student/show.html.twig` | #9 | #12 creates `student/_credits.html.twig`, #13 creates `student/_attendance.html.twig` (both `ignore missing` includes) |
@@ -64,7 +64,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
    | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` |
    | `.env`, `.env.example` | #0 | append their own variables with safe defaults and a one-line comment (#2 adds `APP_BRAND_NAME`) |
-| `templates/placeholder.html.twig`, the placeholder routes test | #0 | #2 puts the placeholder into the layouts and adds `_styleguide` to the expected routes; nobody else |
+| `templates/placeholder.html.twig`, the placeholder routes test | #0 | #2 puts the placeholder into the layouts and adds `_styleguide` to the expected routes; #4 makes the test log in before its requests; nobody else |
 | `CLAUDE.md`, `.claude/rules/module-<name>.md` | #0 | append to their own module's rule file; `CLAUDE.md` keeps one pointer per module |
    | `docs/rpi-cycles.md`, `docs/harness/*` | CTO | nothing |
 
