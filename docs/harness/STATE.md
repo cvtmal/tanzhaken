@@ -5,7 +5,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3 done; W4: #14 done; W5: #17 done, #18 implementing
+- **Phase of the project:** W0–W2 done; W3 done; W4: #14 done, #12 #13 #15 in flight; W5: #17 done, #18 implementing
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
@@ -36,8 +36,10 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 18 `data-protection` | implement | c18-impl | A (8001) | 11-11 11:05 | plan 26 steps; D-049, D-050; Step 3.8 may BLOCK on flash after logout |
-| 13 `attendance-ui` | plan | c13-plan | C (8003) | 11-11 11:00 | research R1–R13 (133k); opened before #10 landed (D-051): lane sync before implement |
+| 12 `credits-ui` | implement | c12-impl | B (8002) | 11-11 11:13 | plan PD1–PD10; D-053 |
+| 15 `csv-export` | implement | c15-impl | D (8004) | 11-11 11:12 | plan D1–D9; D-052; add/add conflict with #13 on attendance translations |
+| 18 `data-protection` | review | c18-review | A (8001) | 11-11 11:20 | 537 tests; D-050, D-054; .public-main 30rem cap → #20 |
+| 13 `attendance-ui` | implement | c13-impl | C (8003) | 11-11 11:10 | plan 27 steps (P1–P8); lane synced onto #10; F3 segmented bar → #20 |
 
 ## Next actions
 
@@ -51,8 +53,10 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 ## Notes for the successor
 
+- For #20's prompt (from #18): #2's `.public-main` caps the privacy page at 30rem (~60 chars per line).
+- For #20's prompt (D-053): dashboard "+10" Undo and Low rows; void/correct as dialogs (may add `page_scripts = ['dialog']` to student/show.html.twig).
 - For #20's prompt (c10-review): F-m1 course card "next lesson" uses starts_at >= now, the page ends_at >= now (a running lesson differs); F-m2/F-m3 test gaps (edit on archived course; sub-route field-error flash, nothing_to_extend); i18n `{field}` in English and missing invalid_message.
-- For #15's prompts (from c13-research): Attendance `PlaceholderController` holds both `lessonShow` (#13) and `courseExport` (#15): the later lander keeps the other's deletion. #13 R4 leaves toast Undo for clear/correct to #20.
+- For #15's prompts (from c13-research): Attendance `PlaceholderController` holds both `lessonShow` (#13) and `courseExport` (#15): the later lander keeps the other's deletion. #13 R4 leaves toast Undo for clear/correct to #20; #13 leaves F3's segmented present bar to #20.
 
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
