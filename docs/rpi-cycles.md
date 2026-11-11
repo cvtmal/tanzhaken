@@ -176,7 +176,7 @@ Conventional Symfony, module-first: `src/<Module>/<Layer>/`, namespace `App\<Mod
 
 - **`Shared` is open to every module and depends on none.** It refers to a teacher by ID (`Uuid`), never by the `Teacher` class. A module that needs a fact owned by a module it may not depend on reads it with a DBAL query of its own: `Courses` asks whether a lesson has attendance rows without using a class of `Attendance`.
 - **Layers:** `Controller`, `Entity`, `Repository`, `Service`, `ReadModel`, `Form`, `Security`, `Twig`, `Console`, `Exception`.
-- **Writes:** controller → one `final` service method that validates, checks ownership, changes entities inside a transaction and writes the audit event. **Reads:** lists and tables come from a `ReadModel` class with one DBAL query that returns `final readonly` view objects, so no page has an N+1.
+- **Writes:** controller → one `final` service method that validates, checks ownership, changes entities inside a transaction and writes the audit event. Every domain refusal (validation, ownership, state) is thrown **before** `wrapInTransaction()`: Doctrine ORM 3 closes the EntityManager on any exception inside it, which breaks a form re-render in the same request (from #6). **Reads:** lists and tables come from a `ReadModel` class with one DBAL query that returns `final readonly` view objects, so no page has an N+1.
 - **Balance** has one implementation, `App\Credits\ReadModel\Balances` (#6). Every page and export asks it; nobody recomputes the formula.
 - **Enforcement:** phpat rules for the module table and the layers, inside `make lint`. Test suites: `Unit`, `Integration` (kernel + SQLite), `Functional` (`WebTestCase`), `Architecture`.
 
