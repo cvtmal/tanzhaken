@@ -12,22 +12,20 @@ use Zenstruck\Foundry\Attribute\ResetDatabase;
 /**
  * Every S5 route exists from cycle #0 on and renders the placeholder until its owner ships it.
  * When a cycle replaces a placeholder with the real page, it moves the route's row from
- * placeholderRoutes() to SHIPPED (and drops it from PUBLIC if it is listed there).
+ * placeholderRoutes() to SHIPPED.
  *
- * Teacher placeholders need a logged-in teacher (ACC-5, #4); the PUBLIC ones render anonymously.
+ * Every remaining placeholder is a teacher route: it needs a logged-in teacher (ACC-5, #4). The last
+ * public placeholder (privacy) shipped with #18, so the PUBLIC list is gone.
  */
 #[ResetDatabase]
 final class PlaceholderRoutesTest extends WebTestCase
 {
     use LogsInTeacher;
 
-    /** Placeholders that render without a login (S5 public routes, security.yaml access_control). */
-    private const PUBLIC = ['privacy'];
-
     /** S5 routes whose real page has shipped; they are tested by their own cycle's tests. */
     private const SHIPPED = [
-        'home', 'register', 'login', 'logout',
-        'password_forgot', 'password_reset', 'account', 'account_profile', 'account_password',
+        'home', 'register', 'login', 'logout', 'privacy',
+        'password_forgot', 'password_reset', 'account', 'account_profile', 'account_password', 'account_delete',
         'student_index', 'student_new', 'student_show', 'student_edit', 'student_archive', 'student_restore',
         'checkin_public', 'checkin_public_confirm',
         'dashboard',
@@ -41,7 +39,6 @@ final class PlaceholderRoutesTest extends WebTestCase
      */
     public static function placeholderRoutes(): iterable
     {
-        yield 'privacy' => ['privacy', [], '/privacy'];
         yield 'lesson_show' => ['lesson_show', ['id' => 'x', 'lessonId' => 'y'], '/courses/x/lessons/y'];
         yield 'course_export' => ['course_export', ['id' => 'x'], '/courses/x/export.csv'];
         yield 'checkin_manage' => ['checkin_manage', ['id' => 'x'], '/lessons/x/check-in'];
@@ -60,9 +57,7 @@ final class PlaceholderRoutesTest extends WebTestCase
 
         self::assertSame($expectedPath, $router->generate($name, $params));
 
-        if (!\in_array($name, self::PUBLIC, true)) {
-            $this->logInTeacher($client);
-        }
+        $this->logInTeacher($client);
         $client->request('GET', $expectedPath);
 
         self::assertResponseIsSuccessful();
@@ -70,21 +65,9 @@ final class PlaceholderRoutesTest extends WebTestCase
     }
 
     /**
-     * @return iterable<string, array{string, array<string, string>, string}>
-     */
-    public static function teacherPlaceholderRoutes(): iterable
-    {
-        foreach (self::placeholderRoutes() as $key => $row) {
-            if (!\in_array($row[0], self::PUBLIC, true)) {
-                yield $key => $row;
-            }
-        }
-    }
-
-    /**
      * @param array<string, string> $params
      */
-    #[DataProvider('teacherPlaceholderRoutes')]
+    #[DataProvider('placeholderRoutes')]
     public function test_teacher_placeholder_redirects_anonymous_visitors_to_login(string $name, array $params, string $expectedPath): void
     {
         $client = self::createClient();

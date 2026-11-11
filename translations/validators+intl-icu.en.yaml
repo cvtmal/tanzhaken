@@ -27,6 +27,10 @@ account:
         current_password:
             blank: Enter your current password.
             wrong: This is not your current password.
+    delete:
+        password:
+            blank: Enter your password.
+            wrong: This is not your password.
 students:
     student:
         first_name:

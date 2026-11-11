@@ -35,3 +35,5 @@
 @import "./courses/course-list.css";
 @import "./courses/course-form.css";
 @import "./courses/course-page.css";
+@import "./account/delete.css";
+@import "./account/privacy.css";

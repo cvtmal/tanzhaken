@@ -1,0 +1,35 @@
+{# #18 slot of account/show (ACC-6); variables: delete_form (DeleteAccountType view, posts to account_delete).
+   The password is the confirmation; with JS the submit first opens the dialog below (outside the form, no nesting). #}
+<div class="account-delete">
+    {% embed 'components/_card.html.twig' with {tag: 'section', form: delete_form} only %}
+        {% block card_body %}
+            <h2 class="card__title">{{ 'delete.heading'|trans({}, 'account') }}</h2>
+            <p>{{ 'delete.lede'|trans({}, 'account') }}</p>
+            {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.password) }}
+                {% include 'components/_button.html.twig' with {
+                    label: 'delete.submit'|trans({}, 'account'),
+                    variant: 'secondary',
+                    type: 'submit',
+                    attr: {class: 'account-delete__submit'},
+                    data: {'dialog-open': 'account-delete-confirm'},
+                } only %}
+            {{ form_end(form) }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/_dialog.html.twig' with {id: 'account-delete-confirm', title: 'delete.dialog.title'|trans({}, 'account')} only %}
+        {% block dialog_body %}
+            <p>{{ 'delete.dialog.text'|trans({}, 'account') }}</p>
+        {% endblock %}
+        {% block dialog_actions %}
+            {% include 'components/_button.html.twig' with {label: 'delete.dialog.cancel'|trans({}, 'account'), variant: 'secondary', type: 'submit'} only %}
+            {% include 'components/_button.html.twig' with {
+                label: 'delete.dialog.confirm'|trans({}, 'account'),
+                attr: {class: 'account-delete__submit'},
+                data: {'dialog-confirm': true},
+            } only %}
+        {% endblock %}
+    {% endembed %}
+</div>

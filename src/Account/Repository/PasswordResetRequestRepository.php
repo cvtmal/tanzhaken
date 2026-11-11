@@ -7,6 +7,7 @@ namespace App\Account\Repository;
 use App\Account\Entity\PasswordResetRequest;
 use App\Account\Entity\Teacher;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 
@@ -34,5 +35,21 @@ class PasswordResetRequestRepository extends ServiceEntityRepository
             ->createQuery('DELETE FROM '.PasswordResetRequest::class.' r WHERE r.teacher = :teacher')
             ->setParameter('teacher', $teacher->getId(), UuidType::NAME)
             ->execute();
+    }
+
+    /**
+     * Deletes every expired reset link of every teacher (data minimisation, F-m2). `<=` matches
+     * PasswordResetRequest::isExpiredAt().
+     *
+     * @return int the number of rows deleted
+     */
+    public function deleteExpired(\DateTimeImmutable $now): int
+    {
+        $deleted = $this->getEntityManager()
+            ->createQuery('DELETE FROM '.PasswordResetRequest::class.' r WHERE r.expiresAt <= :now')
+            ->setParameter('now', $now, Types::DATETIME_IMMUTABLE)
+            ->execute();
+
+        return \is_int($deleted) ? $deleted : 0;
     }
 }

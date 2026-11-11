@@ -43,6 +43,7 @@ final class PasswordResets
     /**
      * Mails a reset link when the email belongs to a teacher and its limit allows it; otherwise
      * does nothing. Never throws for unknown, malformed or limited input. No audit event (R10).
+     * Purges every expired link of every teacher on each request the email limit allows (F-m2).
      */
     public function request(string $email): void
     {
@@ -54,6 +55,7 @@ final class PasswordResets
         if (null !== $this->throttle->allowEmail($email)) {
             return;
         }
+        $this->requests->deleteExpired($this->clock->now());
         $teacher = $this->teachers->findOneByEmail($email);
         if (null === $teacher) {
             return;

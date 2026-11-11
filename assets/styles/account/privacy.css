@@ -1,0 +1,78 @@
+/*
+ * Privacy statement (#18, account/privacy.html.twig). Reading width, rhythm between the sections and a
+ * two-column fact list from 40rem up. The public layout already caps the column (.public-main). Tokens only.
+ */
+.privacy {
+    max-width: 40rem;
+    padding-bottom: var(--space-40);
+    color: var(--color-ink);
+    line-height: var(--leading-text);
+    overflow-wrap: anywhere;
+}
+
+.privacy__heading {
+    font-family: var(--font-serif);
+    font-size: var(--display-30);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+}
+
+.privacy__lede {
+    margin-top: var(--space-12);
+    font-size: var(--text-17);
+}
+
+.privacy__updated {
+    margin-top: var(--space-8);
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}
+
+.privacy__section {
+    margin-top: var(--space-32);
+}
+
+.privacy__section h2 {
+    font-size: var(--text-19);
+    font-weight: var(--weight-semibold);
+}
+
+.privacy__section h3 {
+    margin-top: var(--space-20);
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+}
+
+.privacy__section p,
+.privacy__facts {
+    margin-top: var(--space-8);
+    color: var(--color-ink-2);
+}
+
+.privacy__facts dt {
+    margin-top: var(--space-12);
+    color: var(--color-ink);
+    font-weight: var(--weight-semibold);
+}
+
+.privacy__facts dd {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+    margin: var(--space-4) 0 0;
+}
+
+@media (min-width: 40rem) {
+    .privacy__facts {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        column-gap: var(--space-16);
+    }
+
+    .privacy__facts dt,
+    .privacy__facts dd {
+        margin-top: var(--space-12);
+    }
+}

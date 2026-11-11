@@ -1,0 +1,74 @@
+{# Privacy statement (PRIV-1, #18; PrivacyController::show). Public layout, no navigation.
+   Variables: operator_name, operator_address, operator_email, hosting_region (string, trimmed; empty =
+   not configured); placeholders (bool, true outside prod). Sections in the order of research D8;
+   one h3 per kind of data the schema holds. States facts only, no promise of legal compliance. #}
+{% extends 'layout/public.html.twig' %}
+
+{% trans_default_domain 'account' %}
+
+{% block title %}{{ 'privacy.title'|trans }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <article class="privacy">
+        <h1 class="privacy__heading">{{ 'privacy.heading'|trans }}</h1>
+        <p class="privacy__lede">{{ 'privacy.lede'|trans({brand: brand_name}) }}</p>
+        <p class="privacy__updated">{{ 'privacy.updated'|trans }}</p>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.controller.heading'|trans }}</h2>
+            <p>{{ 'privacy.controller.intro'|trans({brand: brand_name}) }}</p>
+            <dl class="privacy__facts">
+                <dt>{{ 'privacy.controller.name'|trans }}</dt>
+                <dd>{% include 'account/_privacy_value.html.twig' with {value: operator_name, placeholders: placeholders} only %}</dd>
+                <dt>{{ 'privacy.controller.address'|trans }}</dt>
+                <dd>{% include 'account/_privacy_value.html.twig' with {value: operator_address, placeholders: placeholders} only %}</dd>
+                <dt>{{ 'privacy.controller.email'|trans }}</dt>
+                <dd>{% include 'account/_privacy_value.html.twig' with {value: operator_email, placeholders: placeholders, kind: 'email'} only %}</dd>
+            </dl>
+            <p>{{ 'privacy.controller.teacher'|trans }}</p>
+        </section>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.purpose.heading'|trans }}</h2>
+            <p>{{ 'privacy.purpose.text'|trans({brand: brand_name}) }}</p>
+        </section>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.data.heading'|trans }}</h2>
+            <p>{{ 'privacy.data.intro'|trans }}</p>
+            {% for category in ['teacher_account', 'students', 'courses', 'lessons', 'enrollments', 'credits', 'attendance', 'audit_log', 'security_tokens', 'rate_limits'] %}
+                <h3>{{ ('privacy.data.' ~ category ~ '.heading')|trans }}</h3>
+                <p>{{ ('privacy.data.' ~ category ~ '.text')|trans }}</p>
+            {% endfor %}
+        </section>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.storage.heading'|trans }}</h2>
+            <p>{{ 'privacy.storage.text'|trans }}</p>
+            <dl class="privacy__facts">
+                <dt>{{ 'privacy.storage.region'|trans }}</dt>
+                <dd>{% include 'account/_privacy_value.html.twig' with {value: hosting_region, placeholders: placeholders} only %}</dd>
+            </dl>
+            <p>{{ 'privacy.storage.no_tracking'|trans }}</p>
+            <p>{{ 'privacy.storage.cookies'|trans }}</p>
+        </section>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.retention.heading'|trans }}</h2>
+            <p>{{ 'privacy.retention.text'|trans }}</p>
+            <p>{{ 'privacy.retention.links'|trans }}</p>
+            <p>{{ 'privacy.retention.counters'|trans }}</p>
+        </section>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.deletion.heading'|trans }}</h2>
+            <p>{{ 'privacy.deletion.account'|trans }}</p>
+            <p>{{ 'privacy.deletion.students'|trans }}</p>
+        </section>
+
+        <section class="privacy__section">
+            <h2>{{ 'privacy.students.heading'|trans }}</h2>
+            <p>{{ 'privacy.students.text'|trans }}</p>
+        </section>
+    </article>
+{% endblock %}

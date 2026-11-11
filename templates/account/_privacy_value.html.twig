@@ -1,0 +1,14 @@
+{# One operator or hosting value of /privacy (#18, research D7). Params:
+   value (string, already trimmed; empty = not configured);
+   placeholders (bool: true outside prod, adds a "Placeholder" badge to a configured value);
+   kind (string 'text'|'email', default 'text': an email prints as a mailto link).
+   Call: {% include 'account/_privacy_value.html.twig' with {value: operator_email, placeholders: placeholders, kind: 'email'} only %} #}
+{% trans_default_domain 'account' %}
+{% if value is empty %}
+    {% include 'components/_status_badge.html.twig' with {label: 'privacy.value.not_configured'|trans, variant: 'danger'} only %}
+{% else %}
+    {% if kind|default('text') == 'email' %}<a href="mailto:{{ value }}">{{ value }}</a>{% else %}<span class="privacy__value">{{ value }}</span>{% endif %}
+    {% if placeholders %}
+        {% include 'components/_status_badge.html.twig' with {label: 'privacy.value.placeholder'|trans, variant: 'low'} only %}
+    {% endif %}
+{% endif %}

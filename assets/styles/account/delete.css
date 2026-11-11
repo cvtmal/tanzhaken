@@ -1,0 +1,29 @@
+/* Delete card of /account (#18, ACC-6). _button has no danger variant (#2's component stays
+   unchanged, OD-2): the submit and the dialog's confirm button are drawn with the danger tokens.
+   Focus keeps the global :focus-visible ring. */
+.account-delete {
+    margin-top: var(--space-16);
+}
+
+.account-delete .card__title {
+    margin-bottom: var(--space-8);
+    color: var(--color-danger-text);
+}
+
+/* The lede: same gaps as the settings cards (settings.css), secondary ink like the privacy text. */
+.account-delete .card__title + p {
+    margin-bottom: var(--space-14);
+    color: var(--color-ink-2);
+}
+
+.btn.account-delete__submit,
+.btn.account-delete__submit:hover {
+    border-color: var(--color-danger-solid);
+    background: var(--color-danger-solid);
+    color: var(--color-on-accent);
+}
+
+.btn.account-delete__submit:hover {
+    border-color: var(--color-danger-text);
+    background: var(--color-danger-text);
+}

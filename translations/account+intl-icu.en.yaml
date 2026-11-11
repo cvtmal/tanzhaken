@@ -114,3 +114,85 @@ settings:
     new_password:
         label: New password
         help: 8 characters or more
+delete:
+    heading: Delete account
+    lede: 'This deletes your account and everything in it: courses, lessons, students, passes, attendance and history. It cannot be undone.'
+    password:
+        label: Your password
+        help: Enter your password to confirm.
+    submit: Delete account
+    dialog:
+        title: Delete your account?
+        text: All your data is removed now and for good.
+        cancel: Keep my account
+        confirm: Delete everything
+    done: Your account and all its data were deleted.
+privacy:
+    title: Privacy
+    heading: Privacy statement
+    lede: 'This page explains which data {brand} stores, why, where, for how long, and how it is deleted.'
+    updated: 'Last updated: 11 November 2026'
+    value:
+        placeholder: Placeholder
+        not_configured: Not configured
+    controller:
+        heading: Who is responsible
+        intro: 'The operator of this {brand} installation is responsible for the service:'
+        name: Name
+        address: Address
+        email: Email
+        teacher: Each teacher who uses the service is responsible for the details of their students that they enter.
+    purpose:
+        heading: What the data is for
+        text: '{brand} helps dance teachers run their courses: schedules, students, lesson passes and the check-in after class. The data is used for that and nothing else.'
+    data:
+        heading: What is stored
+        intro: These are all the kinds of data the service keeps.
+        teacher_account:
+            heading: Teacher account
+            text: 'Your name, your email address, your password (stored only as a hash, never in readable form), your time zone and the date the account was created.'
+        students:
+            heading: Students
+            text: 'First and last name, an optional email address and notes, and the date a student was archived.'
+        courses:
+            heading: Courses
+            text: 'Name, description, location, schedule and time zone of each course.'
+        lessons:
+            heading: Lessons
+            text: 'Start and end time of each lesson, its status and whether it was cancelled.'
+        enrollments:
+            heading: Enrollments
+            text: 'Which student is in which course, the dates they joined and left, and the label shown for them at check-in.'
+        credits:
+            heading: Passes and credits
+            text: 'The passes a student has received: number of lessons, date, an optional note, and the date a pass was voided.'
+        attendance:
+            heading: Attendance
+            text: 'Whether a student was present or absent at a lesson, whether this came from the QR check-in or from the teacher, and when it was recorded.'
+        audit_log:
+            heading: Change log
+            text: 'Who changed what and when, so that corrections to attendance and credits can be traced.'
+        security_tokens:
+            heading: Check-in and reset links
+            text: 'The links for the check-in after class and for resetting a password, stored only as hashes, with the times they were created and expire.'
+        rate_limits:
+            heading: Rate-limit counters
+            text: 'Temporary counters by IP address and email address that slow down repeated attempts, for example at login. They are kept in the server cache, not in the database.'
+    storage:
+        heading: Where it is stored
+        text: The data is kept in a database on the operator's server.
+        region: Region
+        no_tracking: There is no analytics or tracking, and the pages load no resources from third parties.
+        cookies: The only cookie is the session cookie that keeps you logged in.
+    retention:
+        heading: How long it is kept
+        text: Data is kept until the teacher deletes it or deletes the account.
+        links: Password reset links are valid for at most 60 minutes and are then removed. Check-in links expire after 60 minutes.
+        counters: Rate-limit counters expire with their time window.
+    deletion:
+        heading: Deleting data
+        account: 'On the Account page, Delete account removes the account and all of its data at once.'
+        students: Archived students are kept until the account is deleted, but a teacher can remove their email address and notes at any time.
+    students:
+        heading: For students
+        text: 'If you are a student, ask your teacher: they can correct, archive or remove your details. You can also write to the operator at the email address above.'

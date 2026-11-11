@@ -152,6 +152,45 @@ final class PasswordResetsTest extends KernelTestCase
         self::assertSame(0, self::countRows('password_reset_request'));
     }
 
+    public function test_a_request_purges_expired_links_of_every_teacher(): void
+    {
+        TeacherFactory::createOne(['email' => self::EMAIL]);
+        $other = TeacherFactory::createOne(['email' => 'mia@tanzraum.example']);
+        $this->requestLink(self::EMAIL);
+
+        self::mockTime('2026-03-10 21:00:00');
+        $this->requestLink('mia@tanzraum.example');
+
+        self::assertSame(1, self::countRows('password_reset_request'));
+        self::assertSame([$other->getId()->toRfc4122()], self::teachersWithLinks());
+    }
+
+    public function test_an_unknown_email_also_purges_but_keeps_valid_links(): void
+    {
+        TeacherFactory::createOne(['email' => self::EMAIL]);
+        $other = TeacherFactory::createOne(['email' => 'mia@tanzraum.example']);
+        $this->requestLink(self::EMAIL);
+        self::mockTime('2026-03-10 20:30:00');
+        $this->requestLink('mia@tanzraum.example');
+
+        self::mockTime('2026-03-10 21:05:00');
+        self::resets()->request('nobody@example.test');
+
+        self::assertSame(1, self::countRows('password_reset_request'));
+        self::assertSame([$other->getId()->toRfc4122()], self::teachersWithLinks());
+    }
+
+    /**
+     * @return list<string> the teacher ids (RFC 4122) that have a reset row
+     */
+    private static function teachersWithLinks(): array
+    {
+        return array_map(
+            static fn (mixed $id): string => Uuid::fromBinary((string) $id)->toRfc4122(),
+            self::connection()->fetchFirstColumn('SELECT teacher_id FROM password_reset_request'),
+        );
+    }
+
     /**
      * Requests a link and returns the plain token from the mail (the only place it exists).
      */

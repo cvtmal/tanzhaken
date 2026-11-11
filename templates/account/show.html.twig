@@ -1,9 +1,10 @@
 {# Account page (ACC-4; AccountController). Hotspot owned by #11: #18 adds account/_delete.html.twig at the end.
    Variables: teacher (Teacher); profile_form (ProfileType view, posts to account_profile);
-   password_form (ChangePasswordType view, posts to account_password). #}
+   password_form (ChangePasswordType view, posts to account_password);
+   delete_form (DeleteAccountType view, posts to account_delete; rendered by account/_delete.html.twig, #18). #}
 {% extends 'layout/teacher.html.twig' %}
 
-{% set page_scripts = ['password-toggle'] %}
+{% set page_scripts = ['password-toggle', 'dialog'] %}
 
 {% block title %}{{ 'settings.title'|trans({}, 'account') }} · {{ brand_name }}{% endblock %}
 
