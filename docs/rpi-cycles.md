@@ -95,7 +95,7 @@ Size is a guess for budgeting sessions: S under 60k tokens for the whole cycle's
 | 15 | `csv-export` | W4 | REG-6 | 6, 7, 10 | — | — | Plan | S | Open |
 | 16 | `checkin-teacher-ui` | W5 | QR-1, QR-6, TEC-5 | 8, 13 | — | — | Research | M | Open |
 | 17 | `dashboard` | W5 | UI-2 | 4, 5, 6 | — | — | Plan | S | ✅ Done |
-| 18 | `data-protection` | W5 | PRIV-1, ACC-6 | 11 | — | G5 | Research | M | Open |
+| 18 | `data-protection` | W5 | PRIV-1, ACC-6 | 11 | — | G5 | Research | M | ✅ Done |
 | 19 | `security-hardening` | W6 | SEC-1–SEC-4, TEC-7, J-G | 14, 16, 18 | — | — | Research | M | Open |
 | 20 | `a11y-responsive-polish` | W6 | A11Y-1, UI-1–UI-4, J-I | 12–18 | — | G7 | Research | L | Open |
 | 21 | `db-portability` | W6 | TEC-3, DOD (MariaDB) | 16, 18 | fixes only | G8 | Research | M | Open |

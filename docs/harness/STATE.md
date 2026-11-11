@@ -5,7 +5,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3 done; W4: #14 done, #12 #13 #15 in flight; W5: #17 done, #18 implementing
+- **Phase of the project:** W0–W2 done; W3 done; W4: #14 done, #12 #13 #15 in flight; W5: #17, #18 done; #16 waits on #13
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
@@ -36,14 +36,14 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
+| 16 `checkin-teacher-ui` | research | c16-research | A (8001) | 11-11 11:28 | opened before #13 landed (D-051 pattern): lane sync before implement |
 | 12 `credits-ui` | implement | c12-impl | B (8002) | 11-11 11:13 | plan PD1–PD10; D-053 |
 | 15 `csv-export` | implement | c15-impl | D (8004) | 11-11 11:12 | plan D1–D9; D-052; add/add conflict with #13 on attendance translations |
-| 18 `data-protection` | review | c18-review | A (8001) | 11-11 11:20 | 537 tests; D-050, D-054; .public-main 30rem cap → #20 |
 | 13 `attendance-ui` | implement | c13-impl | C (8003) | 11-11 11:10 | plan 27 steps (P1–P8); lane synced onto #10; F3 segmented bar → #20 |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
 2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
@@ -60,7 +60,8 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
-- For #22's prompt (from #18): document APP_OPERATOR_* and APP_HOSTING_REGION.
+- For #22's prompt (from #18): document APP_OPERATOR_* and APP_HOSTING_REGION; c18-review F-m1: privacy text says expired reset links "are then removed" but they are purged only on the next allowed reset request (PasswordResets.php:58) — fix text or purge.
+- For #19's prompt (from #18): `account_delete` has no password-attempt limiter.
 - For #22's prompt (from #14): the check-in IP limiter needs `trusted_proxies` behind a proxy; also document `DEFAULT_URI`.
 - The owner's 5-hour usage limit hit all sessions at ~09:58 on 11-11; teammates resumed by message after the owner said "limit resetted". After such a stop: message each teammate to continue, and check its lane for half-done subagent work.
 - For #19's prompt (from #10): concurrent double enrolment of one student → 500 (unique-key race unmapped).
