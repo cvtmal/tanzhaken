@@ -1,0 +1,9 @@
+/*
+ * CSV export action (#15). The course page's header actions (#10) hold Edit, Archive/Restore and
+ * "Export CSV". `.page-header__actions` is `flex: none`, so on phones the third button pushed the
+ * box past the row and the page scrolled sideways (review F-M1). Capping the box at the row's width
+ * lets #10's `flex-wrap: wrap` take effect: "Export CSV" moves to a second line.
+ */
+.course-page .page-header__actions {
+    max-width: 100%;
+}

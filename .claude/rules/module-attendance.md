@@ -36,3 +36,11 @@ Namespace `App\Attendance\<Layer>`. Placeholder actions in `src/Attendance/Contr
 - `Repository\AttendanceRepository`: `findOneForLessonAndStudent(LessonSession, Student)`, `hasActiveEnrollment(Uuid $courseId, Uuid $studentId)` (Attendance's own DBAL read of `enrollment`).
 - Read models: `ReadModel\LessonRegister::forLesson(Teacher, Uuid): ?list<LessonRegisterRow>` (null = 404; active enrollments plus anyone with a mark; `status` null = "Not marked"; join balances from `App\Credits\ReadModel\Balances` by `enrollmentId`). `ReadModel\StudentAttendanceHistory::forStudent(Teacher, Uuid): list<StudentAttendanceRow>` (newest first; `[]` for a foreign student, so check `StudentRepository::findOwned` for the 404).
 - The services have no consumer yet and are removed from the test container: tests build them by hand (D-026).
+
+## #15 notes (csv-export)
+
+- Route: `course_export` GET `/courses/{id}/export.csv` (`Requirement::UUID`), `Controller\CourseExportController` (invokable). `CourseRepository::findOwned` else 404; archived courses export too. Headers: `text/csv; charset=UTF-8`, attachment `register-<slug>-<Y-m-d>.csv` (today in the course zone), `Cache-Control` with `no-store, private`. Button: `templates/course/_export_action.html.twig` (secondary `_link_button`, `download`, no icon).
+- Classes: `Service\CsvEncoder::encode(iterable<list<string|int|null>>): string` (BOM + RFC 4180, comma, CRLF; `[]` = empty line; `SEPARATOR` is the switch for a `;` variant). `ReadModel\CourseRegisterExport::forCourse(Teacher, Uuid, $now): list<CourseRegisterExportRow>` (one query; `[]` for a foreign course). `Service\CourseRegisterCsv::build(Teacher, Course): string` / `filename(Course): string` (register section, empty line, balance summary from `Balances::forCourse`). Catalogue keys under `export.*` in `translations/attendance+intl-icu.en.yaml`.
+- D1 lessons: not cancelled, and `starts_at_utc <= now` or already carrying a mark; chronological.
+- D2 students per lesson: anyone with a mark, plus active enrolments with `joined_at <= ends_at_utc`; a left student without a mark is not listed.
+- D5 neutralisation: string cells starting with `= + - @ \t \r` get a leading `'`; int cells (lessons bought/used/left) are never prefixed, so `-1` stays a number. Pass every user-sourced value as a string.

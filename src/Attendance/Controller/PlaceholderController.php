@@ -18,10 +18,4 @@ final class PlaceholderController extends AbstractController
     {
         return $this->render('placeholder.html.twig', ['route' => 'lesson_show']);
     }
-
-    #[Route('/courses/{id}/export.csv', name: 'course_export', methods: ['GET'])]
-    public function courseExport(): Response
-    {
-        return $this->render('placeholder.html.twig', ['route' => 'course_export']);
-    }
 }

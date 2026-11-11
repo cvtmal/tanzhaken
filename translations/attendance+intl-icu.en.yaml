@@ -1,0 +1,34 @@
+# Domain `attendance` (S7).
+# export.*: the course register CSV and its button (#15). Keys of other cycles go under their own
+# top-level key, so a merge of this file is a concatenation (#15 D9).
+export:
+    action: Export CSV
+    column:
+        date: Date
+        time: Time
+        timezone: Time zone
+        student: Student
+        status: Status
+    status:
+        present: Present
+        absent: Absent
+        not_marked: Not marked
+    summary:
+        title: Balance summary
+        column:
+            student: Student
+            credits: Lessons bought
+            used: Lessons used
+            balance: Lessons left
+            state: State
+            enrollment: Enrolment
+    state:
+        renewal_needed: Renewal needed
+        low: Low
+        ok: OK
+    enrollment:
+        active: Enrolled
+        left: Left
+    student_name: '{first} {last}'
+    filename: 'register-{slug}-{date}.csv'
+    filename_no_slug: 'register-{date}.csv'

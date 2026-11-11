@@ -1,0 +1,6 @@
+{# Slot of #10 in course/show.html.twig (page_actions), filled by #15. Receives `course`
+   {id: string RFC 4122, name: string, timezone: string}. Renders on active and archived courses
+   (D7): a secondary link button "Export CSV", no icon (none in the sprite), `download` attribute;
+   a GET link with no state change (D8). #}
+{% trans_default_domain 'attendance' %}
+{% include 'components/_link_button.html.twig' with {label: 'export.action'|trans, href: path('course_export', {id: course.id}), variant: 'secondary', attr: {download: ''}} only %}
