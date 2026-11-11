@@ -38,12 +38,12 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 |---|---|---|---|---|---|
 | 2 `design-system` | implement | c02-impl-3 (bg c0ba60e9) | B (8002) | 11-11 09:20 | phases 1–6 green (8df631e, 150 tests); resumes at Step 7.1 (validation, browser pass, outcome file) |
 | 5 `scheduling` | implement | c05-impl (bg 60afd909) | A (8001) | 11-11 09:00 | plan: 7 phases; LessonScheduler unwired until #10 injects it |
-| 6 `credit-ledger` | review | c06-review (bg a4d8ece0) | C (8003) | 11-11 09:40 | impl green (153 tests); double-void race → #19, MariaDB → #21 |
+| 4 `teacher-auth` | research | c04-research (bg 802fb667) | C (8003) | 11-11 09:55 | #2 not landed: reads its plan; implement only after #2 lands (`lane sync` first) |
 | 7 `attendance-core` | implement | c07-impl (bg 51e61cbc) | D (8004) | 11-11 08:55 | plan: 7 phases; told to apply D-027 to AttendanceMarker; child-process concurrency test in make test |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75` (all ✅ Done in the overview). W1 has only #2 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9` (all ✅ Done in the overview). W1 has only #2 left.
 
 1. Check `bin/harness/status`: the `ci` line for `b4dcb75` (or a later harness commit) must be green before you open a new lane. Red → fix lane first (`CTO.md` §4.5).
 2. Resume #2: `bin/harness/lane sync design-system` (it lacks #3 and the S3 edit, D-023), then spawn `c02-impl-2` (implement, lane B, port 8002) with "Resume from the changes log (section Checkpoint) at Step 5.1." Open points it reported: alert dismiss button has no JS yet, success flash markup interim until 5.3; 390 px checked in a 390 px iframe because resize_window does not shrink the viewport.
