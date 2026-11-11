@@ -1,0 +1,19 @@
+{# Empty state (spec §6): three ghost rows, a serif title, a line of text, an optional call to action. Params:
+   title (string, translated, required); text (string, translated, required);
+   action ({label: string, href: string, icon: string|null}|null, default null: rendered as a large link button);
+   level (int 2-3, heading level of the title, default 2).
+   Call: {% include 'components/_empty_state.html.twig' with {title: 'x'|trans, text: 'y'|trans, action: {label: 'z'|trans, href: path('course_new'), icon: 'add'}} only %} #}
+{% set action = action|default(null) %}
+{% set level = level|default(2) %}
+<div class="empty-state">
+    <div class="empty-state__ghosts" aria-hidden="true">
+        {%- for i in 1..3 %}<span class="empty-state__ghost"><span class="empty-state__tile"></span><span class="empty-state__bars"><span class="empty-state__bar"></span><span class="empty-state__bar empty-state__bar--short"></span></span></span>{% endfor -%}
+    </div>
+    <h{{ level }} class="empty-state__title">{{ title }}</h{{ level }}>
+    <p class="empty-state__text">{{ text }}</p>
+    {%- if action %}
+        <div class="empty-state__action">
+            {% include 'components/_link_button.html.twig' with {label: action.label, href: action.href, icon: action.icon|default(null), size: 'lg'} only %}
+        </div>
+    {%- endif %}
+</div>

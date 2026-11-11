@@ -1,0 +1,24 @@
+{# Flash region (P3): flashes carry already-translated text. error -> alert danger, warning -> alert warning,
+   info -> alert info; success (and any other type) -> toast (_toast, driven by toast.js). Toasts go into one
+   fixed .toast-stack, so several of them stack instead of covering each other.
+   Included by the teacher layout; reads app.flashes. #}
+{% set alert_variants = {error: 'danger', warning: 'warning', info: 'info'} %}
+{% set toasts = [] %}
+<div class="flash-region" role="status" aria-live="polite">
+    {%- for type, messages in app.flashes %}
+        {%- for message in messages %}
+            {%- if alert_variants[type] is defined %}
+                {% include 'components/_alert.html.twig' with {variant: alert_variants[type], text: message} only %}
+            {%- else %}
+                {%- set toasts = toasts|merge([message]) %}
+            {%- endif %}
+        {%- endfor %}
+    {%- endfor %}
+    {%- if toasts is not empty %}
+        <div class="toast-stack">
+            {%- for message in toasts %}
+                {% include 'components/_toast.html.twig' with {message: message} only %}
+            {%- endfor %}
+        </div>
+    {%- endif -%}
+</div>

@@ -1,0 +1,80 @@
+/*
+ * Toast (spec §6, P7): 52 px dark bar, r16, check icon in mint. Fixed above the tab bar on phones,
+ * bottom right on desktop. On the dark surface the focus outline uses Paper (R1).
+ * Inside a .toast-stack (the flash region) the stack is fixed instead, so several toasts stack upwards.
+ */
+.toast {
+    position: fixed;
+    right: var(--space-14);
+    bottom: calc(var(--tabbar-height) + var(--space-12));
+    left: var(--space-14);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: var(--space-14);
+    min-height: var(--control-lg);
+    padding: 0 var(--space-8) 0 var(--space-18);
+    border-radius: var(--radius-16);
+    background: var(--color-toast-bg);
+    color: var(--color-toast-text);
+    box-shadow: var(--shadow-toast);
+    font-size: var(--text-15);
+}
+
+.toast :focus-visible {
+    outline-color: var(--color-paper);
+}
+
+.toast__icon {
+    width: 20px;
+    height: 20px;
+    color: var(--color-toast-icon);
+}
+
+.toast__message {
+    flex: 1;
+    margin: 0;
+}
+
+.toast__action,
+.toast__action form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.toast__dismiss {
+    margin-left: calc(-1 * var(--space-6));
+}
+
+.toast-stack {
+    position: fixed;
+    right: var(--space-14);
+    bottom: calc(var(--tabbar-height) + var(--space-12));
+    left: var(--space-14);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.toast-stack .toast {
+    position: static;
+}
+
+@media (min-width: 64rem) {
+    .toast-stack {
+        bottom: var(--space-24);
+        left: auto;
+        right: var(--space-24);
+        width: 28rem;
+        max-width: calc(100vw - 2 * var(--space-24));
+    }
+
+    .toast {
+        bottom: var(--space-24);
+        left: auto;
+        right: var(--space-24);
+        max-width: 28rem;
+    }
+}

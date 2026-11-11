@@ -76,6 +76,6 @@ final class PlaceholderRoutesTest extends WebTestCase
         sort($expected);
 
         self::assertSame($expected, $names);
-        self::assertNull($router->getRouteCollection()->get('_styleguide'));
+        self::assertNotNull($router->getRouteCollection()->get('_styleguide'));
     }
 }

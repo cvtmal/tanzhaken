@@ -1,0 +1,19 @@
+{# Table (spec §6), embed with slots: stacked cards below 64rem, a real table at and above it. Params:
+   caption (string, translated, required: names the table; visually hidden unless show_caption);
+   show_caption (bool, default false); variant (string 'default'|'compact', default 'default': compact = 36 px header, 42 px rows).
+   Blocks: table_head (one <tr> of <th scope="col">), table_body (the <tr> rows).
+   Every <td> carries data-label="{{ '…'|trans }}" (printed as the micro label of the stacked card). Row actions go in a
+   <td class="table__actions"> as _button size 'compact' (30 px + hit target; full width and 44 px when stacked).
+   Call: {% embed 'components/_table.html.twig' with {caption: 'x'|trans} only %}{% block table_head %}<tr>…</tr>{% endblock %}{% block table_body %}…{% endblock %}{% endembed %} #}
+{% set variant = variant|default('default') %}
+<div class="table-wrap">
+    <table class="table table--{{ variant }}">
+        <caption class="{{ show_caption|default(false) ? 'table__caption' : 'table__caption visually-hidden' }}">{{ caption }}</caption>
+        <thead>
+            {%- block table_head %}{% endblock -%}
+        </thead>
+        <tbody>
+            {%- block table_body %}{% endblock -%}
+        </tbody>
+    </table>
+</div>

@@ -18,4 +18,20 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
+    'password-toggle' => [
+        'path' => './assets/js/password-toggle.js',
+        'entrypoint' => true,
+    ],
+    'dialog' => [
+        'path' => './assets/js/dialog.js',
+        'entrypoint' => true,
+    ],
+    'toast' => [
+        'path' => './assets/js/toast.js',
+        'entrypoint' => true,
+    ],
+    'alert' => [
+        'path' => './assets/js/alert.js',
+        'entrypoint' => true,
+    ],
 ];

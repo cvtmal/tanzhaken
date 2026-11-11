@@ -1,3 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block body_class %}layout-public{% endblock %}
+{% block body_class 'layout-public' %}
+
+{# Public layout: brand + content + privacy link, nothing else (no navigation, no user data). #}
+{% block body %}
+    <div class="public-shell">
+        <header class="public-shell__brand">
+            {% include 'components/_wordmark.html.twig' with {size: 'sm'} only %}
+        </header>
+        <main id="main" class="public-main" tabindex="-1">
+            {% block main %}{% endblock %}
+        </main>
+        {% include 'layout/_footer.html.twig' %}
+    </div>
+{% endblock %}

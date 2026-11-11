@@ -1,0 +1,225 @@
+/* Styleguide page only (dev and test). Loaded by templates/styleguide/index.html.twig, not by app.css. */
+.sg-header {
+    margin: var(--space-16) 0 var(--space-24);
+}
+
+.sg-intro {
+    margin: var(--space-8) 0;
+    color: var(--color-ink-2);
+}
+
+.sg-section {
+    margin: var(--space-40) 0;
+}
+
+.sg-section__heading {
+    margin-bottom: var(--space-12);
+    font-family: var(--font-serif);
+    font-size: var(--display-24);
+    font-weight: var(--weight-regular);
+    letter-spacing: var(--tracking-display);
+}
+
+.sg-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-16);
+}
+
+.sg-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-12);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sg-swatch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-10);
+    border-radius: var(--radius-14);
+    background: var(--color-card);
+    box-shadow: var(--shadow-ring);
+    font-size: var(--text-13);
+}
+
+.sg-swatch__chip {
+    display: block;
+    height: 44px;
+    margin-bottom: var(--space-6);
+    border-radius: var(--radius-10);
+    box-shadow: inset 0 0 0 1px rgba(30, 26, 29, 0.1);
+}
+
+.sg-swatch__name {
+    font-size: var(--text-12);
+    overflow-wrap: anywhere;
+}
+
+.sg-swatch__hex {
+    color: var(--color-ink-2);
+}
+
+.sg-swatch__note {
+    color: var(--color-ink-3);
+}
+
+.sg-type-row {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-10) 0;
+    border-bottom: 1px solid var(--color-line);
+}
+
+.sg-type-row__label {
+    color: var(--color-ink-3);
+    font-size: var(--text-12);
+}
+
+.sg-icons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sg-icons__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    font-size: var(--text-12);
+    overflow-wrap: anywhere;
+}
+
+.sg-plain-button {
+    min-height: var(--control-min);
+    padding: 0 var(--space-16);
+    border: 1px solid var(--color-field-line);
+    border-radius: var(--radius-12);
+    background: var(--color-card);
+    cursor: pointer;
+}
+
+/* Swatches: one class per colour token. */
+.swatch--paper { background: var(--color-paper); }
+.swatch--card { background: var(--color-card); }
+.swatch--inset { background: var(--color-inset); }
+.swatch--line { background: var(--color-line); }
+.swatch--line-strong { background: var(--color-line-strong); }
+.swatch--field-line { background: var(--color-field-line); }
+.swatch--ink { background: var(--color-ink); }
+.swatch--ink-2 { background: var(--color-ink-2); }
+.swatch--ink-3 { background: var(--color-ink-3); }
+.swatch--accent { background: var(--color-accent); }
+.swatch--accent-pressed { background: var(--color-accent-pressed); }
+.swatch--accent-soft { background: var(--color-accent-soft); }
+.swatch--accent-line { background: var(--color-accent-line); }
+.swatch--on-accent { background: var(--color-on-accent); }
+.swatch--neutral-bg { background: var(--color-neutral-bg); }
+.swatch--neutral-bg-2 { background: var(--color-neutral-bg-2); }
+.swatch--disabled-bg { background: var(--color-disabled-bg); }
+.swatch--disabled-text { background: var(--color-disabled-text); }
+.swatch--toast-bg { background: var(--color-toast-bg); }
+.swatch--toast-text { background: var(--color-toast-text); }
+.swatch--toast-icon { background: var(--color-toast-icon); }
+.swatch--success-text { background: var(--color-success-text); }
+.swatch--success-bg { background: var(--color-success-bg); }
+.swatch--success-line { background: var(--color-success-line); }
+.swatch--success-solid { background: var(--color-success-solid); }
+.swatch--low-text { background: var(--color-low-text); }
+.swatch--low-bg { background: var(--color-low-bg); }
+.swatch--low-line { background: var(--color-low-line); }
+.swatch--low-solid { background: var(--color-low-solid); }
+.swatch--danger-text { background: var(--color-danger-text); }
+.swatch--danger-bg { background: var(--color-danger-bg); }
+.swatch--danger-line { background: var(--color-danger-line); }
+.swatch--danger-solid { background: var(--color-danger-solid); }
+.swatch--focus { background: var(--color-focus); }
+
+/* Text scale samples */
+.sg-text-11 { font-size: var(--text-11); }
+.sg-text-12 { font-size: var(--text-12); }
+.sg-text-13 { font-size: var(--text-13); }
+.sg-text-14 { font-size: var(--text-14); }
+.sg-text-15 { font-size: var(--text-15); }
+.sg-text-16 { font-size: var(--text-16); }
+.sg-text-17 { font-size: var(--text-17); }
+.sg-text-19 { font-size: var(--text-19); }
+.sg-text-22 { font-size: var(--text-22); }
+
+/* Component demos */
+.sg-subheading {
+    margin: var(--space-24) 0 var(--space-10);
+    font-size: var(--text-15);
+    font-weight: var(--weight-semibold);
+}
+
+.sg-row + .sg-row {
+    margin-top: var(--space-12);
+}
+
+.sg-row--narrow {
+    max-width: 24rem;
+}
+
+.sg-dark {
+    padding: var(--space-8) var(--space-8) var(--space-8) var(--space-18);
+    border-radius: var(--radius-16);
+    background: var(--color-toast-bg);
+    color: var(--color-toast-text);
+}
+
+.sg-dark :focus-visible {
+    outline-color: var(--color-paper);
+}
+
+.sg-stack {
+    display: grid;
+    gap: var(--space-10);
+    max-width: 30rem;
+}
+
+.sg-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-10);
+}
+
+.sg-frame {
+    margin-bottom: var(--space-16);
+    padding: var(--space-16) var(--space-20);
+    border: 1px dashed var(--color-line-strong);
+    border-radius: var(--radius-16);
+}
+
+.sg-form {
+    max-width: 30rem;
+}
+
+/* Toast and tab bar shown in place (both are fixed in the app). */
+.sg-toast .toast,
+.sg-tab-bar .tab-bar {
+    position: static;
+}
+
+.sg-toast .toast {
+    max-width: 28rem;
+}
+
+.sg-tab-bar {
+    padding: 0;
+    overflow: hidden;
+}
+
+@media (min-width: 64rem) {
+    .sg-tab-bar .tab-bar {
+        display: block;
+        max-width: 402px;
+    }
+}

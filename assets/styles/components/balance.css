@@ -1,0 +1,49 @@
+/* Balance chip (S9, spec §3 credit chip): number pill + optional state label. */
+.balance {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    vertical-align: middle;
+}
+
+.balance__chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 28px;
+    padding: 0 var(--space-10);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    line-height: 1;
+}
+
+.balance__label {
+    font-size: var(--text-13);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+}
+
+.balance--neutral .balance__chip {
+    background: var(--color-inset);
+    color: var(--color-ink);
+}
+
+.balance--low .balance__chip {
+    background: var(--color-low-bg);
+    color: var(--color-low-text);
+}
+
+.balance--low .balance__label {
+    color: var(--color-low-text);
+}
+
+.balance--danger .balance__chip {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+}
+
+.balance--danger .balance__label {
+    color: var(--color-danger-text);
+}

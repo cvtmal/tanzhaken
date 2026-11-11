@@ -1,0 +1,26 @@
+{# Balance chip (S9, spec §3 credit chip). Params:
+   balance (int, required: lessons left, negative = lessons owed); show_label (bool, default true).
+   States: >= 3 neutral, no label; 1-2 low + component.balance.low; 0 danger + component.balance.renewal_needed;
+   < 0 danger + component.balance.outstanding (count). Negative numbers print with U+2212.
+   The chip is aria-hidden; a visually hidden sentence speaks the number (unless the visible label already does).
+   Call: {% include 'components/_balance_badge.html.twig' with {balance: row.balance} only %} #}
+{% set show_label = show_label ?? true %}
+{% if balance >= 3 %}
+    {% set state = 'neutral' %}
+    {% set label = null %}
+{% elseif balance >= 1 %}
+    {% set state = 'low' %}
+    {% set label = 'component.balance.low'|trans %}
+{% elseif balance == 0 %}
+    {% set state = 'danger' %}
+    {% set label = 'component.balance.renewal_needed'|trans %}
+{% else %}
+    {% set state = 'danger' %}
+    {% set label = 'component.balance.outstanding'|trans({count: -balance}) %}
+{% endif %}
+{% set spoken = balance >= 0 ? 'component.balance.left'|trans({count: balance}) : 'component.balance.outstanding'|trans({count: -balance}) %}
+<span class="balance balance--{{ state }}">
+    <span class="balance__chip tabular" aria-hidden="true">{{ balance < 0 ? '−' ~ (-balance) : balance }}</span>
+    {%- if not (show_label and balance < 0) %}<span class="visually-hidden">{{ spoken }}</span>{% endif -%}
+    {%- if show_label and label %}<span class="balance__label">{{ label }}</span>{% endif -%}
+</span>

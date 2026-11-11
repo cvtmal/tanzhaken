@@ -1,0 +1,53 @@
+/* Error page (R11): a calm centred block in the public layout: icon tile, serif heading, one line, link home. */
+.error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-40) 0;
+    text-align: center;
+}
+
+.error-page__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--space-24);
+    border-radius: var(--radius-16);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.error-page__heading {
+    font-family: var(--font-serif);
+    font-size: var(--display-28);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+}
+
+.error-page__text {
+    max-width: 22rem;
+    margin-top: var(--space-8);
+    color: var(--color-ink-2);
+    font-size: var(--text-16);
+    line-height: var(--leading-text);
+}
+
+.error-page__action {
+    width: 100%;
+    max-width: 22rem;
+    margin-top: var(--space-24);
+}
+
+.error-page__action .btn {
+    width: 100%;
+}
+
+@media (min-width: 64rem) {
+    .error-page__action,
+    .error-page__action .btn {
+        width: auto;
+    }
+}

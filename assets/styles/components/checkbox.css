@@ -1,0 +1,85 @@
+/* Checkbox and radio: the real input with appearance:none, 22 px box; the label row is 44 px high (hit area). */
+.choices {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.choice {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    min-height: var(--control-min);
+}
+
+.choice__label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-height: var(--control-min);
+    color: var(--color-ink);
+    font-size: var(--text-16);
+    cursor: pointer;
+}
+
+.choice__input {
+    position: relative;
+    display: inline-grid;
+    place-content: center;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    border: 1.5px solid var(--color-field-line);
+    border-radius: 6px;
+    background: var(--color-card);
+    appearance: none;
+    cursor: pointer;
+    flex: none;
+}
+
+.choice__input--radio {
+    border-radius: var(--radius-round);
+}
+
+.choice__input:hover {
+    border-color: var(--color-ink-3);
+}
+
+.choice__input:checked {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+}
+
+/* Check mark: a white L rotated; radio dot: a white circle. */
+.choice__input--checkbox:checked::before {
+    content: "";
+    width: 6px;
+    height: 11px;
+    margin-top: -2px;
+    border: solid var(--color-on-accent);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.choice__input--radio:checked::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-round);
+    background: var(--color-on-accent);
+}
+
+.choice__input:disabled {
+    border-color: var(--color-line);
+    background: var(--color-disabled-bg);
+    cursor: not-allowed;
+}
+
+.field--error .choice__input {
+    border-color: var(--color-danger-solid);
+}
+
+@media (min-width: 64rem) {
+    .choice__label {
+        font-size: var(--text-15);
+    }
+}

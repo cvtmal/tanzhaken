@@ -1,0 +1,229 @@
+title: Styleguide
+intro: Every component of the design system in every state. Development and test only.
+flashes_link: Show sample flashes
+
+flash:
+    success: Saved. This is a success flash.
+    error: Something went wrong. This is an error flash.
+
+tokens:
+    heading: Colour tokens
+    intro: Values from the design; changes for WCAG 2.2 AA are marked.
+    aa:
+        ink_3: 'AA: was #766D71 (4.25 on Inset), now 4.79 on Inset'
+        field_line: 'AA: was #D9D0C2 (1.51 on Card), now 3.63 on Card'
+        line_strong: Design field line, decorative only
+        low_solid: 'AA: was #D9982B (2.46 on Card), now 3.46 on Card'
+        focus: '2px accent outline, offset 2px (9.64 on Paper)'
+        disabled_text: Inactive controls are exempt from contrast
+
+type:
+    heading: Type
+    display: Salsa Beginners
+    text: Twelve students are enrolled in this course. The next lesson starts at 19:00.
+    meta: Meta text
+    micro: Micro label
+
+icons:
+    heading: Icons
+    intro: Material Symbols Rounded, 24 px optical size, weight 400.
+
+focus:
+    heading: Keyboard focus
+    intro: Press Tab to move the focus; every control shows a 2px accent outline.
+    link: A text link
+    button: A plain button
+
+button:
+    heading: Buttons
+    intro: Four variants in five sizes, with icon and disabled. Pill small, compact and Undo are drawn below 44 px and keep a 44 px hit area.
+    size:
+        md: Default
+        lg: Large
+        pill: Pill
+        pill-sm: Pill small
+        compact: Compact
+    with_icon: Open check-in
+    icon_end: Next
+    disabled: Disabled
+    link_heading: Link buttons
+    link: A link button
+    new_course: New course
+    open: Open
+    cta: Add student
+    icon_heading: Icon buttons
+    back: Back
+    more: More actions
+    close: Close
+    undo: Undo
+
+badge:
+    heading: Status badges
+    intro: Not controls, so no hit area. The check-in dot pulses unless reduced motion is on.
+    today: Today
+    open: Check-in open
+    present: Present
+    absent: Absent
+    not_yet: Not yet
+    low: 3 to renew
+    danger: Pass used up
+    neutral: Paused
+    small: Small size
+
+balance:
+    heading: Balance and pass
+    intro: 'Balance chip per S9: 3 or more neutral, 1 to 2 low, 0 renewal needed, below 0 outstanding.'
+    without_label: Without label
+    dots: Pass as dots
+    bar: Pass as bar
+
+card:
+    heading: Cards
+    hero_time: '19:00'
+    hero_title: Salsa Beginners
+    hero_meta: Studio 2 · 12 students
+    compact_time: '18:30'
+    compact_title: Kizomba Basics
+    compact_meta: Thursday · 9 students
+    stat_label: Next lesson
+    stat_value: Today, 19:00
+    stat_meta: Check-in not opened
+    stat2_label: Previous
+    stat2_value: Tue 3 Nov
+    stat2_meta: 10 of 12 present
+    link_title: A card that is one link
+    link_meta: The whole card is clickable.
+    variant: Variant {name}
+
+list_row:
+    heading: List rows
+    label: Students
+    anna: Anna Meier
+    david: David Roth
+    david_meta: Owes 1 lesson
+    elias: Elias Baumann
+    elias_meta: Last lesson on this pass
+    elias_last: Last here Tue 3 Nov
+    add_ten: '+10'
+    add_ten_label: '+10 lessons for {name}'
+    course: Kizomba Basics
+    course_meta: 18:30 · 9 students
+    weekday: Thu
+    day: '12'
+    static: A row without a link
+
+avatar:
+    heading: Avatars
+    initials: EB
+
+page_header:
+    heading: Page headers
+    courses: Courses
+    new_course: New course
+    course: Salsa Beginners
+    course_subtitle: Tuesdays · 19:00–20:00 · Studio 2
+    back: Back to courses
+    edit: Edit
+    greeting: Good evening, Lena
+    date: Tuesday, 10 November
+
+alert:
+    heading: Alerts
+    intro: Error flashes render as the danger alert; only danger is announced at once (role alert).
+    info_title: Heads up
+    info: Check-in opens 15 minutes before the lesson.
+    success_title: Saved
+    success: The course was updated.
+    warning_title: Low balance
+    warning: Two students have one lesson left on their pass.
+    danger_title: Could not save
+    danger: Please fix the two fields marked below.
+    no_title: An alert without a title.
+
+empty_state:
+    heading: Empty state
+    title: No courses yet
+    text: Create your first course and add students to it. Check-in works from the first lesson.
+    action: New course
+    no_action: No students in this course yet.
+
+form:
+    heading: Form theme
+    intro: A Symfony form rendered with the global theme. The email field shows the error state, the form shows the error summary. The eye button needs JavaScript.
+    summary: Two things need your attention before the course can be saved.
+    name:
+        label: Course name
+        help: Students see this name when they check in.
+        placeholder: e.g. Salsa Beginners
+        value: Salsa Beginners
+    email:
+        label: Email
+        value: lena@tanzraum
+        error: Enter a full email address.
+    password:
+        label: Password
+    course:
+        label: Course
+        placeholder: Choose a course
+        salsa: Salsa Beginners
+        bachata: Bachata Intermediate
+        kizomba: Kizomba Basics
+    weekday:
+        label: Weekday
+        mon: Mo
+        tue: Tu
+        wed: We
+        thu: Th
+        fri: Fr
+        sat: Sa
+        sun: Su
+    duration:
+        label: Duration, minutes
+    level:
+        label: Level
+        beginner: Beginner
+        improver: Improver
+    notes:
+        label: Description
+    reminder:
+        label: Remind me 15 minutes before check-in opens
+    submit: Create course
+
+table:
+    heading: Table
+    intro: Below 64rem every row is a card and each cell shows its column label; from 64rem a real table.
+    caption: Salsa Beginners, students
+    student: Student
+    lessons_left: Lessons left
+    last_here: Last here
+    actions: Actions
+    anna_last: Tue 3 Nov
+    david_last: Tue 27 Oct
+    elias_last: Tue 3 Nov
+
+dialog:
+    heading: Dialog and sheet
+    intro: The confirmation holds back a form submit until you confirm; without JavaScript the button submits at once. The sheet becomes a side panel from 64rem.
+    trigger: Close check-in
+    title: Close check-in?
+    text: Students who have not checked in can no longer do so. You can still mark them present by hand.
+    keep_open: Keep open
+    confirm: Close check-in
+    sheet_trigger: Move student
+    sheet_title: Move Elias to
+    sheet_legend: Course
+    cancel: Cancel
+    move: Move
+
+toast:
+    heading: Toast
+    intro: Success flashes render as a toast. With an action (Undo) it stays until dismissed; without one it hides after 6 seconds, paused while hovered or focused.
+    message: Marked present
+    undo: Undo
+
+tab_bar:
+    heading: Tab bar
+    intro: Fixed at the bottom below 64rem; shown in place here.
+
+wordmark:
+    heading: Wordmark

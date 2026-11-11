@@ -1,0 +1,18 @@
+{# Toast (spec §6, P7), embed with an optional slot: dark bar fixed above the tab bar on phones, bottom right on desktop. Params:
+   message (string, translated, required); icon (string, sprite id, default 'check'); id (string|null, default null).
+   Block: toast_action (optional, e.g. an Undo <form> with _button variant 'toast-action'); a toast with an action never hides by itself.
+   Always prints a dismiss button (layout.flash.dismiss), hidden until assets/js/toast.js (teacher layout script) un-hides it;
+   that script also hides a toast without an action after 6 s, paused while it is hovered or focused.
+   Call: {% embed 'components/_toast.html.twig' with {message: 'x'|trans} only %}{% block toast_action %}<form …>…</form>{% endblock %}{% endembed %} #}
+{% set icon = icon|default('check') %}
+{% set id = id|default(null) %}
+{% set action %}{% block toast_action %}{% endblock %}{% endset %}
+{% set has_action = action|trim is not empty %}
+<div class="toast"{% if id %} id="{{ id }}"{% endif %}{% if not has_action %} data-toast-autohide{% endif %}>
+    {{ icon(icon, null, 'toast__icon') }}
+    <p class="toast__message">{{ message }}</p>
+    {%- if has_action %}
+        <div class="toast__action">{{ action }}</div>
+    {%- endif %}
+    {% include 'components/_icon_button.html.twig' with {icon: 'close', label: 'layout.flash.dismiss'|trans, variant: 'plain', attr: {class: 'toast__dismiss', hidden: 'hidden'}, data: {'toast-dismiss': true}} only %}
+</div>

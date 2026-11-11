@@ -1,0 +1,457 @@
+{% extends 'layout/teacher.html.twig' %}
+
+{% trans_default_domain 'styleguide' %}
+
+{# P2: the demo form has a password field; the dialog section opens a dialog and a sheet. #}
+{% set page_scripts = ['password-toggle', 'dialog'] %}
+
+{% set colour_tokens = [
+    {name: 'paper', hex: '#F7F4EE'}, {name: 'card', hex: '#FFFEFB'}, {name: 'inset', hex: '#F1ECE3'},
+    {name: 'line', hex: '#E8E1D5'}, {name: 'line-strong', hex: '#D9D0C2', note: 'tokens.aa.line_strong'},
+    {name: 'field-line', hex: '#8F8478', note: 'tokens.aa.field_line'},
+    {name: 'ink', hex: '#1E1A1D'}, {name: 'ink-2', hex: '#5C5458'}, {name: 'ink-3', hex: '#6E6569', note: 'tokens.aa.ink_3'},
+    {name: 'accent', hex: '#62295A'}, {name: 'accent-pressed', hex: '#4E1F48'}, {name: 'accent-soft', hex: '#F3E9F1'},
+    {name: 'accent-line', hex: '#E3CFE0'}, {name: 'on-accent', hex: '#FFFFFF'},
+    {name: 'neutral-bg', hex: '#F3EFE7'}, {name: 'neutral-bg-2', hex: '#EDE7DC'},
+    {name: 'disabled-bg', hex: '#E8E1D5'}, {name: 'disabled-text', hex: '#766D71', note: 'tokens.aa.disabled_text'},
+    {name: 'toast-bg', hex: '#1E1A1D'}, {name: 'toast-text', hex: '#F7F4EE'}, {name: 'toast-icon', hex: '#8FD1B0'},
+    {name: 'success-text', hex: '#256B4D'}, {name: 'success-bg', hex: '#E5F1EA'}, {name: 'success-line', hex: '#C6E0D2'}, {name: 'success-solid', hex: '#2E8660'},
+    {name: 'low-text', hex: '#8A5A00'}, {name: 'low-bg', hex: '#FBF0D6'}, {name: 'low-line', hex: '#EFD9A6'}, {name: 'low-solid', hex: '#B57F1F', note: 'tokens.aa.low_solid'},
+    {name: 'danger-text', hex: '#A8321F'}, {name: 'danger-bg', hex: '#FBE8E3'}, {name: 'danger-line', hex: '#F1C9BE'}, {name: 'danger-solid', hex: '#C2412C'},
+    {name: 'focus', hex: '#62295A', note: 'tokens.aa.focus'},
+] %}
+{% set display_sizes = [44, 42, 40, 32, 30, 28, 24] %}
+{% set text_sizes = [22, 19, 17, 16, 15, 14, 13, 12, 11] %}
+{% set icon_ids = [
+    'add', 'arrow-back', 'arrow-forward', 'calendar-month', 'calendar-today', 'check', 'check-circle', 'chevron-right',
+    'close', 'confirmation-number', 'edit', 'error', 'expand-more', 'fullscreen', 'group', 'history', 'home', 'info',
+    'location-on', 'lock', 'more-horiz', 'person', 'person-add', 'qr-code-2', 'remove', 'repeat', 'schedule', 'search',
+    'timer', 'undo', 'visibility', 'warning',
+    'home-fill', 'calendar-month-fill', 'group-fill', 'person-fill', 'check-circle-fill',
+] %}
+
+{% set sample_tabs = [
+    {route: 'dashboard', label: 'layout.nav.today'|trans({}, 'messages'), icon: 'home', prefixes: ['dashboard']},
+    {route: 'course_index', label: 'layout.nav.courses'|trans({}, 'messages'), icon: 'calendar-month', prefixes: ['course_']},
+    {route: 'student_index', label: 'layout.nav.students'|trans({}, 'messages'), icon: 'group', prefixes: ['student_']},
+    {route: 'account', label: 'layout.nav.account'|trans({}, 'messages'), icon: 'person', prefixes: ['account']},
+] %}
+{% set roster = [
+    {name: 'list_row.anna', balance: 7, last: 'table.anna_last'},
+    {name: 'list_row.david', balance: -1, last: 'table.david_last'},
+    {name: 'list_row.elias', balance: 1, last: 'table.elias_last'},
+] %}
+
+{% block title %}{{ 'title'|trans }} · {{ brand_name }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/styleguide.css') }}">
+{% endblock %}
+
+{% block main %}
+    <header class="sg-header">
+        <h1 class="display-32">{{ 'title'|trans }}</h1>
+        <p class="sg-intro">{{ 'intro'|trans }}</p>
+        <p><a href="{{ path('_styleguide', {flashes: 1}) }}">{{ 'flashes_link'|trans }}</a></p>
+    </header>
+
+    <section id="sg-tokens" class="sg-section" data-component="tokens">
+        <h2 class="sg-section__heading">{{ 'tokens.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'tokens.intro'|trans }}</p>
+        <ul class="sg-swatches">
+            {% for token in colour_tokens %}
+                <li class="sg-swatch">
+                    <span class="sg-swatch__chip swatch--{{ token.name }}"></span>
+                    <code class="sg-swatch__name">{{ '--color-' ~ token.name }}</code>
+                    <span class="sg-swatch__hex tabular">{{ token.hex }}</span>
+                    {% if token.note is defined %}
+                        <span class="sg-swatch__note">{{ token.note|trans }}</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section id="sg-type" class="sg-section" data-component="type">
+        <h2 class="sg-section__heading">{{ 'type.heading'|trans }}</h2>
+        {% for size in display_sizes %}
+            <div class="sg-type-row">
+                <code class="sg-type-row__label">{{ '.display-' ~ size }}</code>
+                <p class="display-{{ size }}">{{ 'type.display'|trans }}</p>
+            </div>
+        {% endfor %}
+        {% for size in text_sizes %}
+            <div class="sg-type-row">
+                <code class="sg-type-row__label">{{ '--text-' ~ size }}</code>
+                <p class="sg-text-{{ size }}">{{ 'type.text'|trans }}</p>
+            </div>
+        {% endfor %}
+        <div class="sg-type-row">
+            <code class="sg-type-row__label">{{ '.meta' }}</code>
+            <p class="meta">{{ 'type.meta'|trans }}</p>
+        </div>
+        <div class="sg-type-row">
+            <code class="sg-type-row__label">{{ '.micro' }}</code>
+            <p class="micro">{{ 'type.micro'|trans }}</p>
+        </div>
+    </section>
+
+    <section id="sg-icons" class="sg-section" data-component="icons">
+        <h2 class="sg-section__heading">{{ 'icons.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'icons.intro'|trans }}</p>
+        <ul class="sg-icons">
+            {% for id in icon_ids %}
+                <li class="sg-icons__item">
+                    {{ icon(id, null, 'icon--24') }}
+                    <code>{{ id }}</code>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section id="sg-focus" class="sg-section" data-component="focus">
+        <h2 class="sg-section__heading">{{ 'focus.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'focus.intro'|trans }}</p>
+        <div class="sg-row">
+            <a href="#sg-focus">{{ 'focus.link'|trans }}</a>
+            <button type="button" class="sg-plain-button">{{ 'focus.button'|trans }}</button>
+        </div>
+    </section>
+
+    <section id="sg-button" class="sg-section" data-component="button">
+        <h2 class="sg-section__heading">{{ 'button.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'button.intro'|trans }}</p>
+        {% for variant in ['primary', 'soft', 'secondary', 'text'] %}
+            <h3 class="sg-subheading"><code>{{ 'btn--' ~ variant }}</code></h3>
+            <div class="sg-row">
+                {% for size in ['md', 'lg', 'pill', 'pill-sm', 'compact'] %}
+                    {% include 'components/_button.html.twig' with {label: ('button.size.' ~ size)|trans, variant: variant, size: size} only %}
+                {% endfor %}
+                {% include 'components/_button.html.twig' with {label: 'button.with_icon'|trans, variant: variant, icon: 'qr-code-2'} only %}
+                {% include 'components/_button.html.twig' with {label: 'button.icon_end'|trans, variant: variant, icon: 'arrow-forward', icon_position: 'end'} only %}
+                {% include 'components/_button.html.twig' with {label: 'button.disabled'|trans, variant: variant, disabled: true} only %}
+            </div>
+        {% endfor %}
+
+        <h3 class="sg-subheading">{{ 'button.link_heading'|trans }}</h3>
+        <div class="sg-row">
+            {% include 'components/_link_button.html.twig' with {label: 'button.link'|trans, href: '#sg-button'} only %}
+            {% include 'components/_link_button.html.twig' with {label: 'button.new_course'|trans, href: '#sg-button', variant: 'soft', size: 'pill', icon: 'add'} only %}
+            {% include 'components/_link_button.html.twig' with {label: 'button.open'|trans, href: '#sg-button', variant: 'secondary', size: 'pill'} only %}
+        </div>
+        <div class="sg-row sg-row--narrow">
+            {% include 'components/_link_button.html.twig' with {label: 'button.cta'|trans, href: '#sg-button', size: 'lg', icon: 'add', full_width: true} only %}
+        </div>
+
+        <h3 class="sg-subheading">{{ 'button.icon_heading'|trans }}</h3>
+        <div class="sg-row">
+            {% include 'components/_icon_button.html.twig' with {icon: 'arrow-back', label: 'button.back'|trans, href: '#sg-button'} only %}
+            {% include 'components/_icon_button.html.twig' with {icon: 'more-horiz', label: 'button.more'|trans} only %}
+            {% include 'components/_icon_button.html.twig' with {icon: 'close', label: 'button.close'|trans} only %}
+            {% include 'components/_icon_button.html.twig' with {icon: 'arrow-back', label: 'button.back'|trans, variant: 'plain', href: '#sg-button'} only %}
+            {% include 'components/_icon_button.html.twig' with {icon: 'close', label: 'button.close'|trans, disabled: true} only %}
+        </div>
+
+        <h3 class="sg-subheading"><code>{{ 'btn--toast-action' }}</code></h3>
+        <div class="sg-row sg-dark">
+            {% include 'components/_button.html.twig' with {label: 'button.undo'|trans, variant: 'toast-action'} only %}
+            {% include 'components/_icon_button.html.twig' with {icon: 'close', label: 'button.close'|trans, variant: 'plain'} only %}
+        </div>
+    </section>
+
+    <section id="sg-badge" class="sg-section" data-component="badge">
+        <h2 class="sg-section__heading">{{ 'badge.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'badge.intro'|trans }}</p>
+        <div class="sg-row">
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.today'|trans, variant: 'today'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.open'|trans, variant: 'open', pulse: true} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.present'|trans, variant: 'present'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.absent'|trans, variant: 'absent'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.not_yet'|trans, variant: 'not-yet'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.low'|trans, variant: 'low'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.danger'|trans, variant: 'danger'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.neutral'|trans, variant: 'neutral'} only %}
+        </div>
+        <h3 class="sg-subheading">{{ 'badge.small'|trans }}</h3>
+        <div class="sg-row">
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.today'|trans, variant: 'today', size: 'sm'} only %}
+            {% include 'components/_status_badge.html.twig' with {label: 'badge.open'|trans, variant: 'open', size: 'sm'} only %}
+        </div>
+    </section>
+
+    <section id="sg-balance" class="sg-section" data-component="balance">
+        <h2 class="sg-section__heading">{{ 'balance.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'balance.intro'|trans }}</p>
+        <div class="sg-row">
+            {% for balance in [10, 3, 2, 1, 0, -1, -3] %}
+                {% include 'components/_balance_badge.html.twig' with {balance: balance} only %}
+            {% endfor %}
+        </div>
+        <h3 class="sg-subheading">{{ 'balance.without_label'|trans }}</h3>
+        <div class="sg-row">
+            {% for balance in [7, 2, 0, -1] %}
+                {% include 'components/_balance_badge.html.twig' with {balance: balance, show_label: false} only %}
+            {% endfor %}
+        </div>
+        <h3 class="sg-subheading">{{ 'balance.dots'|trans }}</h3>
+        {% for left in [10, 7, 2, 0] %}
+            <div class="sg-row">{% include 'components/_pass_dots.html.twig' with {left: left} only %}</div>
+        {% endfor %}
+        <h3 class="sg-subheading">{{ 'balance.bar'|trans }}</h3>
+        {% for left in [10, 7, 2, 0] %}
+            <div class="sg-row">{% include 'components/_pass_dots.html.twig' with {left: left, variant: 'bar'} only %}</div>
+        {% endfor %}
+    </section>
+
+    <section id="sg-card" class="sg-section" data-component="card">
+        <h2 class="sg-section__heading">{{ 'card.heading'|trans }}</h2>
+        <div class="sg-stack">
+            <h3 class="sg-subheading"><code>{{ 'card--hero' }}</code></h3>
+            {% embed 'components/_card.html.twig' with {variant: 'hero'} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block card_body %}
+                    <span class="display-30 tabular">{{ 'card.hero_time'|trans }}</span>
+                    <span class="card__title">{{ 'card.hero_title'|trans }}</span>
+                    <span class="card__meta">{{ 'card.hero_meta'|trans }}</span>
+                {% endblock %}
+            {% endembed %}
+            <h3 class="sg-subheading"><code>{{ 'card--compact' }}</code></h3>
+            {% embed 'components/_card.html.twig' with {variant: 'compact'} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block card_body %}
+                    <span class="display-24 tabular">{{ 'card.compact_time'|trans }}</span>
+                    <span class="card__title">{{ 'card.compact_title'|trans }}</span>
+                    <span class="card__meta">{{ 'card.compact_meta'|trans }}</span>
+                {% endblock %}
+            {% endembed %}
+            <h3 class="sg-subheading"><code>{{ 'card--stat' }}</code></h3>
+            <div class="sg-grid-2">
+                {% embed 'components/_card.html.twig' with {variant: 'stat'} only %}
+                    {% trans_default_domain 'styleguide' %}
+                    {% block card_body %}
+                        <span class="card__label">{{ 'card.stat_label'|trans }}</span>
+                        <span class="card__value">{{ 'card.stat_value'|trans }}</span>
+                        <span class="card__meta">{{ 'card.stat_meta'|trans }}</span>
+                    {% endblock %}
+                {% endembed %}
+                {% embed 'components/_card.html.twig' with {variant: 'stat'} only %}
+                    {% trans_default_domain 'styleguide' %}
+                    {% block card_body %}
+                        <span class="card__label">{{ 'card.stat2_label'|trans }}</span>
+                        <span class="card__value">{{ 'card.stat2_value'|trans }}</span>
+                        <span class="card__meta">{{ 'card.stat2_meta'|trans }}</span>
+                    {% endblock %}
+                {% endembed %}
+            </div>
+            <h3 class="sg-subheading"><code>{{ 'card--link' }}</code></h3>
+            {% embed 'components/_card.html.twig' with {href: '#sg-card'} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block card_body %}
+                    <span class="card__title">{{ 'card.link_title'|trans }}</span>
+                    <span class="card__meta">{{ 'card.link_meta'|trans }}</span>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </section>
+
+    <section id="sg-list-row" class="sg-section" data-component="list-row">
+        <h2 class="sg-section__heading">{{ 'list_row.heading'|trans }}</h2>
+        {% embed 'components/_list.html.twig' with {label: 'list_row.label'|trans} only %}
+            {% trans_default_domain 'styleguide' %}
+            {% block list_items %}
+                {% embed 'components/_list_row.html.twig' with {title: 'list_row.anna'|trans, href: '#sg-list-row', lead: 'avatar', initials: 'AM'} only %}
+                    {% block row_trailing %}{% include 'components/_balance_badge.html.twig' with {balance: 7, show_label: false} only %}{% endblock %}
+                {% endembed %}
+                {% embed 'components/_list_row.html.twig' with {title: 'list_row.david'|trans, meta: 'list_row.david_meta'|trans, meta_variant: 'danger', href: '#sg-list-row', lead: 'avatar', initials: 'DR', chevron: false} only %}
+                    {% trans_default_domain 'styleguide' %}
+                    {% block row_trailing %}
+                        {% include 'components/_balance_badge.html.twig' with {balance: -1, show_label: false} only %}
+                        {% include 'components/_button.html.twig' with {label: 'list_row.add_ten'|trans, variant: 'soft', size: 'pill-sm', attr: {'aria-label': 'list_row.add_ten_label'|trans({name: 'list_row.david'|trans})}} only %}
+                    {% endblock %}
+                {% endembed %}
+                {% embed 'components/_list_row.html.twig' with {title: 'list_row.elias'|trans, meta: 'list_row.elias_meta'|trans, meta_variant: 'low', href: '#sg-list-row', lead: 'avatar', initials: 'EB', chevron: false} only %}
+                    {% trans_default_domain 'styleguide' %}
+                    {% block row_trailing %}
+                        {% include 'components/_balance_badge.html.twig' with {balance: 1, show_label: false} only %}
+                        {% include 'components/_button.html.twig' with {label: 'list_row.add_ten'|trans, variant: 'soft', size: 'pill-sm', attr: {'aria-label': 'list_row.add_ten_label'|trans({name: 'list_row.elias'|trans})}} only %}
+                    {% endblock %}
+                {% endembed %}
+                {% embed 'components/_list_row.html.twig' with {title: 'list_row.course'|trans, meta: 'list_row.course_meta'|trans, href: '#sg-list-row', lead: 'date', date_weekday: 'list_row.weekday'|trans, date_day: 'list_row.day'|trans} only %}{% endembed %}
+                {% embed 'components/_list_row.html.twig' with {title: 'list_row.static'|trans, meta: 'list_row.elias_last'|trans} only %}{% endembed %}
+            {% endblock %}
+        {% endembed %}
+    </section>
+
+    <section id="sg-avatar" class="sg-section" data-component="avatar">
+        <h2 class="sg-section__heading">{{ 'avatar.heading'|trans }}</h2>
+        <div class="sg-row">
+            {% for size in ['sm', 'md', 'lg'] %}
+                {% include 'components/_avatar.html.twig' with {initials: 'avatar.initials'|trans, size: size} only %}
+                <code>{{ 'avatar--' ~ size }}</code>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="sg-page-header" class="sg-section" data-component="page-header">
+        <h2 class="sg-section__heading">{{ 'page_header.heading'|trans }}</h2>
+        <div class="sg-frame">
+            {% embed 'components/_page_header.html.twig' with {title: 'page_header.courses'|trans, level: 3} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block page_actions %}
+                    {% include 'components/_link_button.html.twig' with {label: 'page_header.new_course'|trans, href: '#sg-page-header', variant: 'soft', size: 'pill', icon: 'add'} only %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+        <div class="sg-frame">
+            {% embed 'components/_page_header.html.twig' with {title: 'page_header.course'|trans, subtitle: 'page_header.course_subtitle'|trans, back_href: '#sg-page-header', back_label: 'page_header.back'|trans, level: 3} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block page_actions %}
+                    {% include 'components/_button.html.twig' with {label: 'page_header.edit'|trans, variant: 'secondary', size: 'pill', icon: 'edit'} only %}
+                {% endblock %}
+            {% endembed %}
+        </div>
+        <div class="sg-frame">
+            {% include 'components/_page_header.html.twig' with {title: 'page_header.course'|trans, breadcrumbs: [{label: 'page_header.courses'|trans, href: '#sg-page-header'}, {label: 'page_header.course'|trans}], level: 3} only %}
+        </div>
+        <div class="sg-frame">
+            {% include 'components/_page_header.html.twig' with {title: 'page_header.greeting'|trans, subtitle: 'page_header.date'|trans, level: 3} only %}
+        </div>
+    </section>
+
+    <section id="sg-alert" class="sg-section" data-component="alert">
+        <h2 class="sg-section__heading">{{ 'alert.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'alert.intro'|trans }}</p>
+        <div class="sg-stack">
+            {% for variant in ['info', 'success', 'warning', 'danger'] %}
+                {% include 'components/_alert.html.twig' with {variant: variant, title: ('alert.' ~ variant ~ '_title')|trans, text: ('alert.' ~ variant)|trans} only %}
+            {% endfor %}
+            {% include 'components/_alert.html.twig' with {variant: 'info', text: 'alert.no_title'|trans, dismissible: true} only %}
+        </div>
+    </section>
+
+    <section id="sg-empty-state" class="sg-section" data-component="empty-state">
+        <h2 class="sg-section__heading">{{ 'empty_state.heading'|trans }}</h2>
+        <div class="sg-frame">
+            {% include 'components/_empty_state.html.twig' with {title: 'empty_state.title'|trans, text: 'empty_state.text'|trans, action: {label: 'empty_state.action'|trans, href: '#sg-empty-state', icon: 'add'}, level: 3} only %}
+        </div>
+        <div class="sg-frame">
+            {% include 'components/_empty_state.html.twig' with {title: 'empty_state.no_action'|trans, text: 'empty_state.text'|trans, level: 3} only %}
+        </div>
+    </section>
+
+    <section id="sg-form" class="sg-section" data-component="form">
+        <h2 class="sg-section__heading">{{ 'form.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'form.intro'|trans }}</p>
+        <div class="sg-form">
+            {{ form_start(demo_form, {attr: {novalidate: 'novalidate'}}) }}
+                {{ form_widget(demo_form) }}
+            {{ form_end(demo_form) }}
+        </div>
+    </section>
+
+    <section id="sg-table" class="sg-section" data-component="table">
+        <h2 class="sg-section__heading">{{ 'table.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'table.intro'|trans }}</p>
+        {% for variant in ['default', 'compact'] %}
+            <h3 class="sg-subheading"><code>{{ 'table--' ~ variant }}</code></h3>
+            {% embed 'components/_table.html.twig' with {caption: 'table.caption'|trans, show_caption: variant == 'default', variant: variant, roster: roster} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block table_head %}
+                    <tr>
+                        <th scope="col">{{ 'table.student'|trans }}</th>
+                        <th scope="col">{{ 'table.lessons_left'|trans }}</th>
+                        <th scope="col">{{ 'table.last_here'|trans }}</th>
+                        <th scope="col"><span class="visually-hidden">{{ 'table.actions'|trans }}</span></th>
+                    </tr>
+                {% endblock %}
+                {% block table_body %}
+                    {% for row in roster %}
+                        <tr>
+                            <td data-label="{{ 'table.student'|trans }}">{{ row.name|trans }}</td>
+                            <td data-label="{{ 'table.lessons_left'|trans }}">{% include 'components/_balance_badge.html.twig' with {balance: row.balance} only %}</td>
+                            <td data-label="{{ 'table.last_here'|trans }}">{{ row.last|trans }}</td>
+                            <td class="table__actions" data-label="{{ 'table.actions'|trans }}">
+                                {% include 'components/_button.html.twig' with {label: 'list_row.add_ten'|trans, variant: 'soft', size: 'compact', attr: {'aria-label': 'list_row.add_ten_label'|trans({name: row.name|trans})}} only %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endblock %}
+            {% endembed %}
+        {% endfor %}
+    </section>
+
+    <section id="sg-dialog" class="sg-section" data-component="dialog">
+        <h2 class="sg-section__heading">{{ 'dialog.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'dialog.intro'|trans }}</p>
+        <div class="sg-row">
+            <form method="get" action="#sg-dialog">
+                {% include 'components/_button.html.twig' with {label: 'dialog.trigger'|trans, variant: 'secondary', type: 'submit', name: 'closed', value: '1', data: {'dialog-open': 'sg-dialog-close-checkin'}} only %}
+            </form>
+            {% include 'components/_button.html.twig' with {label: 'dialog.sheet_trigger'|trans, variant: 'soft', data: {'dialog-open': 'sg-dialog-sheet'}} only %}
+        </div>
+        {% embed 'components/_dialog.html.twig' with {id: 'sg-dialog-close-checkin', title: 'dialog.title'|trans} only %}
+            {% trans_default_domain 'styleguide' %}
+            {% block dialog_body %}
+                <p>{{ 'dialog.text'|trans }}</p>
+            {% endblock %}
+            {% block dialog_actions %}
+                {% include 'components/_button.html.twig' with {label: 'dialog.keep_open'|trans, variant: 'secondary', type: 'submit'} only %}
+                {% include 'components/_button.html.twig' with {label: 'dialog.confirm'|trans, data: {'dialog-confirm': true}} only %}
+            {% endblock %}
+        {% endembed %}
+        {% embed 'components/_dialog.html.twig' with {id: 'sg-dialog-sheet', title: 'dialog.sheet_title'|trans, variant: 'sheet'} only %}
+            {% trans_default_domain 'styleguide' %}
+            {% block dialog_body %}
+                <fieldset class="field">
+                    <legend class="visually-hidden">{{ 'dialog.sheet_legend'|trans }}</legend>
+                    <div class="choices">
+                        {% for course in ['salsa', 'bachata', 'kizomba'] %}
+                            <div class="choice">
+                                <input type="radio" class="choice__input choice__input--radio" id="{{ 'sg-sheet-' ~ course }}" name="sg_sheet_course" value="{{ course }}"{% if loop.first %} checked{% endif %}>
+                                <label class="choice__label" for="{{ 'sg-sheet-' ~ course }}">{{ ('form.course.' ~ course)|trans }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endblock %}
+            {% block dialog_actions %}
+                {% include 'components/_button.html.twig' with {label: 'dialog.cancel'|trans, variant: 'secondary', type: 'submit', value: 'cancel'} only %}
+                {% include 'components/_button.html.twig' with {label: 'dialog.move'|trans, type: 'submit', value: 'move'} only %}
+            {% endblock %}
+        {% endembed %}
+    </section>
+
+    <section id="sg-toast" class="sg-section" data-component="toast">
+        <h2 class="sg-section__heading">{{ 'toast.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'toast.intro'|trans }}</p>
+        <div class="sg-frame sg-toast">
+            {% embed 'components/_toast.html.twig' with {message: 'toast.message'|trans, id: 'sg-toast-undo'} only %}
+                {% trans_default_domain 'styleguide' %}
+                {% block toast_action %}
+                    <form method="get" action="#sg-toast">
+                        {% include 'components/_button.html.twig' with {label: 'toast.undo'|trans, variant: 'toast-action', type: 'submit', name: 'undo', value: '1'} only %}
+                    </form>
+                {% endblock %}
+            {% endembed %}
+        </div>
+    </section>
+
+    <section id="sg-tab-bar" class="sg-section" data-component="tab-bar">
+        <h2 class="sg-section__heading">{{ 'tab_bar.heading'|trans }}</h2>
+        <p class="sg-intro">{{ 'tab_bar.intro'|trans }}</p>
+        <div class="sg-frame sg-tab-bar">
+            {% include 'components/_tab_bar.html.twig' with {items: sample_tabs, current: 'course_index'} only %}
+        </div>
+    </section>
+
+    <section id="sg-wordmark" class="sg-section" data-component="wordmark">
+        <h2 class="sg-section__heading">{{ 'wordmark.heading'|trans }}</h2>
+        <div class="sg-row">
+            {% for size in ['sm', 'md', 'lg'] %}
+                {% include 'components/_wordmark.html.twig' with {size: size} only %}
+                <code>{{ 'wordmark--' ~ size }}</code>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,62 @@
+/* The pass (spec §3): 14 px dots, or a 118 x 8 bar of 10 segments (10 px + 2 px gap). */
+.pass {
+    --pass-fill: var(--color-accent);
+    --pass-track: var(--color-line-strong);
+
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.pass--low {
+    --pass-fill: var(--color-low-solid);
+}
+
+.pass--danger {
+    --pass-track: var(--color-danger-line);
+}
+
+.pass--dots {
+    flex-wrap: wrap;
+    gap: var(--space-6);
+}
+
+.pass--dots .pass__unit {
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-round);
+    box-shadow: inset 0 0 0 1.5px var(--pass-track);
+}
+
+.pass--dots .pass__unit--filled {
+    background: var(--pass-fill);
+    box-shadow: none;
+}
+
+.pass--bar {
+    --pass-track: var(--color-line);
+
+    gap: var(--space-2);
+}
+
+.pass--bar.pass--danger {
+    --pass-track: var(--color-danger-line);
+}
+
+.pass--bar .pass__unit {
+    width: 10px;
+    height: 8px;
+    background: var(--pass-track);
+}
+
+.pass--bar .pass__unit:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.pass--bar .pass__unit:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.pass--bar .pass__unit--filled {
+    background: var(--pass-fill);
+}

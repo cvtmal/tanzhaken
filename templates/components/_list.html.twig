@@ -1,0 +1,7 @@
+{# List container (spec §4): card surface with inset dividers, embed with a slot. Params:
+   label (string|null, translated, default null: aria-label of the list).
+   Block: list_items (one _list_row embed per item).
+   Call: {% embed 'components/_list.html.twig' with {} only %}{% block list_items %}{% for s in students %}{% embed 'components/_list_row.html.twig' with {…} only %}{% endembed %}{% endfor %}{% endblock %}{% endembed %} #}
+<ul class="list"{% if label|default(null) %} aria-label="{{ label }}"{% endif %}>
+    {%- block list_items %}{% endblock -%}
+</ul>

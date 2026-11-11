@@ -1,0 +1,7 @@
+{# Error page for status 500. Twig context: status_code, status_text (unused). #}
+{% extends '@Twig/Exception/_error_page.html.twig' %}
+
+{% block error_title %}{{ 'error.500.title'|trans }}{% endblock %}
+{% block error_icon 'warning' %}
+{% block error_heading %}{{ 'error.500.heading'|trans }}{% endblock %}
+{% block error_text %}{{ 'error.500.text'|trans }}{% endblock %}

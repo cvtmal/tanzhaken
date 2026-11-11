@@ -1,0 +1,187 @@
+{# Global form theme (R8), registered in config/packages/twig_design_system.yaml. Spec §1 (segments), §2 (fields).
+   Rows: .field (+ .field--error); help id <id>_help, error id <id>_errors, both in aria-describedby; aria-invalid on error.
+   Expanded choices render as <fieldset class="field field--group"> with a <legend>; add 'segmented' to the field's
+   attr.class for one-tap tiles (weekday, duration), otherwise stacked radios/checkboxes.
+   Form-level errors render as a danger _alert at the top of the form (PRD §8 error summary).
+   PasswordType prints a show/hide button that stays hidden until assets/js/password-toggle.js runs:
+   set page_scripts = ['password-toggle'] on a page that renders a password field. #}
+{% use 'form_div_layout.html.twig' %}
+
+{# Rows #}
+
+{%- block form_row -%}
+    {%- set has_errors = errors|length > 0 -%}
+    {%- set described = [] -%}
+    {%- if help %}{% set described = described|merge([id ~ '_help']) %}{% endif -%}
+    {%- if has_errors %}{% set described = described|merge([id ~ '_errors']) %}{% endif -%}
+    {%- set describedby = described|join(' ') -%}
+    {%- set field_class = ('field' ~ (has_errors ? ' field--error') ~ ' ' ~ row_attr.class|default(''))|trim -%}
+    {%- set row_attr = row_attr|merge({class: field_class}) -%}
+    {%- if expanded is defined and expanded -%}
+        {%- set row_attr = row_attr|merge({class: field_class ~ ' field--group'}) -%}
+        <fieldset{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}{% if describedby %} aria-describedby="{{ describedby }}"{% endif %}>
+            {%- if label is not same as(false) -%}
+                <legend class="field__label">
+                    {{- block('form_label_content') -}}
+                    {%- if not required %} <span class="field__optional">{{ 'component.form.optional'|trans({}, 'messages') }}</span>{% endif -%}
+                </legend>
+            {%- endif -%}
+            {{- form_widget(form) -}}
+            {{- form_errors(form) -}}
+            {{- form_help(form) -}}
+        </fieldset>
+    {%- else -%}
+        {%- set widget_attr = {} -%}
+        {%- if describedby %}{% set widget_attr = widget_attr|merge({'aria-describedby': describedby}) %}{% endif -%}
+        {%- if has_errors %}{% set widget_attr = widget_attr|merge({'aria-invalid': 'true'}) %}{% endif -%}
+        {%- if 'checkbox' in block_prefixes or 'radio' in block_prefixes -%}
+            {%- set row_attr = row_attr|merge({class: field_class ~ ' field--check'}) -%}
+            <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+                <div class="choice">
+                    {{- form_widget(form, {attr: widget_attr}) -}}
+                    {{- form_label(form) -}}
+                </div>
+                {{- form_errors(form) -}}
+                {{- form_help(form) -}}
+            </div>
+        {%- else -%}
+            <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+                {{- form_label(form) -}}
+                {{- form_widget(form, {attr: widget_attr}) -}}
+                {{- form_errors(form) -}}
+                {{- form_help(form) -}}
+            </div>
+        {%- endif -%}
+    {%- endif -%}
+{%- endblock form_row -%}
+
+{%- block button_row -%}
+    <div class="field field--actions">
+        {{- form_widget(form) -}}
+    </div>
+{%- endblock button_row -%}
+
+{# Labels, help, errors #}
+
+{%- block form_label -%}
+    {%- if label is not same as(false) -%}
+        {%- set is_choice_item = 'checkbox' in block_prefixes or 'radio' in block_prefixes -%}
+        {%- if not compound %}{% set label_attr = label_attr|merge({for: id}) %}{% endif -%}
+        {%- set base_class = 'segmented__label' in label_attr.class|default('')|split(' ') ? '' : (is_choice_item ? 'choice__label' : 'field__label') -%}
+        {%- set label_attr = label_attr|merge({class: (base_class ~ ' ' ~ label_attr.class|default(''))|trim}) -%}
+        <{{ element|default('label') }}{% with {attr: label_attr} %}{{ block('attributes') }}{% endwith %}>
+            {{- block('form_label_content') -}}
+            {%- if not required and not is_choice_item and not compound %} <span class="field__optional">{{ 'component.form.optional'|trans({}, 'messages') }}</span>{% endif -%}
+        </{{ element|default('label') }}>
+    {%- endif -%}
+{%- endblock form_label -%}
+
+{%- block form_help -%}
+    {%- if help -%}
+        <p id="{{ id }}_help" class="field__help">{{- block('form_help_content') -}}</p>
+    {%- endif -%}
+{%- endblock form_help -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        {%- if form is rootform -%}
+            {% include 'components/_alert.html.twig' with {
+                variant: 'danger',
+                title: 'component.form.error_summary'|trans({}, 'messages'),
+                text: errors|map(error => error.message)|join(' ')
+            } only %}
+        {%- else -%}
+            <div id="{{ id }}_errors" class="field__errors">
+                {%- for error in errors %}<p class="field__error">{{ error.message }}</p>{% endfor -%}
+            </div>
+        {%- endif -%}
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{# Text inputs #}
+
+{%- block input_element -%}
+    {%- set attr = attr|merge({class: ('input ' ~ attr.class|default(''))|trim}) -%}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{%- endblock input_element -%}
+
+{%- block form_widget_simple -%}
+    {%- set type = type|default('text') -%}
+    {%- if type in ['hidden', 'range', 'color'] -%}
+        {{- parent() -}}
+    {%- else -%}
+        <span class="input-wrap{{ errors|length > 0 ? ' input-wrap--error' }}">
+            {{- block('input_element') -}}
+            {%- if errors|length > 0 %}{{ icon('error', null, 'input-wrap__error') }}{% endif -%}
+        </span>
+    {%- endif -%}
+{%- endblock form_widget_simple -%}
+
+{%- block password_widget -%}
+    {%- set type = type|default('password') -%}
+    <span class="input-wrap input-wrap--password{{ errors|length > 0 ? ' input-wrap--error' }}">
+        {{- block('input_element') -}}
+        {%- if errors|length > 0 %}{{ icon('error', null, 'input-wrap__error') }}{% endif -%}
+        <button type="button" class="input-wrap__toggle" data-password-toggle hidden aria-pressed="false" aria-label="{{ 'component.form.show_password'|trans({}, 'messages') }}">
+            {{- icon('visibility', null, 'icon--22') -}}
+        </button>
+    </span>
+{%- endblock password_widget -%}
+
+{%- block textarea_widget -%}
+    {%- set attr = attr|merge({class: ('input input--textarea ' ~ attr.class|default(''))|trim}) -%}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+{%- endblock textarea_widget -%}
+
+{# Choices #}
+
+{%- block choice_widget_collapsed -%}
+    {%- set attr = attr|merge({class: ('select ' ~ attr.class|default(''))|trim}) -%}
+    <span class="select-wrap{{ errors|length > 0 ? ' select-wrap--error' }}">
+        {{- parent() -}}
+        {{- icon('expand-more', null, 'select-wrap__icon') -}}
+    </span>
+{%- endblock choice_widget_collapsed -%}
+
+{%- block choice_widget_expanded -%}
+    {%- set segmented = 'segmented' in attr.class|default('')|split(' ') -%}
+    {%- if not segmented %}{% set attr = attr|merge({class: ('choices ' ~ attr.class|default(''))|trim}) %}{% endif -%}
+    <div {{ block('widget_container_attributes') }}>
+        {%- for child in form -%}
+            {%- if segmented -%}
+                <span class="segmented__item">
+                    {{- form_widget(child, {attr: {class: 'segmented__input'}}) -}}
+                    {{- form_label(child, null, {translation_domain: choice_translation_domain, label_attr: {class: 'segmented__label'}}) -}}
+                </span>
+            {%- else -%}
+                <div class="choice">
+                    {{- form_widget(child) -}}
+                    {{- form_label(child, null, {translation_domain: choice_translation_domain}) -}}
+                </div>
+            {%- endif -%}
+        {%- endfor -%}
+    </div>
+{%- endblock choice_widget_expanded -%}
+
+{%- block checkbox_widget -%}
+    {%- if 'segmented__input' not in attr.class|default('')|split(' ') -%}
+        {%- set attr = attr|merge({class: ('choice__input choice__input--checkbox ' ~ attr.class|default(''))|trim}) -%}
+    {%- endif -%}
+    {{- parent() -}}
+{%- endblock checkbox_widget -%}
+
+{%- block radio_widget -%}
+    {%- if 'segmented__input' not in attr.class|default('')|split(' ') -%}
+        {%- set attr = attr|merge({class: ('choice__input choice__input--radio ' ~ attr.class|default(''))|trim}) -%}
+    {%- endif -%}
+    {{- parent() -}}
+{%- endblock radio_widget -%}
+
+{# Buttons #}
+
+{%- block button_widget -%}
+    {%- set attr = attr|merge({class: ('btn btn--primary btn--lg ' ~ attr.class|default(''))|trim}) -%}
+    <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>
+        <span class="btn__label">{{- block('form_label_content') -}}</span>
+    </button>
+{%- endblock button_widget -%}

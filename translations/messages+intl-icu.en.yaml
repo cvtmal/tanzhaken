@@ -1,7 +1,54 @@
 layout:
-    app_name: TanzHaken
+    skip_to_content: Skip to content
+    nav:
+        label: Main navigation
+        today: Today
+        courses: Courses
+        students: Students
+        account: Account
+    footer:
+        privacy: Privacy
+    flash:
+        dismiss: Dismiss
 
 placeholder:
-    title: Not built yet · TanzHaken
+    title: Not built yet
     heading: Not built yet
     body: This page ({route}) arrives in a later cycle.
+
+component:
+    form:
+        optional: optional
+        show_password: Show password
+        error_summary: Please check the form
+    alert:
+        dismiss: Dismiss
+    dialog:
+        close: Close
+    page_header:
+        breadcrumbs: Breadcrumb
+    balance:
+        low: Low
+        renewal_needed: Renewal needed
+        outstanding: '{count, plural, one {# lesson outstanding} other {# lessons outstanding}}'
+        left: '{count, plural, one {# lesson left} other {# lessons left}}'
+        of_total: '{left} of {total} lessons left'
+
+error:
+    home: Go to the start page
+    generic:
+        title: 'Error {code}'
+        heading: Something went wrong
+        text: 'The request could not be completed (error {code}). Please try again in a moment.'
+    '403':
+        title: No access
+        heading: This page is not open to you
+        text: You do not have access to this page. If you think you should, sign in with the right account.
+    '404':
+        title: Page not found
+        heading: We could not find this page
+        text: The link may be old or mistyped.
+    '500':
+        title: Something went wrong
+        heading: Something went wrong on our side
+        text: Please try again in a moment.

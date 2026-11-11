@@ -4,17 +4,20 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block meta %}{% endblock %}
-        <title>{% block title %}{{ 'layout.app_name'|trans }}{% endblock %}</title>
+        <title>{% block title %}{{ brand_name }}{% endblock %}</title>
         {% block stylesheets %}
+            <link rel="preload" href="{{ asset('fonts/figtree-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
+        <a class="skip-link" href="#main">{{ 'layout.skip_to_content'|trans }}</a>
         {% block body %}
-            <main id="main">{% block main %}{% endblock %}</main>
+            <main id="main" tabindex="-1">{% block main %}{% endblock %}</main>
         {% endblock %}
         {% block scripts %}
-            {{ importmap('app') }}
+            {# P2: a layout sets layout_scripts, a page sets page_scripts, both at template top level. #}
+            {{ importmap(['app']|merge(layout_scripts|default([]))|merge(page_scripts|default([]))) }}
         {% endblock %}
     </body>
 </html>

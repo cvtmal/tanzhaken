@@ -1,0 +1,181 @@
+/*
+ * Table (spec §6, R13). Mobile first: each row is a card and each cell prints its data-label as a micro label.
+ * At 64rem a real table: header 40 px 12px/600 ink-3, rows 44 px, inset dividers, hovered row on Paper.
+ */
+.table-wrap {
+    margin: var(--space-8) 0;
+}
+
+.table {
+    display: block;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-15);
+}
+
+.table__caption {
+    display: block;
+    margin-bottom: var(--space-8);
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+    font-weight: var(--weight-semibold);
+    text-align: start;
+}
+
+/* Stacked: the header row is read by screen readers only. */
+.table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.table tbody {
+    display: grid;
+    gap: var(--space-8);
+}
+
+.table tbody tr {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-12) var(--space-16);
+    border-radius: var(--radius-16);
+    background: var(--color-card);
+    box-shadow: var(--shadow-ring);
+}
+
+.table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+    min-height: 28px;
+    padding: 0;
+}
+
+.table td::before {
+    content: attr(data-label);
+    color: var(--color-ink-3);
+    font-size: var(--text-11);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+}
+
+/* Row actions: full row, 44 px targets. */
+.table td.table__actions {
+    display: flex;
+    gap: var(--space-8);
+    padding-top: var(--space-4);
+}
+
+.table td.table__actions::before {
+    display: none;
+}
+
+.table__actions .btn {
+    --btn-height: var(--control-min);
+    --btn-radius: var(--radius-12);
+    --btn-font: var(--text-15);
+
+    flex: 1;
+}
+
+@media (min-width: 64rem) {
+    .table-wrap {
+        overflow-x: auto;
+        padding: 0 var(--space-8) 0 var(--space-18);
+        border-radius: var(--radius-18);
+        background: var(--color-card);
+        box-shadow: var(--shadow-ring);
+    }
+
+    .table {
+        display: table;
+    }
+
+    .table__caption {
+        display: table-caption;
+        padding-top: var(--space-12);
+    }
+
+    .table thead {
+        position: static;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+    }
+
+    .table tbody {
+        display: table-row-group;
+    }
+
+    .table tbody tr {
+        display: table-row;
+        padding: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .table th {
+        height: 40px;
+        padding: 0 var(--space-12) 0 0;
+        border-bottom: 1px solid var(--color-line);
+        color: var(--color-ink-3);
+        font-size: var(--text-12);
+        font-weight: var(--weight-semibold);
+        text-align: start;
+        white-space: nowrap;
+    }
+
+    .table td,
+    .table td.table__actions {
+        display: table-cell;
+        height: 44px;
+        min-height: 0;
+        padding: 0 var(--space-12) 0 0;
+        vertical-align: middle;
+    }
+
+    .table tbody tr + tr td {
+        border-top: 1px solid var(--color-inset);
+    }
+
+    .table tbody tr:hover td {
+        background: var(--color-paper);
+    }
+
+    .table td::before {
+        display: none;
+    }
+
+    .table th:last-child,
+    .table td:last-child {
+        padding-right: 0;
+    }
+
+    .table td.table__actions {
+        text-align: end;
+        white-space: nowrap;
+    }
+
+    .table__actions .btn {
+        --btn-height: 30px;
+        --btn-radius: var(--radius-9);
+        --btn-font: var(--text-13);
+    }
+
+    .table--compact th {
+        height: 36px;
+    }
+
+    .table--compact td,
+    .table--compact td.table__actions {
+        height: 42px;
+    }
+}

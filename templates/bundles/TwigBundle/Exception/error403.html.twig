@@ -1,0 +1,7 @@
+{# Error page for status 403. Twig context: status_code, status_text (unused). #}
+{% extends '@Twig/Exception/_error_page.html.twig' %}
+
+{% block error_title %}{{ 'error.403.title'|trans }}{% endblock %}
+{% block error_icon 'lock' %}
+{% block error_heading %}{{ 'error.403.heading'|trans }}{% endblock %}
+{% block error_text %}{{ 'error.403.text'|trans }}{% endblock %}

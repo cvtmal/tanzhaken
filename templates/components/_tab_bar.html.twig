@@ -1,0 +1,19 @@
+{# Tab bar: fixed bottom navigation below 64rem (hidden at and above it, where the sidebar takes over).
+   Params: items (list of {route: string, label: string (translated), icon: string (sprite id), prefixes: list<string>}, required);
+           current (string|null, current route name, default null).
+   An item is active when current starts with one of its prefixes: aria-current="page" and the "-fill" icon.
+   Call: {% include 'components/_tab_bar.html.twig' with {items: nav_items, current: app.request.attributes.get('_route')} only %} #}
+{% set current = current|default('') %}
+<nav class="tab-bar" aria-label="{{ 'layout.nav.label'|trans }}">
+    <ul class="tab-bar__list">
+        {% for item in items %}
+            {% set active = item.prefixes|filter(prefix => current starts with prefix)|length > 0 %}
+            <li class="tab-bar__entry">
+                <a class="tab-bar__item{{ active ? ' tab-bar__item--active' }}" href="{{ path(item.route) }}"{% if active %} aria-current="page"{% endif %}>
+                    {{ icon(active ? item.icon ~ '-fill' : item.icon, null, 'icon--24') }}
+                    <span class="tab-bar__label">{{ item.label }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

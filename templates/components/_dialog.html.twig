@@ -1,0 +1,24 @@
+{# Dialog (spec §6, P6, R7), embed with slots: a native <dialog> that assets/js/dialog.js opens with showModal(). Params:
+   id (string, required: element id; a trigger carries data-dialog-open="<id>"); title (string, translated, required);
+   variant (string 'modal'|'sheet', default 'modal': sheet = bottom sheet below 64rem, right side panel at and above it);
+   close_label (string, translated, default 'component.dialog.close'|trans: name of the close icon button).
+   Blocks: dialog_body (content); dialog_actions (buttons, printed inside <form method="dialog">: a type 'submit' button
+   just closes; a button with data: {'dialog-confirm': true} closes and submits the form whose submit button opened the dialog).
+   Place the dialog outside the trigger's form (no nested forms). Without JS the trigger submits its form directly.
+   Call: {% embed 'components/_dialog.html.twig' with {id: 'close-checkin', title: 'x'|trans} only %}{% block dialog_body %}…{% endblock %}{% block dialog_actions %}…{% endblock %}{% endembed %} #}
+{% set variant = variant|default('modal') %}
+<dialog id="{{ id }}" class="dialog dialog--{{ variant }}" aria-labelledby="{{ id }}_title">
+    {%- if variant == 'sheet' %}<span class="dialog__grabber" aria-hidden="true"></span>{% endif %}
+    <div class="dialog__header">
+        <h2 id="{{ id }}_title" class="dialog__title">{{ title }}</h2>
+        <form method="dialog" class="dialog__close">
+            {% include 'components/_icon_button.html.twig' with {icon: 'close', label: close_label|default('component.dialog.close'|trans), type: 'submit', variant: 'plain'} only %}
+        </form>
+    </div>
+    <div class="dialog__body">
+        {%- block dialog_body %}{% endblock -%}
+    </div>
+    <form method="dialog" class="dialog__actions">
+        {%- block dialog_actions %}{% endblock -%}
+    </form>
+</dialog>

@@ -1,0 +1,12 @@
+{# Status badge (spec §3), not a control. Params:
+   label (string, translated, required);
+   variant (string 'today'|'open'|'present'|'absent'|'not-yet'|'low'|'danger'|'neutral', default 'neutral');
+   pulse (bool, default false: animated green dot; 'open' always shows the dot, pulse animates it; stopped by reduced motion);
+   size (string 'md'|'sm', default 'md': 24 px, 'sm' 22 px for course cards).
+   Call: {% include 'components/_status_badge.html.twig' with {label: 'x'|trans, variant: 'open', pulse: true} only %} #}
+{% set variant = variant|default('neutral') %}
+{% set pulse = pulse|default(false) %}
+<span class="badge badge--{{ variant }} badge--{{ size|default('md') }}">
+    {%- if pulse or variant == 'open' %}<span class="badge__dot{{ pulse ? ' pulse' }}" aria-hidden="true"></span>{% endif -%}
+    {{ label }}
+</span>

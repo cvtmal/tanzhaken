@@ -1,0 +1,52 @@
+/* Icon-only button, 44 x 44 (spec §1): ring (card + 1px ring, icon 22) and plain (header, icon 24). */
+.icon-btn {
+    --icon-btn-icon: 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--control-min);
+    height: var(--control-min);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-round);
+    color: var(--color-ink);
+    text-decoration: none;
+    cursor: pointer;
+    flex: none;
+}
+
+.icon-btn__icon {
+    width: var(--icon-btn-icon);
+    height: var(--icon-btn-icon);
+}
+
+.icon-btn--ring {
+    background: var(--color-card);
+    box-shadow: var(--shadow-ring);
+}
+
+.icon-btn--ring:hover {
+    background: var(--color-inset);
+    color: var(--color-ink);
+}
+
+.icon-btn--plain {
+    --icon-btn-icon: 24px;
+
+    background: transparent;
+    color: inherit;
+}
+
+.icon-btn--plain:hover {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    color: inherit;
+}
+
+.icon-btn:disabled,
+.icon-btn:disabled:hover {
+    background: var(--color-disabled-bg);
+    box-shadow: none;
+    color: var(--color-disabled-text);
+    cursor: not-allowed;
+}

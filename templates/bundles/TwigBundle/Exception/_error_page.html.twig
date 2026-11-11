@@ -1,0 +1,19 @@
+{# Error page frame (R11): public layout, an icon tile, a serif heading, one line of text, a link home.
+   No database query and no app.user, so it renders for any error, logged in or not. Child templates fill
+   the blocks error_title (the <title> text), error_icon (a sprite id as an expression), error_heading and error_text. #}
+{% extends 'layout/public.html.twig' %}
+
+{% block title %}{% block error_title %}{{ 'error.generic.title'|trans({code: status_code ?? ''}) }}{% endblock %} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="error-page">
+        <span class="error-page__icon" aria-hidden="true">{{ icon(block('error_icon')|trim, null, 'icon--24') }}</span>
+        <h1 class="error-page__heading">{% block error_heading %}{{ 'error.generic.heading'|trans }}{% endblock %}</h1>
+        <p class="error-page__text">{% block error_text %}{{ 'error.generic.text'|trans({code: status_code ?? ''}) }}{% endblock %}</p>
+        <div class="error-page__action">
+            {% include 'components/_link_button.html.twig' with {label: 'error.home'|trans, href: path('home'), icon: 'arrow-back'} only %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block error_icon 'info' %}

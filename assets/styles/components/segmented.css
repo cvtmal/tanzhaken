@@ -1,0 +1,67 @@
+/* Segmented choice (spec §1 Segments, D1): one tile per option, 46 px high, at least 44 px wide (7 weekdays fit 390 px), r13; selected = accent + white.
+   The radio stays in the DOM (visually hidden, focusable); its label is the tile. */
+.segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+}
+
+.segmented__item {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    min-width: var(--control-min);
+}
+
+.segmented__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.segmented__label {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    padding: 0 var(--space-8);
+    border: 1px solid var(--color-field-line);
+    border-radius: 13px;
+    background: var(--color-card);
+    color: var(--color-ink);
+    font-size: var(--text-15);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.segmented__input:hover + .segmented__label {
+    background: var(--color-inset);
+}
+
+.segmented__input:checked + .segmented__label {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+.segmented__input:focus-visible + .segmented__label {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+}
+
+.segmented__input:disabled + .segmented__label {
+    border-color: var(--color-line);
+    background: var(--color-disabled-bg);
+    color: var(--color-disabled-text);
+    cursor: not-allowed;
+}
+
+.field--error .segmented__label {
+    border-color: var(--color-danger-solid);
+}

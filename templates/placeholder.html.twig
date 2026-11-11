@@ -1,9 +1,9 @@
-{% extends 'base.html.twig' %}
+{% extends route matches '/^(home|login|logout|register|password_)/' ? 'layout/auth.html.twig' : (route in ['checkin_public', 'privacy'] ? 'layout/public.html.twig' : 'layout/teacher.html.twig') %}
 
-{% block title %}{{ 'placeholder.title'|trans }}{% endblock %}
+{% block title %}{{ 'placeholder.title'|trans }} · {{ brand_name }}{% endblock %}
 
 {% block main %}
-    <h1>{{ 'placeholder.heading'|trans }}</h1>
-    <p>{{ 'placeholder.body'|trans({route: route}) }}</p>
+    <h1 class="display-32">{{ 'placeholder.heading'|trans }}</h1>
+    <p class="placeholder__body">{{ 'placeholder.body'|trans({route: route}) }}</p>
     <p><code data-route="{{ route }}">{{ route }}</code></p>
 {% endblock %}

@@ -1,0 +1,63 @@
+/* Wordmark (spec §7): accent tile with a check + brand name in Newsreader 500. */
+.wordmark {
+    --wordmark-tile: 30px;
+    --wordmark-radius: var(--radius-9);
+    --wordmark-check: 18px;
+    --wordmark-text: 21px;
+    --wordmark-gap: var(--space-10);
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wordmark-gap);
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+a.wordmark:hover {
+    color: var(--color-ink);
+}
+
+.wordmark--sm {
+    --wordmark-tile: 26px;
+    --wordmark-radius: 8px;
+    --wordmark-check: 16px;
+    --wordmark-text: 18px;
+    --wordmark-gap: var(--space-8);
+}
+
+.wordmark--lg {
+    --wordmark-tile: 44px;
+    --wordmark-radius: 13px;
+    --wordmark-check: 26px;
+    --wordmark-text: 28px;
+    --wordmark-gap: var(--space-12);
+}
+
+.wordmark__tile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wordmark-tile);
+    height: var(--wordmark-tile);
+    border-radius: var(--wordmark-radius);
+    background: var(--color-accent);
+    flex: none;
+}
+
+.wordmark__tile svg {
+    width: var(--wordmark-check);
+    height: var(--wordmark-check);
+    fill: none;
+    stroke: var(--color-on-accent);
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.wordmark__name {
+    font-family: var(--font-serif);
+    font-size: var(--wordmark-text);
+    font-weight: var(--weight-medium);
+    line-height: 1;
+    letter-spacing: var(--tracking-display);
+}

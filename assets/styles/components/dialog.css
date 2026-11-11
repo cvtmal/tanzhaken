@@ -1,0 +1,150 @@
+/*
+ * Dialog (spec §6, P6): native <dialog> opened with showModal(). Modal = centred card; sheet = bottom sheet
+ * below 64rem and a right side panel (--panel-width, full height) at and above it. Backdrop = --scrim.
+ */
+.dialog {
+    --dialog-from: translateY(8px) scale(0.98);
+
+    width: min(calc(100% - var(--space-32)), 26rem);
+    max-width: none;
+    max-height: calc(100dvh - var(--space-32));
+    padding: var(--space-24);
+    border: 0;
+    border-radius: var(--radius-22);
+    background: var(--color-card);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-dialog);
+    overflow-y: auto;
+}
+
+.dialog::backdrop {
+    background: var(--scrim);
+}
+
+.dialog__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-12);
+}
+
+.dialog__title {
+    margin: var(--space-8) 0 0;
+    font-family: var(--font-serif);
+    font-size: var(--display-24);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+}
+
+.dialog__close {
+    margin: calc(-1 * var(--space-10)) calc(-1 * var(--space-10)) 0 0;
+}
+
+.dialog__body {
+    margin-top: var(--space-8);
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+    line-height: var(--leading-text);
+}
+
+.dialog__body > :first-child {
+    margin-top: 0;
+}
+
+.dialog__body > :last-child {
+    margin-bottom: 0;
+}
+
+.dialog__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-10);
+    margin-top: var(--space-20);
+}
+
+.dialog__actions:empty {
+    display: none;
+}
+
+.dialog__actions .btn {
+    --btn-height: var(--control-min);
+    --btn-radius: var(--radius-12);
+}
+
+/* Sheet (spec §6 bottom sheet): bottom edge, r28 top, grabber. */
+.dialog--sheet {
+    --dialog-from: translateY(100%);
+
+    inset: auto 0 0;
+    width: 100%;
+    max-height: 90dvh;
+    margin: 0;
+    padding: var(--space-10) var(--space-24) max(var(--space-24), env(safe-area-inset-bottom));
+    border-radius: var(--radius-28) var(--radius-28) 0 0;
+    box-shadow: var(--shadow-sheet);
+}
+
+.dialog__grabber {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0 auto var(--space-14);
+    border-radius: 2px;
+    background: var(--color-line-strong);
+}
+
+@keyframes th-dialog-in {
+    from {
+        opacity: 0;
+        transform: var(--dialog-from);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .dialog[open] {
+        animation: th-dialog-in 180ms ease-out;
+    }
+}
+
+/* Side panel (spec §6): right edge, full height, footer with a top border. */
+@media (min-width: 64rem) {
+    .dialog--sheet {
+        --dialog-from: translateX(100%);
+
+        inset: 0 0 0 auto;
+        width: var(--panel-width);
+        height: 100%;
+        max-height: none;
+        padding: 26px var(--space-20) 0 var(--space-32);
+        border-left: 1px solid var(--color-line);
+        border-radius: 0;
+        box-shadow: var(--shadow-panel);
+        overflow: hidden;
+    }
+
+    .dialog--sheet[open] {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dialog--sheet .dialog__grabber {
+        display: none;
+    }
+
+    .dialog--sheet .dialog__title {
+        font-size: var(--display-28);
+    }
+
+    .dialog--sheet .dialog__body {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .dialog--sheet .dialog__actions {
+        margin: 0 calc(-1 * var(--space-20)) 0 calc(-1 * var(--space-32));
+        padding: var(--space-16) var(--space-32) var(--space-24);
+        border-top: 1px solid var(--color-line);
+    }
+}

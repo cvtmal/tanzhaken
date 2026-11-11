@@ -1,0 +1,7 @@
+{# Generic error page (every status without its own template). Twig context: status_code, status_text. #}
+{% extends '@Twig/Exception/_error_page.html.twig' %}
+
+{% block error_title %}{{ 'error.generic.title'|trans({code: status_code}) }}{% endblock %}
+{% block error_icon 'error' %}
+{% block error_heading %}{{ 'error.generic.heading'|trans }}{% endblock %}
+{% block error_text %}{{ 'error.generic.text'|trans({code: status_code}) }}{% endblock %}

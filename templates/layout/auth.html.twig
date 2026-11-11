@@ -1,3 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block body_class %}layout-auth{% endblock %}
+{% block body_class 'layout-auth' %}
+
+{% block body %}
+    <div class="auth-shell">
+        <header class="auth-shell__brand">
+            {% include 'components/_wordmark.html.twig' with {size: 'lg', href: path('home')} only %}
+        </header>
+        <main id="main" class="auth-card" tabindex="-1">
+            {% block main %}{% endblock %}
+        </main>
+        {% include 'layout/_footer.html.twig' %}
+    </div>
+{% endblock %}

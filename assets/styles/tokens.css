@@ -1,0 +1,153 @@
+/*
+ * Design tokens (cycle #2). Source: docs/design/README.md §5 and the component spec.
+ *
+ * Changes against the design for WCAG 2.2 AA (contrast per WCAG relative luminance):
+ *   --color-ink-3        #766D71 -> #6E6569  meta text: 4.25/4.07/4.36 on Inset/#EDE7DC/#F3EFE7 (fail 4.5)
+ *                                            -> 4.79/4.58/4.91 (pass); on Paper/Card 5.13/5.58
+ *   --color-field-line   #D9D0C2 -> #8F8478  input boundary on Card 1.51 (fail 3:1) -> 3.63 on Card, 3.33 on Paper;
+ *                                            the design value stays as --color-line-strong (decorative only)
+ *   --color-low-solid    #D9982B -> #B57F1F  dot/bar fill on Card 2.46 (fail 3:1) -> 3.46 on Card, 3.08 on #FBF0D6
+ *   --color-focus        Soft ring #F3E9F1 as focus = 1.17 on Card (fail 3:1) -> 2px solid accent outline,
+ *                                            offset 2px (9.64 on Paper); on the dark toast the outline uses Paper
+ *   Disabled text #766D71 on #E8E1D5 is kept: inactive components are exempt (1.4.3).
+ *
+ * Breakpoint: one layout switch at 64rem. It is written as a literal in every media query,
+ * because custom properties cannot be used inside @media conditions.
+ */
+:root {
+    /* Surfaces and lines */
+    --color-paper: #F7F4EE;
+    --color-card: #FFFEFB;
+    --color-inset: #F1ECE3;
+    --color-line: #E8E1D5;
+    --color-line-strong: #D9D0C2;
+    --color-field-line: #8F8478;
+
+    /* Text */
+    --color-ink: #1E1A1D;
+    --color-ink-2: #5C5458;
+    --color-ink-3: #6E6569;
+
+    /* Accent (Plum) */
+    --color-accent: #62295A;
+    --color-accent-pressed: #4E1F48;
+    --color-accent-soft: #F3E9F1;
+    --color-accent-line: #E3CFE0;
+    --color-on-accent: #FFFFFF;
+
+    /* Neutral chips and disabled */
+    --color-neutral-bg: #F3EFE7;
+    --color-neutral-bg-2: #EDE7DC;
+    --color-disabled-bg: #E8E1D5;
+    --color-disabled-text: #766D71;
+
+    /* Toast */
+    --color-toast-bg: #1E1A1D;
+    --color-toast-text: #F7F4EE;
+    --color-toast-icon: #8FD1B0;
+    --color-toast-action-bg: rgba(255, 255, 255, 0.12);
+    --color-toast-action-hover: rgba(255, 255, 255, 0.2);
+
+    /* Status families (S9) */
+    --color-success-text: #256B4D;
+    --color-success-bg: #E5F1EA;
+    --color-success-line: #C6E0D2;
+    --color-success-solid: #2E8660;
+    --color-low-text: #8A5A00;
+    --color-low-bg: #FBF0D6;
+    --color-low-line: #EFD9A6;
+    --color-low-solid: #B57F1F;
+    --color-danger-text: #A8321F;
+    --color-danger-bg: #FBE8E3;
+    --color-danger-line: #F1C9BE;
+    --color-danger-solid: #C2412C;
+
+    /* Focus */
+    --color-focus: var(--color-accent);
+    --focus-width: 2px;
+    --focus-offset: 2px;
+
+    /* Type */
+    --font-sans: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-serif: "Newsreader", Georgia, serif;
+    --text-11: 0.6875rem;
+    --text-12: 0.75rem;
+    --text-13: 0.8125rem;
+    --text-14: 0.875rem;
+    --text-15: 0.9375rem;
+    --text-16: 1rem;
+    --text-17: 1.0625rem;
+    --text-19: 1.1875rem;
+    --text-22: 1.375rem;
+    --display-24: 1.5rem;
+    --display-28: 1.75rem;
+    --display-30: 1.875rem;
+    --display-32: 2rem;
+    --display-40: 2.5rem;
+    --display-42: 2.625rem;
+    --display-44: 2.75rem;
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+    --leading-text: 1.5;
+    --leading-display: 1.1;
+    --tracking-display: -0.02em;
+    --tracking-micro: 0.08em;
+
+    /* Space */
+    --space-2: 2px;
+    --space-4: 4px;
+    --space-6: 6px;
+    --space-8: 8px;
+    --space-10: 10px;
+    --space-12: 12px;
+    --space-14: 14px;
+    --space-16: 16px;
+    --space-18: 18px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-28: 28px;
+    --space-32: 32px;
+    --space-40: 40px;
+    --space-56: 56px;
+
+    /* Radii */
+    --radius-9: 9px;
+    --radius-10: 10px;
+    --radius-12: 12px;
+    --radius-14: 14px;
+    --radius-16: 16px;
+    --radius-18: 18px;
+    --radius-20: 20px;
+    --radius-22: 22px;
+    --radius-28: 28px;
+    --radius-pill: 999px;
+    --radius-round: 50%;
+
+    /* Control heights */
+    --control-min: 44px;
+    --control-md: 48px;
+    --control-lg: 52px;
+    --control-xl: 54px;
+    --control-field: 52px;
+    --control-field-desktop: 48px;
+
+    /* Shadows */
+    --shadow-ring: 0 0 0 1px var(--color-line);
+    --shadow-card-lift: 0 14px 30px -22px rgba(30, 26, 29, 0.3);
+    --shadow-hero: 0 10px 24px -16px rgba(30, 26, 29, 0.25);
+    --shadow-hero-desktop: 0 14px 30px -20px rgba(30, 26, 29, 0.25);
+    --shadow-dialog: 0 0 0 1px var(--color-line), 0 24px 48px -24px rgba(30, 26, 29, 0.35);
+    --shadow-sheet: 0 -20px 40px -20px rgba(30, 26, 29, 0.4);
+    --shadow-panel: -24px 0 48px -32px rgba(30, 26, 29, 0.25);
+    --shadow-toast: 0 14px 30px -12px rgba(30, 26, 29, 0.5);
+    --scrim: rgba(30, 26, 29, 0.44);
+
+    /* Layout */
+    --sidebar-width: 232px;
+    --tabbar-height: 84px;
+    --content-max-mobile: 40rem;
+    --content-max-desktop: 72rem;
+    --panel-width: 432px;
+}

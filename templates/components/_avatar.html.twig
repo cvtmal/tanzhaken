@@ -1,0 +1,4 @@
+{# Initials avatar (spec §4), decorative: the name is always printed next to it. Params:
+   initials (string, required, e.g. 'EB'); size (string 'sm'|'md'|'lg' = 32/36/44 px, default 'md').
+   Call: {% include 'components/_avatar.html.twig' with {initials: student.initials, size: 'lg'} only %} #}
+<span class="avatar avatar--{{ size|default('md') }}" aria-hidden="true">{{ initials }}</span>

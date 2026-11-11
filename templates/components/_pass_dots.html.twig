@@ -1,0 +1,13 @@
+{# The 10-lesson pass as dots or a segmented bar (spec §3). Params:
+   left (int, required: lessons left; values below 0 or above total are clamped for drawing);
+   total (int, default 10); variant (string 'dots'|'bar', default 'dots').
+   State colours follow S9: 1-2 left = low (Low solid), 0 or less = danger track.
+   One image for assistive tech: role="img" + component.balance.of_total.
+   Call: {% include 'components/_pass_dots.html.twig' with {left: 7, variant: 'bar'} only %} #}
+{% set total = total|default(10) %}
+{% set variant = variant|default('dots') %}
+{% set filled = min(max(left, 0), total) %}
+{% set state = left >= 3 ? 'ok' : (left >= 1 ? 'low' : 'danger') %}
+<span class="pass pass--{{ variant }} pass--{{ state }}" role="img" aria-label="{{ 'component.balance.of_total'|trans({left: left, total: total}) }}">
+    {%- for i in 1..total %}<span class="pass__unit{{ i <= filled ? ' pass__unit--filled' }}"></span>{% endfor -%}
+</span>

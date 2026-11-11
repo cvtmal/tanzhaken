@@ -1,0 +1,170 @@
+/* Buttons and link buttons (spec §1). Sizes as local properties, variants set colours. Focus: global :focus-visible. */
+.btn {
+    --btn-height: var(--control-md);
+    --btn-radius: var(--radius-14);
+    --btn-pad: var(--space-18);
+    --btn-font: var(--text-15);
+    --btn-icon: 20px;
+    --btn-gap: var(--space-8);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--btn-gap);
+    min-height: var(--btn-height);
+    padding: 0 var(--btn-pad);
+    border: 1px solid transparent;
+    border-radius: var(--btn-radius);
+    font-family: inherit;
+    font-size: var(--btn-font);
+    font-weight: var(--weight-semibold);
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.btn__icon {
+    width: var(--btn-icon);
+    height: var(--btn-icon);
+}
+
+.btn--icon-start {
+    padding-left: calc(var(--btn-pad) - var(--space-4));
+}
+
+.btn--icon-end {
+    padding-right: calc(var(--btn-pad) - var(--space-4));
+}
+
+.btn--block {
+    display: flex;
+    width: 100%;
+}
+
+/* Variant paddings at md (spec §1); the size rules below override them. */
+.btn--primary {
+    --btn-pad: var(--space-20);
+}
+
+.btn--text {
+    --btn-pad: var(--space-12);
+}
+
+/* Sizes */
+.btn--lg {
+    --btn-height: var(--control-xl);
+    --btn-radius: var(--radius-16);
+    --btn-pad: var(--space-20);
+    --btn-font: var(--text-16);
+    --btn-icon: 22px;
+}
+
+.btn--pill {
+    --btn-height: 40px;
+    --btn-radius: var(--radius-pill);
+    --btn-pad: var(--space-14);
+    --btn-font: var(--text-14);
+    --btn-gap: var(--space-4);
+}
+
+.btn--pill-sm {
+    --btn-height: 36px;
+    --btn-radius: var(--radius-pill);
+    --btn-pad: var(--space-12);
+    --btn-font: var(--text-14);
+    --btn-gap: var(--space-4);
+}
+
+.btn--compact {
+    --btn-height: 30px;
+    --btn-radius: var(--radius-9);
+    --btn-pad: 11px;
+    --btn-font: var(--text-13);
+    --btn-icon: 17px;
+    --btn-gap: var(--space-4);
+}
+
+@media (min-width: 64rem) {
+    .btn--lg {
+        --btn-height: var(--control-md);
+        --btn-radius: var(--radius-14);
+        --btn-font: var(--text-15);
+        --btn-icon: 20px;
+    }
+}
+
+/* Variants */
+.btn--primary {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+.btn--primary:hover {
+    background: var(--color-accent-pressed);
+    color: var(--color-on-accent);
+}
+
+.btn--soft {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+.btn--soft:hover {
+    background: var(--color-accent-line);
+    color: var(--color-accent);
+}
+
+.btn--secondary {
+    border-color: var(--color-line-strong);
+    background: var(--color-card);
+    color: var(--color-ink);
+}
+
+.btn--secondary:hover {
+    background: var(--color-inset);
+    color: var(--color-ink);
+}
+
+.btn--text {
+    background: transparent;
+    color: var(--color-accent);
+}
+
+.btn--text:hover {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+}
+
+/* Undo on the dark toast (spec §6): 36 px, r10. */
+.btn--toast-action {
+    --btn-height: 36px;
+    --btn-radius: var(--radius-10);
+    --btn-pad: var(--space-12);
+    --btn-font: var(--text-14);
+    --btn-icon: 18px;
+    --btn-gap: var(--space-4);
+
+    background: var(--color-toast-action-bg);
+    color: var(--color-on-accent);
+}
+
+.btn--toast-action:hover {
+    background: var(--color-toast-action-hover);
+    color: var(--color-on-accent);
+}
+
+.btn--toast-action:focus-visible {
+    outline-color: var(--color-paper);
+}
+
+/* Disabled (spec §1): one look for every variant. */
+.btn:disabled,
+.btn:disabled:hover {
+    border-color: transparent;
+    background: var(--color-disabled-bg);
+    color: var(--color-disabled-text);
+    cursor: not-allowed;
+}

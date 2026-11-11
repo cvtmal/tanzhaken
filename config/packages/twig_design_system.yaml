@@ -1,0 +1,5 @@
+# Design system (cycle #2): Twig globals for the layouts and the global form theme. config/packages/twig.yaml belongs to #0.
+twig:
+    form_themes: ['form/theme.html.twig']
+    globals:
+        brand_name: '%env(APP_BRAND_NAME)%'

@@ -1,0 +1,42 @@
+{# Sidebar: teacher navigation at and above 64rem (hidden below it, where the tab bar takes over).
+   Params: items (list of {route, label (translated), icon (sprite id), prefixes}, required; every item but the last
+           goes into the list, the last one (Account) into the footer); current (string|null, current route name, default null).
+   Footer (P4): initials avatar + app.user.displayName when the user has one, otherwise only the item label.
+   Call: {% include 'layout/_sidebar.html.twig' with {items: nav_items, current: app.request.attributes.get('_route')} only %} #}
+{% set current = current|default('') %}
+{% set account = items|last %}
+{% set account_active = account.prefixes|filter(prefix => current starts with prefix)|length > 0 %}
+{% set display_name = null %}
+{% if app.user is not null and app.user.displayName is defined %}
+    {% set display_name = app.user.displayName %}
+{% endif %}
+<nav class="sidebar" aria-label="{{ 'layout.nav.label'|trans }}">
+    <div class="sidebar__brand">
+        {% include 'components/_wordmark.html.twig' with {size: 'md', href: path('dashboard')} only %}
+    </div>
+    <ul class="sidebar__list">
+        {% for item in items|slice(0, items|length - 1) %}
+            {% set active = item.prefixes|filter(prefix => current starts with prefix)|length > 0 %}
+            <li>
+                <a class="sidebar__item hit-target{{ active ? ' sidebar__item--active' }}" href="{{ path(item.route) }}"{% if active %} aria-current="page"{% endif %}>
+                    {{ icon(active ? item.icon ~ '-fill' : item.icon, null, 'sidebar__icon') }}
+                    <span>{{ item.label }}</span>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="sidebar__footer">
+        <a class="sidebar__account{{ account_active ? ' sidebar__account--active' }}" href="{{ path(account.route) }}"{% if account_active %} aria-current="page"{% endif %}>
+            {% if display_name %}
+                <span class="sidebar__avatar" aria-hidden="true">{{ display_name|split(' ')|slice(0, 2)|map(word => word|first|upper)|join }}</span>
+                <span class="sidebar__account-text">
+                    <span class="sidebar__account-name">{{ display_name }}</span>
+                    <span class="sidebar__account-label">{{ account.label }}</span>
+                </span>
+            {% else %}
+                {{ icon(account_active ? account.icon ~ '-fill' : account.icon, null, 'sidebar__icon') }}
+                <span>{{ account.label }}</span>
+            {% endif %}
+        </a>
+    </div>
+</nav>

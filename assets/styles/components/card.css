@@ -1,0 +1,89 @@
+/* Cards (spec §4): default (course card surface), hero (lesson hero), compact (lesson), stat (tile). */
+.card {
+    --card-pad: var(--space-14);
+    --card-radius: var(--radius-18);
+
+    display: block;
+    padding: var(--card-pad);
+    border: 1px solid var(--color-line);
+    border-radius: var(--card-radius);
+    background: var(--color-card);
+    color: var(--color-ink);
+}
+
+.card--hero {
+    --card-pad: var(--space-18);
+    --card-radius: var(--radius-20);
+
+    box-shadow: var(--shadow-hero);
+}
+
+.card--compact {
+    --card-radius: var(--radius-20);
+
+    padding-left: var(--space-18);
+}
+
+.card--stat {
+    --card-radius: var(--radius-16);
+
+    padding: var(--space-12) var(--space-14);
+}
+
+@media (min-width: 64rem) {
+    .card--hero {
+        --card-pad: var(--space-24);
+
+        box-shadow: var(--shadow-hero-desktop);
+    }
+}
+
+.card--link {
+    text-decoration: none;
+}
+
+.card--link:hover {
+    border-color: var(--color-line-strong);
+    color: var(--color-ink);
+}
+
+/* Body helpers */
+.card__label {
+    display: block;
+    color: var(--color-ink-3);
+    font-size: var(--text-12);
+    font-weight: var(--weight-semibold);
+}
+
+.card__value {
+    display: block;
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+}
+
+.card__title {
+    display: block;
+    font-size: var(--text-17);
+    font-weight: var(--weight-semibold);
+}
+
+.card--hero .card__title {
+    font-size: var(--text-19);
+}
+
+@media (min-width: 64rem) {
+    .card--hero .card__title {
+        font-size: var(--text-22);
+    }
+}
+
+.card__meta {
+    display: block;
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+}
+
+.card--stat .card__meta {
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}

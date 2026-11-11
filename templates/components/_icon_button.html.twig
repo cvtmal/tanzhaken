@@ -1,0 +1,20 @@
+{# Icon-only control, 44 x 44, spec §1. Params:
+   icon (string, sprite id, required); label (string, translated, required: becomes aria-label);
+   href (string|null, default null: renders <a> instead of <button>);
+   variant (string 'ring'|'plain', default 'ring'; 'plain' has no background and inherits the text colour, so it also works on the dark toast);
+   type (string, default 'button', <button> only); disabled (bool, default false, <button> only);
+   attr (map<string,string>, extra attributes; attr.class is appended; default {}); data (map<string,string|true>, data-* attributes, default {}).
+   Call: {% include 'components/_icon_button.html.twig' with {icon: 'close', label: 'x'|trans, type: 'submit', variant: 'plain'} only %} #}
+{% set variant = variant|default('ring') %}
+{% set href = href|default(null) %}
+{% set attr = attr|default({}) %}
+{% set data = data|default({}) %}
+{% set classes = ['icon-btn', 'icon-btn--' ~ variant] %}
+{% if attr.class is defined %}{% set classes = classes|merge([attr.class]) %}{% endif %}
+{% set tag = href ? 'a' : 'button' %}
+<{{ tag }} class="{{ classes|join(' ') }}" aria-label="{{ label }}"
+    {%- if href %} href="{{ href }}"{% else %} type="{{ type|default('button') }}"{% if disabled|default(false) %} disabled{% endif %}{% endif %}
+    {%- for key, val in attr|filter((v, k) => k != 'class') %} {{ key }}="{{ val }}"{% endfor %}
+    {%- for key, val in data %}{% if val is same as(true) %} data-{{ key }}{% else %} data-{{ key }}="{{ val }}"{% endif %}{% endfor %}>
+    {{- icon(icon, null, 'icon-btn__icon') -}}
+</{{ tag }}>

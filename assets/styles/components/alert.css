@@ -1,0 +1,58 @@
+/* Alert (status families, Foundations status cards): tinted surface, coloured line, 20 px icon. */
+.alert {
+    --alert-bg: var(--color-accent-soft);
+    --alert-line: var(--color-accent-line);
+    --alert-ink: var(--color-accent);
+
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-10);
+    margin: var(--space-8) 0;
+    padding: var(--space-12) var(--space-14);
+    border: 1px solid var(--alert-line);
+    border-radius: var(--radius-14);
+    background: var(--alert-bg);
+    color: var(--color-ink);
+    font-size: var(--text-14);
+}
+
+.alert--success {
+    --alert-bg: var(--color-success-bg);
+    --alert-line: var(--color-success-line);
+    --alert-ink: var(--color-success-text);
+}
+
+.alert--warning {
+    --alert-bg: var(--color-low-bg);
+    --alert-line: var(--color-low-line);
+    --alert-ink: var(--color-low-text);
+}
+
+.alert--danger {
+    --alert-bg: var(--color-danger-bg);
+    --alert-line: var(--color-danger-line);
+    --alert-ink: var(--color-danger-text);
+}
+
+.alert__icon {
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    color: var(--alert-ink);
+}
+
+.alert__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.alert__title {
+    color: var(--alert-ink);
+    font-size: var(--text-15);
+    font-weight: var(--weight-semibold);
+}
+
+.alert__dismiss {
+    margin: calc(var(--space-10) * -1) calc(var(--space-10) * -1) calc(var(--space-10) * -1) 0;
+    color: var(--alert-ink);
+}

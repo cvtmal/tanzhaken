@@ -1,0 +1,10 @@
+{# Wordmark: accent tile with a check + the brand name (Twig global brand_name, APP_BRAND_NAME).
+   Params: size (string, 'sm'|'md'|'lg', default 'md'); href (string|null, default null: no link).
+   Call: {% include 'components/_wordmark.html.twig' with {size: 'lg', href: path('home')} only %} #}
+{% set size = size|default('md') %}
+{% set href = href|default(null) %}
+{% set tag = href ? 'a' : 'span' %}
+<{{ tag }} class="wordmark wordmark--{{ size }}"{% if href %} href="{{ href }}"{% endif %}>
+    <span class="wordmark__tile"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 13l4.5 4.5L19.5 6.5"/></svg></span>
+    <span class="wordmark__name">{{ brand_name }}</span>
+</{{ tag }}>

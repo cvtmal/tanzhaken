@@ -1,0 +1,20 @@
+{# Inline alert. Params:
+   text (string, translated, required); variant (string 'info'|'success'|'warning'|'danger', default 'info');
+   title (string|null, translated, default null);
+   dismissible (bool, default false: prints a close button, hidden until assets/js/alert.js un-hides it;
+   the teacher layout loads that script, any other page sets page_scripts = ['alert']; without it the alert simply stays).
+   Icons: info, check-circle, warning, error. role="alert" only for danger (announced at once); the others are plain content.
+   Call: {% include 'components/_alert.html.twig' with {variant: 'danger', title: 'x'|trans, text: 'y'|trans} only %} #}
+{% set variant = variant|default('info') %}
+{% set title = title|default(null) %}
+{% set icons = {info: 'info', success: 'check-circle', warning: 'warning', danger: 'error'} %}
+<div class="alert alert--{{ variant }}"{% if variant == 'danger' %} role="alert"{% endif %}>
+    {{ icon(icons[variant], null, 'alert__icon') }}
+    <div class="alert__body">
+        {%- if title %}<p class="alert__title">{{ title }}</p>{% endif -%}
+        <p class="alert__text">{{ text }}</p>
+    </div>
+    {%- if dismissible|default(false) %}
+        {% include 'components/_icon_button.html.twig' with {icon: 'close', label: 'component.alert.dismiss'|trans, variant: 'plain', attr: {class: 'alert__dismiss', hidden: 'hidden'}, data: {'alert-dismiss': true}} only %}
+    {%- endif %}
+</div>

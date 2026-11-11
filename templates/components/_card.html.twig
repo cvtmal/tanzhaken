@@ -1,0 +1,12 @@
+{# Card (spec §4), embed with a slot. Params:
+   variant (string 'default'|'hero'|'compact'|'stat', default 'default');
+   href (string|null, default null: the whole card becomes one link; then put no other control inside);
+   tag (string, element name when href is null, e.g. 'div'|'section'|'article'|'li', default 'div').
+   Block: card_body. Helper classes for the body: .card__label, .card__value, .card__title, .card__meta.
+   Call: {% embed 'components/_card.html.twig' with {variant: 'stat'} only %}{% block card_body %}…{% endblock %}{% endembed %} #}
+{% set variant = variant|default('default') %}
+{% set href = href|default(null) %}
+{% set tag = href ? 'a' : tag|default('div') %}
+<{{ tag }} class="card card--{{ variant }}{{ href ? ' card--link' }}"{% if href %} href="{{ href }}"{% endif %}>
+    {%- block card_body %}{% endblock -%}
+</{{ tag }}>

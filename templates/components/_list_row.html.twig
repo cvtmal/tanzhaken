@@ -1,0 +1,26 @@
+{# List row (<li>, spec §4), embed with a trailing slot; use inside _list. Params:
+   title (string, required); href (string|null, default null: the title link covers the whole row via a stretched ::after);
+   meta (string|null, default null); meta_variant (string 'default'|'danger'|'low', default 'default');
+   lead (string 'avatar'|'date'|'none', default 'none'); initials (string, for lead 'avatar');
+   date_weekday (string, e.g. 'THU', for lead 'date'); date_day (string|int, for lead 'date');
+   chevron (bool, default true when href is set, else false; drawn last, decorative).
+   Block: row_trailing (chips, buttons). Trailing controls sit outside the link and above its stretched area,
+   so there are no nested interactive elements.
+   Call: {% embed 'components/_list_row.html.twig' with {title: s.name, href: path('student_show', {id: s.id}), lead: 'avatar', initials: s.initials} only %}{% block row_trailing %}…{% endblock %}{% endembed %} #}
+{% set href = href|default(null) %}
+{% set meta = meta|default(null) %}
+{% set lead = lead|default('none') %}
+{% set chevron = chevron ?? (href is not null) %}
+<li class="list-row list-row--lead-{{ lead }}{{ href ? ' list-row--link' }}">
+    {%- if lead == 'avatar' %}
+        {% include 'components/_avatar.html.twig' with {initials: initials, size: 'md'} only %}
+    {%- elseif lead == 'date' %}
+        <span class="list-row__date"><span class="list-row__weekday">{{ date_weekday }}</span><span class="list-row__day">{{ date_day }}</span></span>
+    {%- endif %}
+    <span class="list-row__text">
+        {%- if href %}<a class="list-row__title list-row__link" href="{{ href }}">{{ title }}</a>{% else %}<span class="list-row__title">{{ title }}</span>{% endif -%}
+        {%- if meta %}<span class="list-row__meta list-row__meta--{{ meta_variant|default('default') }}">{{ meta }}</span>{% endif -%}
+    </span>
+    <span class="list-row__trailing">{% block row_trailing %}{% endblock %}</span>
+    {%- if chevron %}<span class="list-row__chevron">{{ icon('chevron-right', null, 'icon--22') }}</span>{% endif %}
+</li>

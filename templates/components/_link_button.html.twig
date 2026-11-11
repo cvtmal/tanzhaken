@@ -1,0 +1,25 @@
+{# Link with the look of a button (<a>), spec §1. Params:
+   label (string, translated, required); href (string, required);
+   variant (string 'primary'|'soft'|'secondary'|'text', default 'primary'); size (string 'md'|'lg'|'pill'|'pill-sm'|'compact', default 'md');
+   icon (string|null, sprite id, default null); icon_position (string 'start'|'end', default 'start'); full_width (bool, default false);
+   attr (map<string,string>, extra attributes; attr.class is appended; default {}); data (map<string,string|true>, data-* attributes, default {}).
+   No disabled state: a link that cannot be followed is not rendered.
+   Call: {% include 'components/_link_button.html.twig' with {label: 'x'|trans, href: path('course_index'), size: 'lg', icon: 'add'} only %} #}
+{% set variant = variant|default('primary') %}
+{% set size = size|default('md') %}
+{% set icon = icon|default(null) %}
+{% set icon_position = icon_position|default('start') %}
+{% set attr = attr|default({}) %}
+{% set data = data|default({}) %}
+{% set classes = ['btn', 'btn--' ~ variant, 'btn--' ~ size] %}
+{% if size in ['pill-sm', 'compact'] %}{% set classes = classes|merge(['hit-target']) %}{% endif %}
+{% if full_width|default(false) %}{% set classes = classes|merge(['btn--block']) %}{% endif %}
+{% if icon %}{% set classes = classes|merge(['btn--icon-' ~ icon_position]) %}{% endif %}
+{% if attr.class is defined %}{% set classes = classes|merge([attr.class]) %}{% endif %}
+<a href="{{ href }}" class="{{ classes|join(' ') }}"
+    {%- for key, val in attr|filter((v, k) => k != 'class') %} {{ key }}="{{ val }}"{% endfor %}
+    {%- for key, val in data %}{% if val is same as(true) %} data-{{ key }}{% else %} data-{{ key }}="{{ val }}"{% endif %}{% endfor %}>
+    {%- if icon and icon_position == 'start' %}{{ icon(icon, null, 'btn__icon') }}{% endif -%}
+    <span class="btn__label">{{ label }}</span>
+    {%- if icon and icon_position == 'end' %}{{ icon(icon, null, 'btn__icon') }}{% endif -%}
+</a>

@@ -1,3 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block body_class %}layout-teacher{% endblock %}
+{# P2: scripts every teacher page loads: toast.js (toasts, dismissible alerts). #}
+{% set layout_scripts = ['toast', 'alert'] %}
+{% set nav_items = [
+    {route: 'dashboard', label: 'layout.nav.today'|trans, icon: 'home', prefixes: ['dashboard']},
+    {route: 'course_index', label: 'layout.nav.courses'|trans, icon: 'calendar-month', prefixes: ['course_', 'lesson_', 'checkin_manage', 'checkin_status']},
+    {route: 'student_index', label: 'layout.nav.students'|trans, icon: 'group', prefixes: ['student_']},
+    {route: 'account', label: 'layout.nav.account'|trans, icon: 'person', prefixes: ['account']},
+] %}
+
+{% block body_class 'layout-teacher' %}
+
+{% block body %}
+    {% set current_route = app.request.attributes.get('_route') %}
+    <div class="app-shell">
+        {% include 'layout/_sidebar.html.twig' with {items: nav_items, current: current_route} only %}
+        <div class="app-column">
+            <main id="main" class="app-main" tabindex="-1">
+                {% include 'layout/_flashes.html.twig' %}
+                {% block main %}{% endblock %}
+            </main>
+            {% include 'layout/_footer.html.twig' %}
+        </div>
+        {% include 'components/_tab_bar.html.twig' with {items: nav_items, current: current_route} only %}
+    </div>
+{% endblock %}
