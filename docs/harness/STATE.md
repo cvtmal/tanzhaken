@@ -38,17 +38,17 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 |---|---|---|---|---|---|
 | 8 `checkin-core` | implement | c08-impl (bg 40c34956) | A (8001) | 11-11 12:05 | plan 6 phases; D-035; outcome carries #14 notes (label rule P2, limiter reset) |
 | 4 `teacher-auth` | implement | c04-impl (bg 6004b4d2) | C (8003) | 11-11 11:45 | plan 6 phases; lane synced onto #2/#7; D-031, D-033; #11 must put logout on /account (phones) |
-| 10 `courses-ui` | plan | c10-plan (bg) | B (8002) | 11-11 12:15 | research done (152k); D-034 rows, D-036 badge slot; implement after #4 lands |
+| 10 `courses-ui` | waiting for #4 | — | B (8002) | 11-11 12:25 | plan done (9 phases, L; from Phase 4 needs #4); next: `lane sync courses-ui`, then c10-impl "start at Step 0.1" |
 | 9 `students-ui` | waiting for #4 | — | D (8004) | 11-11 11:55 | plan done (6 phases, phases 0, 3–4 need #4); next: `lane sync students-ui`, then c09-impl |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70` (all ✅ Done in the overview). W1 has only #2 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
-1. Check `bin/harness/status`: the `ci` line for `b4dcb75` (or a later harness commit) must be green before you open a new lane. Red → fix lane first (`CTO.md` §4.5).
-2. Resume #2: `bin/harness/lane sync design-system` (it lacks #3 and the S3 edit, D-023), then spawn `c02-impl-2` (implement, lane B, port 8002) with "Resume from the changes log (section Checkpoint) at Step 5.1." Open points it reported: alert dismiss button has no JS yet, success flash markup interim until 5.3; 390 px checked in a 390 px iframe because resize_window does not shrink the viewport.
-3. Open W2 backend lanes now, they need only #3: #5 `scheduling`, #6 `credit-ledger`, #7 `attendance-core` in lanes A, C, D (research). Their prompts: read `docs/outcomes/03-domain-model.md`; S3's repository/UUID rule applies.
-4. #4 `teacher-auth` needs #2 and #3; its research and plan may start before #2 lands (overview, "What can move"), but only when a lane is free.
+1. **Adopt the two running background teammates (D-037).** `c04-impl` (`6004b4d2`, lane C) and `c08-impl` (`40c34956`, lane A) are `claude --bg` sessions; they are not your teammates and cannot be messaged reliably. Watch for `.claude/worktrees/teacher-auth/.rpi-tracking/reports/c04-impl.md` and `.claude/worktrees/checkin-core/.rpi-tracking/reports/c08-impl.md` with a background waiter (a loop over the files, `sleep 30`, time limit). When one reports: read the file, `claude stop <id>`, `claude rm <id>`, then spawn the next phase as usual (you are in iTerm2: Agent tool, §5). If one is silent 45 min by `ctx` AGE: `claude stop`/`rm` and continue from its changes log with a fresh teammate.
+2. On `c04-impl` DONE: spawn `c04-review` (lane C, 8003). #4 is the critical path. After it lands and CI is green: `lane sync students-ui` → `c09-impl` (lane D, 8004); `lane sync courses-ui` → `c10-impl` (lane B, 8002, "start at Step 0.1; L cycle, WIP commit per phase"). Both plans are in their lanes' `.rpi-tracking/plans/2026-11-11/`.
+3. On `c08-impl` DONE: spawn `c08-review` (lane A, 8001). After #8 lands, lane A goes to #11 `account-and-reset` (research; needs #2, #4: wait for #4) or, if #4 has not landed, stays free.
+4. Then #11 (research; must include the logout partial on `/account` for phones, D-033), and W4 as dependencies land. Review prompts here have said: check D-026/D-027, "On Complete, land with bin/harness/land".
 5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
@@ -61,6 +61,8 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 - The design account holds other private projects; only "TanzHaken design review" is ours.
 - After any `docs/rpi-cycles.md` edit: commit, push, `lane sync` each open lane between its phases.
 - The CI wait: `gh run list --branch main --limit 1` shows the latest run; a harness push starts a new run that supersedes the cycle's.
+- CTO-2 ran as a `--bg` session and could not edit the main checkout (D-024) and could not use in-process teammates (I-2, D-025). You run in iTerm2: edit in place and spawn with the Agent tool. Bash `cd` into a lane moves your own cwd: start lane processes in a subshell `( cd … && … )`.
+- Teammate reports here are reliable and short; every cross-lane question so far had a sensible default — decide in one line and log it (D-026…D-036 are examples).
 
 ## CTO log
 
@@ -69,4 +71,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 `CTO-<n> active since <date time> · handed over <time> at <tokens> · landed <cycles>`
 
 CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
-CTO-2 active since 2026-11-11 07:55
+CTO-2 active since 2026-11-11 07:55 · handed over 2026-11-11 12:30 at 200k · landed #2, #5, #6, #7
