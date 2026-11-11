@@ -482,6 +482,7 @@ Backend only. Implements S8.
 
 - "Open check-in" on the lesson page; `checkin_manage` with the large QR code as server-side SVG (research picks the PHP library), the copyable URL, time left, close and reopen (rotate), and the roster filling in through `checkin_status`.
 - A presentation layout that suits a phone, a tablet and a projected screen.
+- Only the token's hash is stored (S8), so the QR page keeps the plain token itself (in the session, keyed by window id) and offers "Reopen" (which rotates) when it is missing (from #8 research).
 - Functional tests: open, rotate (old URL dead), close, the status JSON holding no more than S4 allows.
 - **Done when:** a phone can scan the code from the screen in the local network test, and the tests pass.
 

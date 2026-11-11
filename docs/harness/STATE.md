@@ -36,7 +36,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 8 `checkin-core` | research | c08-research (bg 84ada023) | A (8001) | 11-11 10:50 | #7 not landed: `lane sync checkin-core` before implement |
+| 8 `checkin-core` | plan | c08-plan (bg) | A (8001) | 11-11 11:35 | research done (129k); lane synced onto #7; limiter keys reset in #14 tests |
 | 4 `teacher-auth` | plan | c04-plan (bg 0e22ae2a) | C (8003) | 11-11 11:00 | research done (141k); D-028/D-029 hotspot grants; implement only after #2 lands (`lane sync` first) |
 | 10 `courses-ui` | research | c10-research (bg ad07eb35) | B (8002) | 11-11 11:25 | D-032: implement after #4 lands (`lane sync` first) |
 | 9 `students-ui` | plan | c09-plan (bg 03511401) | D (8004) | 11-11 11:25 | starts at Plan; D-032: implement after #4 lands |
