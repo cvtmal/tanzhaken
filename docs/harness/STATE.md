@@ -4,7 +4,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 
 ## Now
 
-- **CTO generation:** 1
+- **CTO generation:** 2
 - **Phase of the project:** W0 done, W1 half done
 - **Wave in progress:** W1 (#2 left); W2 may start (#5–#7)
 
@@ -65,3 +65,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 `CTO-<n> active since <date time> · handed over <time> at <tokens> · landed <cycles>`
 
 CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
+CTO-2 active since 2026-11-11 07:55
