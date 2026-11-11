@@ -20,4 +20,19 @@ final class InvalidCreditGrant extends \DomainException
     {
         return new self('The credit grant is already voided.');
     }
+
+    public static function grantedInFuture(): self
+    {
+        return new self('A credit grant cannot take effect in the future.');
+    }
+
+    public static function enrollmentNotActive(): self
+    {
+        return new self('Credits can only be granted to an active enrollment of an active course and student.');
+    }
+
+    public static function reasonTooLong(int $max): self
+    {
+        return new self(\sprintf('The reason must not be longer than %d characters.', $max));
+    }
 }
