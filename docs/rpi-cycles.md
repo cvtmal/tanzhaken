@@ -64,7 +64,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
    | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` |
    | `.env`, `.env.example` | #0 | append their own variables with safe defaults and a one-line comment (#2 adds `APP_BRAND_NAME`) |
-| `templates/placeholder.html.twig`, the placeholder routes test | #0 | #2 puts the placeholder into the layouts and adds `_styleguide` to the expected routes; #4 makes the test log in before its requests; nobody else |
+| `templates/placeholder.html.twig`, the placeholder routes test | #0 | #2 puts the placeholder into the layouts and adds `_styleguide` to the expected routes; #4 makes the test log in before its requests; every cycle that ships a real route edits only the expected-route rows for its own routes (drops the placeholder row, adds its POST sub-routes) |
 | `CLAUDE.md`, `.claude/rules/module-<name>.md` | #0 | append to their own module's rule file; `CLAUDE.md` keeps one pointer per module |
    | `docs/rpi-cycles.md`, `docs/harness/*` | CTO | nothing |
 
