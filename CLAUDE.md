@@ -38,7 +38,7 @@ Commit messages, PR titles and descriptions never contain a Claude Code session 
 | `docs/outcomes/<nn>-<slug>.md` | what each finished cycle delivered; the handoff between cycles |
 | `docs/design/` | design source and reference |
 | `docs/harness/` | `CTO.md`, `TEAMMATE.md`, `STATE.md` (live board), `DECISIONS.md` (log and owner inbox), `README.md` |
-| `bin/harness/` | `ctx` (token meter), `lane` (worktrees), `land` (one commit to `main`), `status` (snapshot) |
+| `bin/harness/` | `ctx` (token meter), `lane` (worktrees), `land` (one commit to `main`), `status` (snapshot), `successor` (opens the next CTO in a new iTerm2 window) |
 
 ## The application
 

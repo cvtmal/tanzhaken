@@ -27,3 +27,10 @@ What went wrong in a harness run, why, and what changed so it does not happen ag
 
 **Sign for next time.** A teammate's `ctx` WHERE that is not its own lane, or an "Environment update" in the CTO's own context saying its working directory changed.
 
+## I-3 · 2026-11-11 · The successor CTO was invisible to the owner
+
+**What happened.** CTO-1 started CTO-2 with `claude --bg`, as `CTO.md` §9 prescribed. CTO-2 ran with no window, so the owner could not see it without `claude attach` or `claude agents`. The same choice caused I-2: a background session is not inside iTerm2, so it needed `teammateMode: in-process` (D-009), whose teammates share one working directory.
+
+**What changed.** `bin/harness/successor <n>` opens a new iTerm2 window that runs an interactive `claude --name CTO-<n>` with the successor prompt. It carries over `CLAUDE_CONFIG_DIR` and the telemetry settings, so the same account is used under `claude`, `claudep` or `claudepj`. `CTO.md` §9 step 4 uses it; `claude --bg` is only the fallback (step 5). The successor runs in iTerm2 mode again, with each teammate in its own pane. CTO-1 verified the window start from an interactive session and from a `--bg` session (preflight step 6, `--test`).
+
+**Sign for next time.** A handover that ends with the owner having to type `claude attach`.

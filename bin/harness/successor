@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Start the successor CTO as an interactive session in a new iTerm2 window,
+# so the owner sees it without `claude attach` and its teammates get their
+# own iTerm2 panes (teammateMode: iterm2; see INCIDENTS.md I-2, I-3).
+#
+#   bin/harness/successor <n>            start CTO-<n> with docs/harness/successor-prompt.txt
+#   bin/harness/successor --test <file>  open a window that only writes <file> (preflight)
+set -euo pipefail
+
+# Main checkout, also when called from a lane worktree.
+repo="$(cd "$(git rev-parse --git-common-dir)/.." && pwd)"
+
+# Carry over the account this session runs under (e.g. a CLAUDE_CONFIG_DIR wrapper).
+envs=""
+for v in CLAUDE_CONFIG_DIR CLAUDE_CODE_ENABLE_TELEMETRY OTEL_METRICS_EXPORTER OTEL_LOGS_EXPORTER; do
+  if [ -n "${!v:-}" ]; then envs+="$v=$(printf %q "${!v}") "; fi
+done
+
+if [ "${1:-}" = "--test" ]; then
+  out="${2:?usage: successor --test <file>}"
+  cmd="cd $(printf %q "$repo") && echo ok > $(printf %q "$out") && exit"
+else
+  n="${1:?usage: successor <n>}"
+  case "$n" in *[!0-9]*) echo "successor: <n> must be a number" >&2; exit 2;; esac
+  cmd="cd $(printf %q "$repo") && ${envs}claude --name CTO-$n \"\$(cat docs/harness/successor-prompt.txt)\""
+fi
+
+osascript - "$cmd" <<'APPLESCRIPT'
+on run argv
+  tell application "iTerm2"
+    activate
+    set w to (create window with default profile)
+    tell current session of w to write text (item 1 of argv)
+  end tell
+end run
+APPLESCRIPT
+echo "opened iTerm2 window: ${1}"
