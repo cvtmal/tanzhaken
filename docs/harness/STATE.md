@@ -36,7 +36,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 11 `account-and-reset` | plan | c11-plan | A (8001) | 11-11 09:03 | research DONE 130k (D-039); implement only after #4 lands |
+| 11 `account-and-reset` | implement | c11-impl | A (8001) | 11-11 09:10 | plan 8 phases, Phase 0 checks #4 outcome; D-039; MigrationTest one-line edit allowed |
 | 10 `courses-ui` | implement | c10-impl | B (8002) | 11-11 09:05 | L cycle, synced onto #4; D-035, D-036, D-038 |
 | 9 `students-ui` | implement | c09-impl | D (8004) | 11-11 09:05 | synced onto #4; D-038 |
 | 14 `checkin-public` | research | c14-research | C (8003) | 11-11 09:05 | D-040 comment fix; #8 outcome notes |
@@ -45,10 +45,10 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
-1. **Adopt the two running background teammates (D-037).** `c04-impl` (`6004b4d2`, lane C) and `c08-impl` (`40c34956`, lane A) are `claude --bg` sessions; they are not your teammates and cannot be messaged reliably. Watch for `.claude/worktrees/teacher-auth/.rpi-tracking/reports/c04-impl.md` and `.claude/worktrees/checkin-core/.rpi-tracking/reports/c08-impl.md` with a background waiter (a loop over the files, `sleep 30`, time limit). When one reports: read the file, `claude stop <id>`, `claude rm <id>`, then spawn the next phase as usual (you are in iTerm2: Agent tool, §5). If one is silent 45 min by `ctx` AGE: `claude stop`/`rm` and continue from its changes log with a fresh teammate.
-2. On `c04-impl` DONE: spawn `c04-review` (lane C, 8003). #4 is the critical path. After it lands and CI is green: `lane sync students-ui` → `c09-impl` (lane D, 8004); `lane sync courses-ui` → `c10-impl` (lane B, 8002, "start at Step 0.1; L cycle, WIP commit per phase"). Both plans are in their lanes' `.rpi-tracking/plans/2026-11-11/`.
-3. On `c08-impl` DONE: spawn `c08-review` (lane A, 8001). After #8 lands, lane A goes to #11 `account-and-reset` (research; needs #2, #4: wait for #4) or, if #4 has not landed, stays free.
-4. Then #11 (research; must include the logout partial on `/account` for phones, D-033), and W4 as dependencies land. Review prompts here have said: check D-026/D-027, "On Complete, land with bin/harness/land".
+1. Lanes: A #11 plan (c11-plan) → implement (sync first; #4 landed); B #10 implement (c10-impl) → review; C #14 research (c14-research) → plan; D #9 implement (c09-impl) → review. Review prompts: "check D-026/D-027 (+ cycle's D-rows); on Complete, land with bin/harness/land".
+2. Next ready cycles when a lane frees: #17 `dashboard` (needs 4, 5, 6: ready now, Plan, S); #12 after #9 + #10; #13 after #9 + #10; #15 after #10; #18 after #11.
+3. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them.
+4. #14's prompt carries D-040.
 5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
