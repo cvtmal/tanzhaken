@@ -37,25 +37,29 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
 | 11 `account-and-reset` | implement | c11-impl | A (8001) | 11-11 09:10 | plan 8 phases, Phase 0 checks #4 outcome; D-039; MigrationTest one-line edit allowed |
+| 17 `dashboard` | plan | c17-plan | D (8004) | 11-11 09:37 | starts at Plan; links via S5 placeholders |
 | 10 `courses-ui` | implement | c10-impl | B (8002) | 11-11 09:05 | L cycle, synced onto #4; D-035, D-036, D-038 |
-| 9 `students-ui` | implement | c09-impl | D (8004) | 11-11 09:05 | synced onto #4; D-038 |
-| 14 `checkin-public` | research | c14-research | C (8003) | 11-11 09:05 | D-040 comment fix; #8 outcome notes |
+| 14 `checkin-public` | implement | c14-impl | C (8003) | 11-11 09:17 | plan 6 phases (126k); D-040, D-041; P6 405 page without S8 headers → #19 |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. Lanes: A #11 plan (c11-plan) → implement (sync first; #4 landed); B #10 implement (c10-impl) → review; C #14 research (c14-research) → plan; D #9 implement (c09-impl) → review. Review prompts: "check D-026/D-027 (+ cycle's D-rows); on Complete, land with bin/harness/land".
-2. Next ready cycles when a lane frees: #17 `dashboard` (needs 4, 5, 6: ready now, Plan, S); #12 after #9 + #10; #13 after #9 + #10; #15 after #10; #18 after #11.
+2. Next ready cycles when a lane frees: #12 after #9 + #10; #13 after #9 + #10; #15 after #10; #18 after #11.
 3. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them.
 4. #14's prompt carries D-040.
 5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
 
+- For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
+- For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
+- For #19's prompt: review D-041 (cookie-less public confirm) and the c14 Sec-Fetch-Site check; GET /c/{token}/confirm 405 page lacks S8 headers (c14-plan P6).
 - For #14's prompt (D-040): fix the comment above `^/c/` in `security.yaml` ("#16" → "#14"), comment only.
 - From c11-research, for later prompts: #22 must document `DEFAULT_URI=https://<domain>` in production (reset links are built from it); `trusted_hosts` and a limiter on `/reset-password` go to #19.
 
+- c09-impl ignored the 150k checkpoint (stopped at 190.8k): arm a ctx watcher (stop at 190k) on every implement session.
 - Teammates here burn context fast: research and plan sessions end at 110–150k. Implement sessions that hand plan phases to subagents finish L cycles in one session (#3 did); say "save context: command output to a file, read only exit code and failing lines" in implement prompts.
 - `ctx` STATUS often says `ended` for live split-pane teammates; judge by AGE (D-010). A teammate waiting on a subagent may be quiet 15+ minutes.
 - Idle notifications arrive after each report; they repeat the report in prose. You need not answer them.
