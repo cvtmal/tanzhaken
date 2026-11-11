@@ -65,4 +65,39 @@ final class InvalidCourse extends \DomainException
     {
         return new self('A cancelled lesson cannot be completed.');
     }
+
+    public static function courseArchived(): self
+    {
+        return new self('The course is archived and its schedule cannot be changed.');
+    }
+
+    public static function lessonTimeTaken(): self
+    {
+        return new self('The course already has a lesson starting at that time.');
+    }
+
+    public static function lessonHasAttendance(): self
+    {
+        return new self('The lesson has attendance and cannot be cancelled.');
+    }
+
+    public static function lessonNotCancelled(): self
+    {
+        return new self('The lesson is not cancelled.');
+    }
+
+    public static function cancelledLessonCannotMove(): self
+    {
+        return new self('A cancelled lesson cannot be rescheduled.');
+    }
+
+    public static function invalidWeeks(int $weeks): self
+    {
+        return new self(\sprintf('The number of weeks must be between 1 and 104, %d given.', $weeks));
+    }
+
+    public static function extensionTooFar(int $maxWeeks): self
+    {
+        return new self(\sprintf('The schedule cannot be extended by more than %d weeks at once.', $maxWeeks));
+    }
 }

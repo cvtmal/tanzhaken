@@ -106,6 +106,29 @@ class LessonSession implements TeacherOwned
         $this->cancelledAt = $now;
     }
 
+    public function reschedule(\DateTimeImmutable $startsAtUtc, \DateTimeImmutable $endsAtUtc): void
+    {
+        if (LessonStatus::Cancelled === $this->status) {
+            throw InvalidCourse::cancelledLessonCannotMove();
+        }
+        $startsAtUtc = self::toUtcSeconds($startsAtUtc);
+        $endsAtUtc = self::toUtcSeconds($endsAtUtc);
+        if ($endsAtUtc <= $startsAtUtc) {
+            throw InvalidCourse::lessonEndsBeforeStart();
+        }
+        $this->startsAtUtc = $startsAtUtc;
+        $this->endsAtUtc = $endsAtUtc;
+    }
+
+    public function reinstate(): void
+    {
+        if (LessonStatus::Cancelled !== $this->status) {
+            throw InvalidCourse::lessonNotCancelled();
+        }
+        $this->status = LessonStatus::Scheduled;
+        $this->cancelledAt = null;
+    }
+
     public function isCancelled(): bool
     {
         return LessonStatus::Cancelled === $this->status;
