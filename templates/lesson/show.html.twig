@@ -1,0 +1,106 @@
+{# Lesson page (lesson_show, REG-1, #13; F1 mobile, F3 desktop). Hotspot file owned by #13.
+   Header: course name, sub-line "Tue 10 Nov · 7:00 PM–8:00 PM · Studio 2" in the course zone (plus the zone when it
+   differs from the teacher's; S7, D-042); back arrow below 64rem, breadcrumbs Courses › course › date at and above it.
+   Page actions: the lesson's status badge, "Complete lesson" (complete_form, P6) and the #16 slot.
+   Below: "n of m present" (text only; F3's segmented bar is carried to #20), the cancelled notice, the register
+   (one lesson/_register_row.html.twig per entry) or the empty state, then the cancel disclosure (P3) or the
+   "clear the marks" hint (P6). Works without JS: every row is a <details> with its own POST form.
+   Variables: see the class docblock of App\Attendance\Controller\LessonController.
+   #16 slot contract: lesson/_checkin_action.html.twig is included `ignore missing` in the page actions with
+   {course: course_slot ({id, name, timezone}), lesson: lesson_slot ({id, status, startsAtUtc})} only. #}
+{% extends 'layout/teacher.html.twig' %}
+{% trans_default_domain 'attendance' %}
+
+{% set timezone = course.timezone %}
+{% set date = lesson.startsAtUtc|format_date(pattern: 'EEE d MMM', timezone: timezone) %}
+
+{% block title %}{{ 'lesson.show.title'|trans({course: course.name, date: date}) }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% set subtitle = 'lesson.show.subtitle'|trans({
+        date: date,
+        start: lesson.startsAtUtc|format_time('short', timezone: timezone),
+        end: lesson.endsAtUtc|format_time('short', timezone: timezone),
+    }) %}
+    {% if course.location %}
+        {% set subtitle = 'lesson.show.with_location'|trans({subtitle: subtitle, location: course.location}) %}
+    {% endif %}
+    {% if app.user and app.user.timezone != timezone %}
+        {% set subtitle = 'lesson.show.with_timezone'|trans({subtitle: subtitle, timezone: timezone}) %}
+    {% endif %}
+    {% set status = lesson.status.value %}
+    {% set badge_variants = {scheduled: 'not-yet', completed: 'present', cancelled: 'absent'} %}
+
+    <div class="lesson-page">
+        {% embed 'components/_page_header.html.twig' with {
+            title: course.name,
+            subtitle: subtitle,
+            back_href: path('course_show', {id: course_slot.id}),
+            back_label: 'lesson.show.back'|trans({name: course.name}),
+            breadcrumbs: [
+                {label: 'lesson.show.breadcrumb'|trans, href: path('course_index')},
+                {label: course.name, href: path('course_show', {id: course_slot.id})},
+                {label: date},
+            ],
+            status_label: ('lesson.show.status.' ~ status)|trans,
+            status_variant: badge_variants[status],
+            complete_form: complete_form,
+            course_slot: course_slot,
+            lesson_slot: lesson_slot,
+        } only %}
+            {% trans_default_domain 'attendance' %}
+            {% block page_actions %}
+                {% include 'components/_status_badge.html.twig' with {label: status_label, variant: status_variant} only %}
+                {%- if complete_form %}
+                    {{ form_start(complete_form, {attr: {class: 'lesson-page__complete'}}) }}
+                        {% include 'components/_button.html.twig' with {label: 'lesson.show.complete'|trans, type: 'submit', variant: 'secondary', icon: 'check'} only %}
+                    {{ form_end(complete_form) }}
+                {%- endif %}
+                {% include 'lesson/_checkin_action.html.twig' ignore missing with {course: course_slot, lesson: lesson_slot} only %}
+            {% endblock %}
+        {% endembed %}
+
+        {% if lesson.cancelled %}
+            {% include 'components/_alert.html.twig' with {variant: 'info', text: 'lesson.show.cancelled_notice'|trans} only %}
+        {% endif %}
+
+        {% if entries is empty %}
+            {% include 'components/_empty_state.html.twig' with {
+                title: 'lesson.show.empty.title'|trans,
+                text: 'lesson.show.empty.text'|trans,
+                action: course.archived ? null : {label: 'lesson.show.empty.action'|trans, href: path('course_show', {id: course_slot.id}) ~ '#enroll', icon: 'person-add'},
+            } only %}
+        {% else %}
+            <p class="lesson-page__count" id="lesson-present-count">{{ 'lesson.show.present_count'|trans({present: present_count, total: roster_count}) }}</p>
+            <div class="lesson-register-wrap">
+                <div class="lesson-register__head" aria-hidden="true">
+                    <span>{{ 'lesson.show.columns.student'|trans }}</span>
+                    <span>{{ 'lesson.show.columns.checked_in'|trans }}</span>
+                    <span>{{ 'lesson.show.columns.left'|trans }}</span>
+                </div>
+                <ul class="lesson-register" aria-label="{{ 'lesson.show.register_label'|trans }}">
+                    {%- for entry in entries %}
+                        {% include 'lesson/_register_row.html.twig' with {
+                            entry: entry,
+                            mark: mark_forms[entry.row.studentId.toRfc4122] ?? null,
+                            timezone: timezone,
+                        } only %}
+                    {%- endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if cancel_form %}
+            <details class="lesson-cancel">
+                <summary class="lesson-cancel__toggle">{{ 'lesson.show.cancel.title'|trans }}{{ icon('expand-more', null, 'lesson-cancel__chevron') }}</summary>
+                {{ form_start(cancel_form, {attr: {class: 'lesson-cancel__form'}}) }}
+                    <p class="lesson-cancel__text">{{ 'lesson.show.cancel.text'|trans }}</p>
+                    {{ form_row(cancel_form.reason) }}
+                    {% include 'components/_button.html.twig' with {label: 'lesson.show.cancel.submit'|trans, type: 'submit', variant: 'secondary'} only %}
+                {{ form_end(cancel_form) }}
+            </details>
+        {% elseif cancel_blocked %}
+            <p class="lesson-page__hint">{{ 'lesson.show.cancel_blocked'|trans }}</p>
+        {% endif %}
+    </div>
+{% endblock %}

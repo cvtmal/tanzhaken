@@ -33,6 +33,7 @@ final class PlaceholderRoutesTest extends WebTestCase
         'course_archive', 'course_extend', 'course_lesson_add', 'course_lesson_reschedule', 'course_lesson_cancel',
         'course_lesson_reinstate', 'course_enroll', 'course_enrollment_remove', 'course_enrollment_label',
         'course_export',
+        'lesson_show', 'lesson_mark', 'lesson_complete',
     ];
 
     /**
@@ -40,7 +41,6 @@ final class PlaceholderRoutesTest extends WebTestCase
      */
     public static function placeholderRoutes(): iterable
     {
-        yield 'lesson_show' => ['lesson_show', ['id' => 'x', 'lessonId' => 'y'], '/courses/x/lessons/y'];
         yield 'checkin_manage' => ['checkin_manage', ['id' => 'x'], '/lessons/x/check-in'];
         yield 'checkin_status' => ['checkin_status', ['id' => 'x'], '/lessons/x/check-in/status'];
     }

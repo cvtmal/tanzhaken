@@ -1,0 +1,98 @@
+{# One student on the lesson register (R1–R5, F1/F2 rows, F3 table line). The <li> carries the anchor
+   student-<rfc4122 id> the POST actions redirect to (R12). With a form the row is a <details>: the <summary>
+   (at least 56 px) shows the mark (dashed circle not marked, check present, minus absent), the name, the status
+   with its source ("7:02 PM · by you" / "· QR", in the course zone), the balance chip and the Archived / Left the
+   course badges (R5); the body holds the reason field, Present / Absent as two equal 48 px buttons (can_mark),
+   the cost line (P4: what Present or Absent does to the balance) and Clear (can_clear). Without a form (cancelled
+   lesson and unmarked, or left and unmarked) the row is the same summary as a plain <div>, no disclosure.
+   Variables: entry (App\Attendance\ReadModel\LessonRegisterEntry);
+   mark (array{form: FormView, can_mark: bool, can_clear: bool}|null, an entry of mark_forms);
+   timezone (string, the course zone).
+   Call: {% include 'lesson/_register_row.html.twig' with {entry: entry, mark: mark_forms[id] ?? null, timezone: timezone} only %} #}
+{% trans_default_domain 'attendance' %}
+{% set row = entry.row %}
+{% set status = row.status ? row.status.value : 'not_marked' %}
+{% set status_label = ('lesson.row.status.' ~ status)|trans %}
+{% set meta = row.status and row.markedAt
+    ? 'lesson.row.meta'|trans({
+        status: status_label,
+        source: ('lesson.row.source.' ~ row.source.value)|trans({time: row.markedAt|format_time('short', timezone: timezone)}),
+    })
+    : status_label %}
+{% set balance = entry.balance() %}
+{% set mark_icons = {present: 'check', absent: 'remove'} %}
+{% set summary %}
+    <span class="register-row__mark register-row__mark--{{ status }}">
+        {%- if mark_icons[status] is defined %}{{ icon(mark_icons[status], null, 'icon--18') }}{% endif -%}
+    </span>
+    <span class="register-row__who">
+        <span class="register-row__name">{{ row.firstName }} {{ row.lastName }}</span>
+        {%- if row.studentArchived or not row.enrollmentActive %}
+            <span class="register-row__notes">
+                {%- if not row.enrollmentActive %}{% include 'components/_status_badge.html.twig' with {label: 'lesson.row.left'|trans, variant: 'neutral', size: 'sm'} only %}{% endif -%}
+                {%- if row.studentArchived %}{% include 'components/_status_badge.html.twig' with {label: 'lesson.row.archived'|trans, variant: 'neutral', size: 'sm'} only %}{% endif -%}
+            </span>
+        {%- endif %}
+    </span>
+    <span class="register-row__meta register-row__meta--{{ status }}">{{ meta }}</span>
+    <span class="register-row__balance">
+        {%- if balance is not null %}{% include 'components/_balance_badge.html.twig' with {balance: balance} only %}{% endif -%}
+    </span>
+{% endset %}
+<li class="register-row register-row--{{ status }}" id="{{ entry.anchor }}">
+    {%- if mark %}
+        {% set form = mark.form %}
+        <details class="register-row__details">
+            <summary class="register-row__summary">
+                {{ summary }}
+                <span class="visually-hidden">{{ 'lesson.row.open_hint'|trans }}</span>
+                {{ icon('expand-more', null, 'register-row__chevron') }}
+            </summary>
+            {{ form_start(form, {attr: {class: 'register-row__form'}}) }}
+                {{ form_row(form.reason) }}
+                {%- if mark.can_mark %}
+                    <div class="register-row__choices">
+                        {% include 'components/_button.html.twig' with {
+                            label: 'lesson.row.present'|trans,
+                            type: 'submit',
+                            name: form.present.vars.full_name,
+                            variant: status == 'present' ? 'soft' : 'secondary',
+                            icon: 'check',
+                        } only %}
+                        {% include 'components/_button.html.twig' with {
+                            label: 'lesson.row.absent'|trans,
+                            type: 'submit',
+                            name: form.absent.vars.full_name,
+                            variant: status == 'absent' ? 'soft' : 'secondary',
+                            icon: 'remove',
+                        } only %}
+                    </div>
+                    {%- if balance is not null %}
+                        <p class="register-row__cost">
+                            {%- if entry.present %}
+                                {% set after = entry.balanceIfAbsent %}
+                                {{ 'lesson.row.cost.absent_back'|trans({name: row.firstName, state: after < 0 ? 'owe' : (after == 0 ? 'zero' : 'left'), count: after < 0 ? -after : after}) }}
+                            {%- else %}
+                                {% set after = entry.balanceIfPresent %}
+                                {{ 'lesson.row.cost.present'|trans({name: row.firstName, state: after < 0 ? 'owe' : (after == 0 ? 'zero' : 'left'), count: after < 0 ? -after : after}) }}
+                                {{ 'lesson.row.cost.absent_free'|trans }}
+                            {%- endif -%}
+                        </p>
+                    {%- endif %}
+                {%- endif %}
+                {%- if mark.can_clear %}
+                    <div class="register-row__clear">
+                        {% include 'components/_button.html.twig' with {label: 'lesson.row.clear'|trans, type: 'submit', name: form.clear.vars.full_name, variant: 'text', icon: 'undo'} only %}
+                    </div>
+                {%- endif %}
+                {% do form.present.setRendered() %}
+                {% do form.absent.setRendered() %}
+                {% do form.clear.setRendered() %}
+            {{ form_end(form) }}
+        </details>
+    {%- else %}
+        <div class="register-row__summary register-row__summary--static">
+            {{ summary }}
+        </div>
+    {%- endif %}
+</li>

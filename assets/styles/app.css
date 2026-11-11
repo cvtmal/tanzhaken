@@ -38,3 +38,5 @@
 @import "./account/delete.css";
 @import "./account/privacy.css";
 @import "./attendance/export.css";
+@import "./attendance/lesson-register.css";
+@import "./attendance/student-history.css";

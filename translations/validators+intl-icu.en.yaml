@@ -76,3 +76,6 @@ courses:
             blank: Choose a student.
         label:
             too_long: This check-in label is too long.
+attendance:
+    mark:
+        reason_too_long: The reason may have at most {limit} characters.

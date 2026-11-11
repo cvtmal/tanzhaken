@@ -44,3 +44,12 @@ Namespace `App\Attendance\<Layer>`. Placeholder actions in `src/Attendance/Contr
 - D1 lessons: not cancelled, and `starts_at_utc <= now` or already carrying a mark; chronological.
 - D2 students per lesson: anyone with a mark, plus active enrolments with `joined_at <= ends_at_utc`; a left student without a mark is not listed.
 - D5 neutralisation: string cells starting with `= + - @ \t \r` get a leading `'`; int cells (lessons bought/used/left) are never prefixed, so `-1` stays a number. Pass every user-sourced value as a string.
+
+## #13 notes (attendance-ui)
+
+- `Controller\LessonController` (class docblock lists every template variable): `lesson_show` GET `/courses/{id}/lessons/{lessonId}`; `lesson_mark` POST `/courses/{id}/lessons/{lessonId}/attendance/{studentId}` (buttons `present` / `absent` / `clear`, optional `reason`); `lesson_complete` POST `/courses/{id}/lessons/{lessonId}/complete`. Cancelling posts to #10's `course_lesson_cancel`. Foreign / unknown / malformed id or a lesson of another course → 404; every POST → 303 to `lesson_show` (`#student-<id>` for a mark) with a `success` / `error` flash.
+- Forms: `Form\MarkAttendanceType` (+ `MarkAttendanceData`) named `mark_<base58 student id>`; Complete is #10's `ConfirmActionType` named `complete_<base58 lesson id>`; cancel is #10's `CancelLessonType` `cancel_<base58 lesson id>`. Names come from `ConfirmActionType::formName()`.
+- `Exception\InvalidAttendance::translationKey()` / `translationParameters()`: every factory carries an `attendance.error.*` key in the `attendance` domain; controllers translate the refusal with them, never `getMessage()`.
+- `ReadModel\LessonRegisterEntry`: a `LessonRegisterRow` plus its `?EnrollmentBalance` (`fromRegister($rows, Balances::forCourse())`); `balanceIfPresent()` / `balanceIfAbsent()` move Balances' number by one for the cost line, `displayName()` ("Alex M."), `anchor()` (`student-<id>`).
+- Twig function `student_attendance(Teacher, Uuid)` (`Twig\StudentAttendanceExtension`) → `StudentAttendanceHistory::forStudent()`; used by `student/_attendance.html.twig`.
+- **#16 slot contract:** `templates/lesson/show.html.twig` includes `lesson/_checkin_action.html.twig` in the page actions, `ignore missing with {course: {id, name, timezone}, lesson: {id, status, startsAtUtc}} only` (ids RFC 4122 strings, `status` the `LessonStatus` value, `startsAtUtc` `\DateTimeImmutable`). Ask #13's owner before changing the shape.

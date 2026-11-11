@@ -1,6 +1,9 @@
-# Domain `attendance` (S7).
-# export.*: the course register CSV and its button (#15). Keys of other cycles go under their own
-# top-level key, so a merge of this file is a concatenation (#15 D9).
+# Domain `attendance` (S7). Keys of each cycle go under their own top-level key, so a merge of this
+# file is a concatenation (#15 D9).
+# export.*: the course register CSV and its button (#15).
+# lesson.*, attendance.*, student.*: the lesson page and register (lesson_show) and the student page's
+# attendance history (#13). attendance.error.* mirrors App\Attendance\Exception\InvalidAttendance::translationKey();
+# tests/Unit/Attendance/InvalidAttendanceTest.php lists the keys.
 export:
     action: Export CSV
     column:
@@ -32,3 +35,82 @@ export:
     student_name: '{first} {last}'
     filename: 'register-{slug}-{date}.csv'
     filename_no_slug: 'register-{date}.csv'
+lesson:
+    show:
+        title: '{course}, {date}'
+        back: 'Back to {name}'
+        breadcrumb: Courses
+        subtitle: '{date} · {start}–{end}'
+        with_location: '{subtitle} · {location}'
+        with_timezone: '{subtitle} · {timezone}'
+        present_count: '{present} of {total} present'
+        status:
+            scheduled: Scheduled
+            completed: Completed
+            cancelled: Cancelled
+        cancelled_notice: This lesson is cancelled. Attendance cannot be marked; existing marks can still be cleared.
+        complete: Complete lesson
+        register_label: Register of this lesson
+        columns:
+            student: Student
+            checked_in: Checked in
+            left: Lessons left
+        cancel:
+            title: Cancel this lesson
+            text: Students will see that it does not take place. You can reinstate it on the course page.
+            submit: Cancel lesson
+        cancel_blocked: Clear the marks to cancel this lesson.
+        empty:
+            title: No students in this lesson
+            text: Students enrolled in the course appear here, ready to be marked.
+            action: Add a student
+    row:
+        status:
+            not_marked: Not marked
+            present: Present
+            absent: Absent
+        source:
+            teacher: '{time} · by you'
+            student_qr: '{time} · QR'
+        meta: '{status} · {source}'
+        cost:
+            present: 'Present uses 1 lesson. {name} would then {state, select, owe {owe {count}} zero {be at 0} other {have {count} left}}.'
+            absent_back: 'Absent gives the lesson back. {name} would then {state, select, owe {owe {count}} zero {be at 0} other {have {count} left}}.'
+            absent_free: Absent uses no lesson.
+        present: Present
+        absent: Absent
+        clear: Clear mark
+        reason: Reason for the change
+        reason_help: Kept in the change history. Students do not see it.
+        left: Left the course
+        archived: Archived
+        open_hint: Change attendance
+attendance:
+    flash:
+        marked_present: '{name} marked present'
+        marked_absent: '{name} marked absent'
+        cleared: 'Mark of {name} cleared'
+        completed: Lesson completed.
+        invalid_request: Something went wrong with that form. Please try again.
+    error:
+        student_of_another_teacher: This student cannot be marked in this lesson.
+        lesson_cancelled: This lesson is cancelled. Attendance cannot be marked.
+        student_not_enrolled: This student is no longer enrolled in this course.
+        not_marked: This student has no mark to clear.
+        reason_too_long: 'The reason may have at most {max, plural, one {# character} other {# characters}}.'
+        changed_concurrently: The register changed at the same time, for example by a check-in. Please check it and try again.
+        not_eligible_for_check_in: This student cannot check in to this lesson.
+student:
+    attendance:
+        title: Attendance
+        list_label: Attendance history
+        empty: No attendance marked yet.
+        meta: '{date}, {time} · {source}'
+        with_cancelled: '{meta} · {cancelled}'
+        lesson_cancelled: Lesson cancelled
+        status:
+            present: Present
+            absent: Absent
+        source:
+            teacher: Marked by you
+            student_qr: Checked in by QR

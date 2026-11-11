@@ -1,0 +1,42 @@
+{# Attendance history on the student page (#13 slot of student/show.html.twig, STU-4, REG-3, R11): every mark of
+   the student across the teacher's courses, newest lesson first, no pagination. One _list_row per mark: course name
+   linking to lesson_show, "Tue 10 Nov 2026, 7:00 PM · Checked in by QR" in the course's zone (plus "· Lesson
+   cancelled"), a Present / Absent badge. Empty text without marks.
+   Variables: student (App\Students\Entity\Student). Rows come from student_attendance(app.user, student.id).
+   Call: {% include 'student/_attendance.html.twig' ignore missing with {student: student} only %} #}
+{% trans_default_domain 'attendance' %}
+{% set rows = student_attendance(app.user, student.id) %}
+<section class="students-section student-history" aria-labelledby="student-attendance-heading">
+    <h2 class="students-section__heading" id="student-attendance-heading">{{ 'student.attendance.title'|trans }}</h2>
+    {% if rows is empty %}
+        <p class="student-history__empty">{{ 'student.attendance.empty'|trans }}</p>
+    {% else %}
+        {% embed 'components/_list.html.twig' with {label: 'student.attendance.list_label'|trans, rows: rows} only %}
+            {% trans_default_domain 'attendance' %}
+            {% block list_items %}
+                {% set badge_variants = {present: 'present', absent: 'absent'} %}
+                {% for row in rows %}
+                    {% set meta = 'student.attendance.meta'|trans({
+                        date: row.startsAtUtc|format_date(pattern: 'EEE d MMM y', timezone: row.courseTimezone),
+                        time: row.startsAtUtc|format_time('short', timezone: row.courseTimezone),
+                        source: ('student.attendance.source.' ~ row.source.value)|trans,
+                    }) %}
+                    {% if row.lessonStatus.value == 'cancelled' %}
+                        {% set meta = 'student.attendance.with_cancelled'|trans({meta: meta, cancelled: 'student.attendance.lesson_cancelled'|trans}) %}
+                    {% endif %}
+                    {% embed 'components/_list_row.html.twig' with {
+                        title: row.courseName,
+                        href: path('lesson_show', {id: row.courseId.toRfc4122, lessonId: row.lessonId.toRfc4122}),
+                        meta: meta,
+                        status_label: ('student.attendance.status.' ~ row.status.value)|trans,
+                        status_variant: badge_variants[row.status.value],
+                    } only %}
+                        {% block row_trailing %}
+                            {% include 'components/_status_badge.html.twig' with {label: status_label, variant: status_variant, size: 'sm'} only %}
+                        {% endblock %}
+                    {% endembed %}
+                {% endfor %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+</section>

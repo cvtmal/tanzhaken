@@ -1,0 +1,18 @@
+/*
+ * Attendance history on the student page (#13, student/_attendance.html.twig). The section and
+ * its heading use #9's .students-section; the rows are the _list / _list_row components. Only
+ * the empty text and the badge column are styled here. Tokens only; no motion.
+ */
+.student-history__empty {
+    margin: 0;
+    color: var(--color-ink-3);
+    font-size: var(--text-15);
+}
+
+.student-history .list-row__trailing {
+    flex: none;
+}
+
+.student-history .list-row__meta {
+    white-space: normal;
+}

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Shared;
 
+use App\Tests\Factory\CourseFactory;
+use App\Tests\Factory\LessonSessionFactory;
 use App\Tests\Functional\LogsInTeacher;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
@@ -42,8 +44,9 @@ final class LayoutTest extends WebTestCase
     public function test_lesson_page_marks_courses_as_current(): void
     {
         $client = self::createClient();
-        $this->logInTeacher($client);
-        $crawler = $client->request('GET', '/courses/x/lessons/y');
+        $teacher = $this->logInTeacher($client);
+        $lesson = LessonSessionFactory::createOne(['course' => CourseFactory::createOne(['teacher' => $teacher])]);
+        $crawler = $client->request('GET', \sprintf('/courses/%s/lessons/%s', $lesson->getCourse()->getId()->toRfc4122(), $lesson->getId()->toRfc4122()));
 
         self::assertResponseIsSuccessful();
         $this->assertCurrentLinksPointTo($crawler, '/courses');
