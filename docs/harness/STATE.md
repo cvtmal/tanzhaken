@@ -5,7 +5,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3: #8, #9, #11 done, #10 awaits review; W4: #14 done; W5: #17 done, #18 implementing
+- **Phase of the project:** W0–W2 done; W3 done; W4: #14 done; W5: #17 done, #18 implementing
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
@@ -37,12 +37,11 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
 | 18 `data-protection` | implement | c18-impl | A (8001) | 11-11 11:05 | plan 26 steps; D-049, D-050; Step 3.8 may BLOCK on flash after logout |
-| 13 `attendance-ui` | research | c13-research | C (8003) | 11-11 10:57 | opened before #10 landed (D-051): lane sync before implement |
-| 10 `courses-ui` | review | c10-review | B (8002) | 11-11 10:50 | 508 tests; D-047; c10-impl shut down; next: c10-review (keep both sides on list conflicts) |
+| 13 `attendance-ui` | plan | c13-plan | C (8003) | 11-11 11:00 | research R1–R13 (133k); opened before #10 landed (D-051): lane sync before implement |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
 2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
@@ -51,6 +50,9 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
+
+- For #20's prompt (c10-review): F-m1 course card "next lesson" uses starts_at >= now, the page ends_at >= now (a running lesson differs); F-m2/F-m3 test gaps (edit on archived course; sub-route field-error flash, nothing_to_extend); i18n `{field}` in English and missing invalid_message.
+- For #15's prompts (from c13-research): Attendance `PlaceholderController` holds both `lessonShow` (#13) and `courseExport` (#15): the later lander keeps the other's deletion. #13 R4 leaves toast Undo for clear/correct to #20.
 
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
