@@ -38,8 +38,8 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 |---|---|---|---|---|---|
 | 2 `design-system` | implement | c02-impl-2 (bg a298b7fc) | B (8002) | 11-11 08:03 | resumes at Step 5.1; lane synced onto 8f30ea2 |
 | 5 `scheduling` | plan | c05-plan (bg dbd2cd2c) | A (8001) | 11-11 08:25 | research done (136k): no schema change; tests must pin DST rule D1 |
-| 6 `credit-ledger` | implement | c06-impl (bg) | C (8003) | 11-11 08:45 | plan: 6 phases, no migration; risk double-void → #19 |
-| 7 `attendance-core` | plan | c07-plan (bg b82c4b79) | D (8004) | 11-11 08:30 | research done (136k): no schema change; CheckInRecorder (one INSERT…SELECT) for #8 |
+| 6 `credit-ledger` | implement | c06-impl (bg d869bfc0) | C (8003) | 11-11 08:45 | plan: 6 phases, no migration; risk double-void → #19 |
+| 7 `attendance-core` | implement | c07-impl (bg 51e61cbc) | D (8004) | 11-11 08:55 | plan: 7 phases; told to apply D-027 to AttendanceMarker; child-process concurrency test in make test |
 
 ## Next actions
 
