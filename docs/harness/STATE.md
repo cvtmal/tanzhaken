@@ -38,7 +38,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 |---|---|---|---|---|---|
 | 16 `checkin-teacher-ui` | plan DONE → implement after #13 lands | — | A (8001) | 11-11 11:45 | plan Phase 0 = precondition; D-055, D-056; `lane sync` then spawn c16-impl |
 | 12 `credits-ui` | implement | c12-impl | B (8002) | 11-11 11:13 | plan PD1–PD10; D-053 |
-| 13 `attendance-ui` | implement | c13-impl | C (8003) | 11-11 11:10 | plan 27 steps (P1–P8); lane synced onto #10; F3 segmented bar → #20 |
+| 13 `attendance-ui` | review ✅ Complete → landing | c13-review-2 | C (8003) | 11-11 12:15 | c13-review hit 180k before land; c13-review-2 runs land only (conflicts over #15) |
 
 ## Next actions
 
@@ -54,6 +54,10 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 ## Notes for the successor
 
+- For #20's prompt (c13-review): F-m1 "n of m present" can exceed m when a left student kept a present mark; F-m2 re-pressing the current status flashes a change that did not happen.
+- `land` exits 8 while the main checkout has uncommitted tracked changes: commit harness edits before a reviewer lands.
+- Review sessions here can reach 180k fast (c13-review): arm a ctx watcher on reviews too.
+- For #20's prompt (D-058, from #13): the register prints `attendance.marked_at` (set on create only), so a teacher's change of a QR check-in shows the original time with "by you" (bump marked_at on change, or expose updated_at); seed lacks a started-but-scheduled lesson.
 - For #19's prompt (D-055): add a lead-time rule to `CheckInWindows::open()` (a crafted POST can open and complete a future lesson of one's own). For #20 (c16-research D9): F3 desktop QR side panel.
 - For #20/#3 seed (from #15): the seed has no archived course. For #23: open the CSV in Excel/LibreOffice (manual, owner). A `;` variant is one constant, `CsvEncoder::SEPARATOR`.
 - Chrome in this setup will not narrow below ~560 px; 390 px checks use a 390 px iframe (c18-impl's method).
