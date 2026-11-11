@@ -36,17 +36,17 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 11 `account-and-reset` | review | c11-review | A (8001) | 11-11 09:46 | impl DONE 132k; table `password_reset_request` |
 | 17 `dashboard` | implement | c17-impl | D (8004) | 11-11 09:42 | plan 132k; D-044 (no Low rows, no +10) |
+| 18 `data-protection` | research | c18-research | A (8001) | 11-11 09:52 | G5 default; F-m2 purge in scope |
 | 10 `courses-ui` | implement | c10-impl | B (8002) | 11-11 09:05 | L cycle, synced onto #4; D-035, D-036, D-038 |
-| 14 `checkin-public` | implement | c14-impl | C (8003) | 11-11 09:17 | plan 6 phases (126k); D-040, D-041; P6 405 page without S8 headers → #19 |
+| 14 `checkin-public` | review | c14-review | C (8003) | 11-11 09:48 | impl DONE 116k; D-045; rebase conflict in PlaceholderRoutesTest (keep both rows) left to the reviewer |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. Lanes: A #11 plan (c11-plan) → implement (sync first; #4 landed); B #10 implement (c10-impl) → review; C #14 research (c14-research) → plan; D #9 implement (c09-impl) → review. Review prompts: "check D-026/D-027 (+ cycle's D-rows); on Complete, land with bin/harness/land".
-2. Next ready cycles when a lane frees: #12 after #9 + #10; #13 after #9 + #10; #15 after #10; #18 after #11.
+2. Next ready cycles when a lane frees: #12 after #9 + #10; #13 after #9 + #10; #15 after #10.
 3. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them.
 4. #14's prompt carries D-040.
 5. Then the loop in `CTO.md` §4.
@@ -55,6 +55,7 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
+- For #19's prompt (c11-review F-m1): reset-link single use is not atomic under two concurrent submits (both pass findValid).
 - For #19's prompt (from #11): equal mail timing for known/unknown emails holds only under PHP-FPM (fastcgi_finish_request).
 - For #20's prompt (from #14): captions show the teacher's full display name (board: first name); board polish items in 14's outcome.
 - For #20's prompt (from #11): forgot/reset pages lack A3 split panel; /account fields full-width at 1440; info alert tight on /login.
@@ -63,6 +64,7 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 - From c11-research, for later prompts: #22 must document `DEFAULT_URI=https://<domain>` in production (reset links are built from it); `trusted_hosts` and a limiter on `/reset-password` go to #19.
 
 - c09-impl ignored the 150k checkpoint (stopped at 190.8k): arm a ctx watcher (stop at 190k) on every implement session.
+- PlaceholderRoutesTest SHIPPED rows conflict on every rebase after another UI cycle lands: tell the reviewer "keep both sets of rows".
 - Teammates here burn context fast: research and plan sessions end at 110–150k. Implement sessions that hand plan phases to subagents finish L cycles in one session (#3 did); say "save context: command output to a file, read only exit code and failing lines" in implement prompts.
 - `ctx` STATUS often says `ended` for live split-pane teammates; judge by AGE (D-010). A teammate waiting on a subagent may be quiet 15+ minutes.
 - Idle notifications arrive after each report; they repeat the report in prose. You need not answer them.

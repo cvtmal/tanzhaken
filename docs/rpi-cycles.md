@@ -88,7 +88,7 @@ Size is a guess for budgeting sessions: S under 60k tokens for the whole cycle's
 | 8 | `checkin-core` | W3 | QR-1, QR-4, SQR-1–SQR-8, J-C, J-D (rules) | 5, 7 | `check_in_window` (add-only) | — | Research | M | ✅ Done |
 | 9 | `students-ui` | W3 | STU-1, STU-2 | 2, 4 | — | — | Plan | M | ✅ Done |
 | 10 | `courses-ui` | W3 | CRS-1, CRS-3–CRS-5, STU-3 | 2, 4, 5 | — | — | Research | L | Open |
-| 11 | `account-and-reset` | W3 | ACC-3, ACC-4 | 2, 4 | new `password_reset_request` (the outcome file states the final name for #18 and #21) | G6 | Research | M | Open |
+| 11 | `account-and-reset` | W3 | ACC-3, ACC-4 | 2, 4 | new `password_reset_request` (the outcome file states the final name for #18 and #21) | G6 | Research | M | ✅ Done |
 | 12 | `credits-ui` | W4 | CRD-1, CRD-4, CRD-5, REG-5, STU-4 (credits), J-A | 6, 9, 10 | — | — | Plan | M | Open |
 | 13 | `attendance-ui` | W4 | REG-1–REG-4, STU-4 (attendance), J-E, J-F | 6, 7, 9, 10 | — | — | Research | M | Open |
 | 14 | `checkin-public` | W4 | QR-2–QR-5, QR-7, SQR-1–SQR-8, UI-4, J-B–J-D | 2, 6, 8 | — | — | Research | M | Open |
