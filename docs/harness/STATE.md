@@ -5,8 +5,8 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 3
-- **Phase of the project:** W0, W1 done; W2 backend done, #4 left
-- **Wave in progress:** W2 (#4) and W3 (#8 running; #9–#11 research/plan allowed, D-032)
+- **Phase of the project:** W0–W2 done; W3 #8 done
+- **Wave in progress:** W3 (#9, #10 implement; #11 plan) and W4 #14 (research)
 
 ## Mechanics
 
@@ -36,14 +36,14 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 4 `teacher-auth` | implement | c04-impl (bg 6004b4d2) | C (8003) | 11-11 11:45 | plan 6 phases; lane synced onto #2/#7; D-031, D-033; #11 must put logout on /account (phones) |
-| 11 `account-and-reset` | research | c11-research | A (8001) | 11-11 08:57 | D-032: implement only after #4 lands; reads #4 plan read-only |
-| 10 `courses-ui` | waiting for #4 | — | B (8002) | 11-11 12:25 | plan done (9 phases, L; from Phase 4 needs #4); next: `lane sync courses-ui`, then c10-impl "start at Step 0.1" |
-| 9 `students-ui` | waiting for #4 | — | D (8004) | 11-11 11:55 | plan done (6 phases, phases 0, 3–4 need #4); next: `lane sync students-ui`, then c09-impl |
+| 11 `account-and-reset` | plan | c11-plan | A (8001) | 11-11 09:03 | research DONE 130k (D-039); implement only after #4 lands |
+| 10 `courses-ui` | implement | c10-impl | B (8002) | 11-11 09:05 | L cycle, synced onto #4; D-035, D-036, D-038 |
+| 9 `students-ui` | implement | c09-impl | D (8004) | 11-11 09:05 | synced onto #4; D-038 |
+| 14 `checkin-public` | research | c14-research | C (8003) | 11-11 09:05 | D-040 comment fix; #8 outcome notes |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **Adopt the two running background teammates (D-037).** `c04-impl` (`6004b4d2`, lane C) and `c08-impl` (`40c34956`, lane A) are `claude --bg` sessions; they are not your teammates and cannot be messaged reliably. Watch for `.claude/worktrees/teacher-auth/.rpi-tracking/reports/c04-impl.md` and `.claude/worktrees/checkin-core/.rpi-tracking/reports/c08-impl.md` with a background waiter (a loop over the files, `sleep 30`, time limit). When one reports: read the file, `claude stop <id>`, `claude rm <id>`, then spawn the next phase as usual (you are in iTerm2: Agent tool, §5). If one is silent 45 min by `ctx` AGE: `claude stop`/`rm` and continue from its changes log with a fresh teammate.
 2. On `c04-impl` DONE: spawn `c04-review` (lane C, 8003). #4 is the critical path. After it lands and CI is green: `lane sync students-ui` → `c09-impl` (lane D, 8004); `lane sync courses-ui` → `c10-impl` (lane B, 8002, "start at Step 0.1; L cycle, WIP commit per phase"). Both plans are in their lanes' `.rpi-tracking/plans/2026-11-11/`.
@@ -52,6 +52,9 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 5. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
+
+- For #14's prompt (D-040): fix the comment above `^/c/` in `security.yaml` ("#16" → "#14"), comment only.
+- From c11-research, for later prompts: #22 must document `DEFAULT_URI=https://<domain>` in production (reset links are built from it); `trusted_hosts` and a limiter on `/reset-password` go to #19.
 
 - Teammates here burn context fast: research and plan sessions end at 110–150k. Implement sessions that hand plan phases to subagents finish L cycles in one session (#3 did); say "save context: command output to a file, read only exit code and failing lines" in implement prompts.
 - `ctx` STATUS often says `ended` for live split-pane teammates; judge by AGE (D-010). A teammate waiting on a subagent may be quiet 15+ minutes.
