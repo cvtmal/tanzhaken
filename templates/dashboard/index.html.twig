@@ -1,0 +1,62 @@
+{# Dashboard "Today" page (dashboard, #17, B1/B2): the date line, the greeting, today's lessons
+   with the hero check-in link, the passes to renew and the upcoming lessons. Read-only, no POST (P7).
+   Variables: board (App\Dashboard\ReadModel\TodayBoard), renewals (list<App\Credits\ReadModel\EnrollmentBalance>),
+   teacher_timezone (string), greeting ('morning'|'afternoon'|'evening'), now (\DateTimeImmutable).
+   DOM order Today, Passes to renew, Upcoming (B1); at 64rem the passes move to the right column (B2). #}
+{% extends 'layout/teacher.html.twig' %}
+
+{% block title %}{{ 'title'|trans({}, 'dashboard') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="dashboard-header">
+        <p class="dashboard__date">{{ now|format_date('full', timezone: teacher_timezone) }}</p>
+        {% embed 'components/_page_header.html.twig' with {
+            title: ('greeting.' ~ greeting)|trans({name: app.user.displayName}, 'dashboard'),
+            has_courses: board.hasCourses,
+        } only %}
+            {% block page_actions %}
+                {% if has_courses %}
+                    {% include 'components/_link_button.html.twig' with {
+                        label: 'action.new_course'|trans({}, 'dashboard'),
+                        href: path('course_new'),
+                        variant: 'soft',
+                        size: 'pill',
+                        icon: 'add',
+                        attr: {class: 'dashboard__new-course'},
+                    } only %}
+                {% endif %}
+            {% endblock %}
+        {% endembed %}
+    </div>
+
+    {% if not board.hasCourses %}
+        {% include 'components/_empty_state.html.twig' with {
+            title: 'empty.no_courses_title'|trans({}, 'dashboard'),
+            text: 'empty.no_courses_text'|trans({}, 'dashboard'),
+            action: {label: 'empty.no_courses_action'|trans({}, 'dashboard'), href: path('course_new'), icon: 'add'},
+        } only %}
+    {% else %}
+        {% set hero = board.hero %}
+        <div class="dashboard">
+            <section class="dashboard__section dashboard__today" aria-labelledby="dashboard-today">
+                <h2 class="dashboard__heading" id="dashboard-today">{{ 'section.today'|trans({}, 'dashboard') }}</h2>
+                {% if board.today is empty %}
+                    <p class="dashboard__none">{{ 'empty.no_lessons_today'|trans({}, 'dashboard') }}</p>
+                {% else %}
+                    <div class="dashboard__stack">
+                        {% if hero %}
+                            {% include 'dashboard/_hero.html.twig' with {lesson: hero, board: board, teacher_timezone: teacher_timezone} only %}
+                        {% endif %}
+                        {% for lesson in board.others %}
+                            {% include 'dashboard/_today_lesson.html.twig' with {lesson: lesson, board: board, teacher_timezone: teacher_timezone} only %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </section>
+
+            {% include 'dashboard/_renewals.html.twig' with {renewals: renewals, today_course_ids: board.todayCourseIds} only %}
+
+            {% include 'dashboard/_upcoming.html.twig' with {lessons: board.upcoming, teacher_timezone: teacher_timezone} only %}
+        </div>
+    {% endif %}
+{% endblock %}

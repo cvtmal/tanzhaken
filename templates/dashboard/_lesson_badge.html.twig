@@ -1,0 +1,14 @@
+{# Status badge of a today lesson (P5); renders nothing for a lesson that has not started.
+   Variables: lesson (App\Dashboard\ReadModel\DashboardLesson), now (\DateTimeImmutable, UTC). #}
+{% set since_end = lesson.minutesSinceEnd(now) %}
+{% if lesson.isCancelled %}
+    {% include 'components/_status_badge.html.twig' with {label: 'badge.cancelled'|trans({}, 'dashboard'), variant: 'neutral'} only %}
+{% elseif lesson.checkInOpen %}
+    {% include 'components/_status_badge.html.twig' with {label: 'badge.checkin_open'|trans({}, 'dashboard'), variant: 'open', pulse: true} only %}
+{% elseif lesson.isInProgress(now) %}
+    {% include 'components/_status_badge.html.twig' with {label: 'badge.now'|trans({}, 'dashboard'), variant: 'today'} only %}
+{% elseif since_end is not null and since_end < 60 %}
+    {% include 'components/_status_badge.html.twig' with {label: 'badge.ended_minutes'|trans({minutes: since_end}, 'dashboard'), variant: 'today'} only %}
+{% elseif since_end is not null %}
+    {% include 'components/_status_badge.html.twig' with {label: 'badge.ended_at'|trans({time: lesson.endsAtUtc|format_time('short', timezone: lesson.timezone)}, 'dashboard'), variant: 'neutral'} only %}
+{% endif %}

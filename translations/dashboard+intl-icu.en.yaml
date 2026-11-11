@@ -1,0 +1,42 @@
+# Domain `dashboard` (S7): the "Today" page (#17, UI-2). Tab label "Today", route `dashboard` (design D2).
+title: Today
+greeting:
+    morning: 'Good morning, {name}'
+    afternoon: 'Good afternoon, {name}'
+    evening: 'Good evening, {name}'
+
+section:
+    today: Today
+    renewals: Passes to renew
+    upcoming: Upcoming
+
+renewals:
+    count: '{count, plural, one {# student} other {# students}}'
+    in_today: 'In today’s {course}'
+
+lesson:
+    students: '{count, plural, =0 {No students} one {# student} other {# students}}'
+    duration: '{minutes} min'
+    starts_in: 'in {minutes, plural, one {# min} other {# min}}'
+
+badge:
+    now: Now
+    checkin_open: Check-in open
+    cancelled: Cancelled
+    ended_minutes: 'Ended {minutes, plural, =0 {just now} one {# min ago} other {# min ago}}'
+    ended_at: 'Ended at {time}'
+
+action:
+    new_course: New course
+    open_checkin: Open check-in
+    show_checkin: Show check-in
+    view_lesson: View lesson
+    open_lesson: Open lesson
+
+empty:
+    no_courses_title: No courses yet
+    no_courses_text: Create your first course. Its lessons and check-ins show up here every day.
+    no_courses_action: Create a course
+    no_lessons_today: No lessons today
+    no_upcoming: Nothing scheduled in the next 7 days
+    no_renewals: No passes to renew

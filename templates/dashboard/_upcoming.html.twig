@@ -1,0 +1,28 @@
+{# Upcoming lessons (P1: tomorrow to 7 days ahead, at most 10): date tile (weekday and day in the
+   course's zone), course name, "time · n students"; a cancelled lesson says so (P2). Row links to lesson_show.
+   The 'EEE'/'d' patterns are the exception to D-042 noted in plan Step 3.5: a weekday and a day number, not a time.
+   Variables: lessons (list<App\Dashboard\ReadModel\DashboardLesson>), teacher_timezone (string). #}
+<section class="dashboard__section dashboard__upcoming" aria-labelledby="dashboard-upcoming">
+    <h2 class="dashboard__heading" id="dashboard-upcoming">{{ 'section.upcoming'|trans({}, 'dashboard') }}</h2>
+    {% if lessons is empty %}
+        <p class="dashboard__none">{{ 'empty.no_upcoming'|trans({}, 'dashboard') }}</p>
+    {% else %}
+        {% embed 'components/_list.html.twig' with {label: 'section.upcoming'|trans({}, 'dashboard'), lessons: lessons, teacher_timezone: teacher_timezone} only %}
+            {% block list_items %}
+                {% for lesson in lessons %}
+                    {% set meta = lesson.startsAtUtc|format_time('short', timezone: lesson.timezone) ~ ' · ' ~ 'lesson.students'|trans({count: lesson.studentCount}, 'dashboard') %}
+                    {% if lesson.timezone != teacher_timezone %}{% set meta = meta ~ ' · ' ~ lesson.timezone %}{% endif %}
+                    {% embed 'components/_list_row.html.twig' with {
+                        title: lesson.courseName,
+                        href: path('lesson_show', {id: lesson.courseId, lessonId: lesson.lessonId}),
+                        lead: 'date',
+                        date_weekday: lesson.startsAtUtc|format_date(pattern: 'EEE', timezone: lesson.timezone)|upper,
+                        date_day: lesson.startsAtUtc|format_date(pattern: 'd', timezone: lesson.timezone),
+                        meta: lesson.isCancelled ? 'badge.cancelled'|trans({}, 'dashboard') : meta,
+                        meta_variant: lesson.isCancelled ? 'danger' : 'default',
+                    } only %}{% endembed %}
+                {% endfor %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+</section>

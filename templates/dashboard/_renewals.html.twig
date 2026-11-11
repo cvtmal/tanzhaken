@@ -1,0 +1,33 @@
+{# Passes to renew (P6): Balances::renewalNeeded() rows (balance <= 0), #6's order. Row: full name,
+   "In today's {course}" when the course has a lesson today, else the course name; balance chip.
+   No "+10" here (P7, D-044: #12). Row links to student_show.
+   Variables: renewals (list<App\Credits\ReadModel\EnrollmentBalance>), today_course_ids (array<string, true>, RFC 4122 keys). #}
+<section class="dashboard__section dashboard__renewals" aria-labelledby="dashboard-renewals">
+    <div class="dashboard__heading-row">
+        <h2 class="dashboard__heading" id="dashboard-renewals">{{ 'section.renewals'|trans({}, 'dashboard') }}</h2>
+        {% if renewals is not empty %}
+            <p class="dashboard__count">{{ 'renewals.count'|trans({count: renewals|length}, 'dashboard') }}</p>
+        {% endif %}
+    </div>
+    {% if renewals is empty %}
+        <p class="dashboard__none">{{ 'empty.no_renewals'|trans({}, 'dashboard') }}</p>
+    {% else %}
+        {% embed 'components/_list.html.twig' with {label: 'section.renewals'|trans({}, 'dashboard'), renewals: renewals, today_course_ids: today_course_ids} only %}
+            {% block list_items %}
+                {% for r in renewals %}
+                    {% embed 'components/_list_row.html.twig' with {
+                        title: r.studentFirstName ~ ' ' ~ r.studentLastName,
+                        href: path('student_show', {id: r.studentId}),
+                        meta: today_course_ids[r.courseId.toRfc4122] is defined ? 'renewals.in_today'|trans({course: r.courseName}, 'dashboard') : r.courseName,
+                        chevron: false,
+                        balance: r.balance,
+                    } only %}
+                        {% block row_trailing %}
+                            {% include 'components/_balance_badge.html.twig' with {balance: balance, show_label: false} only %}
+                        {% endblock %}
+                    {% endembed %}
+                {% endfor %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+</section>

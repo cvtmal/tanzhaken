@@ -1,0 +1,249 @@
+/*
+ * Dashboard "Today" page (#17, B1/B2): date line and greeting, section headings, the hero and
+ * compact lesson cards, the upcoming list and the passes to renew. Tokens only; the cards, lists,
+ * badges and buttons come from the components. One column on phones in the order Today, Passes
+ * to renew, Upcoming (B1); at 64rem two columns, schedule left, passes right (B2).
+ */
+
+/* Header: date line above the greeting, "New course" next to the date on phones (B1) and next to
+   the greeting on desktop (B2). The page-header component's wrappers are flattened into this grid. */
+.dashboard-header {
+    display: grid;
+    grid-template-areas:
+        "date actions"
+        "title title";
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--space-16);
+    row-gap: var(--space-4);
+    margin: var(--space-16) 0 var(--space-24);
+}
+
+.dashboard-header .page-header,
+.dashboard-header .page-header__row,
+.dashboard-header .page-header__text {
+    display: contents;
+}
+
+.dashboard__date {
+    grid-area: date;
+    color: var(--color-ink-3);
+    font-size: var(--text-14);
+    font-weight: var(--weight-medium);
+}
+
+.dashboard-header .page-header__title {
+    grid-area: title;
+}
+
+.dashboard-header .page-header__actions {
+    grid-area: actions;
+}
+
+/* The pill is 40 px; as the page's tap target it gets the 44 px minimum. */
+.dashboard__new-course {
+    --btn-height: var(--control-min);
+}
+
+/* Sections */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-28);
+}
+
+.dashboard__heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-12);
+    margin-bottom: var(--space-10);
+}
+
+.dashboard__heading {
+    margin: 0 0 var(--space-10);
+    font-size: var(--text-15);
+    font-weight: var(--weight-semibold);
+}
+
+.dashboard__heading-row .dashboard__heading {
+    margin: 0;
+}
+
+.dashboard__count {
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}
+
+.dashboard__none {
+    color: var(--color-ink-3);
+    font-size: var(--text-14);
+}
+
+.dashboard__stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-10);
+}
+
+/* Lesson cards: serif start time beside the course name and meta */
+.dashboard__time {
+    flex: none;
+    font-family: var(--font-serif);
+    font-size: var(--display-32);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+}
+
+.dashboard__time--compact {
+    font-size: var(--display-24);
+}
+
+.dashboard-lesson {
+    display: flex;
+    align-items: center;
+    gap: var(--space-16);
+}
+
+.dashboard-lesson__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-lesson__text .card__title {
+    overflow-wrap: break-word;
+}
+
+/* Compact card: when time, name and pill do not fit on one row (phone), the pill moves to its own row
+   instead of squeezing the course name into mid-word breaks. */
+.dashboard-lesson--compact {
+    flex-wrap: wrap;
+}
+
+.dashboard-lesson--compact .dashboard-lesson__text {
+    flex-basis: 9rem;
+}
+
+.dashboard-lesson--compact .dashboard-lesson__action {
+    margin-left: auto;
+}
+
+.dashboard-lesson__badge {
+    margin-bottom: var(--space-10);
+}
+
+.dashboard-lesson__text .dashboard-lesson__badge {
+    margin-bottom: var(--space-4);
+}
+
+.dashboard-lesson__badge:not(:has(*)) {
+    display: none;
+}
+
+.dashboard-lesson__action {
+    flex: none;
+}
+
+/* Parts of the meta line shown on desktop only (duration, location of a compact card; B2) */
+.dashboard__wide {
+    display: none;
+}
+
+/* Hero actions: full-width check-in button on phones, "View lesson" beneath it */
+.dashboard-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    margin-top: var(--space-16);
+}
+
+@media (min-width: 64rem) {
+    .dashboard-header {
+        grid-template-areas:
+            "date actions"
+            "title actions";
+        margin: 0 0 var(--space-32);
+    }
+
+    /* Desktop: the header action reads as a secondary button (B2), same single link */
+    .dashboard__new-course {
+        --btn-height: var(--control-md);
+        --btn-radius: var(--radius-14);
+        --btn-pad: var(--space-18);
+        --btn-font: var(--text-15);
+
+        border-color: var(--color-line-strong);
+        background: var(--color-card);
+        color: var(--color-ink);
+    }
+
+    .dashboard__new-course:hover {
+        background: var(--color-inset);
+        color: var(--color-ink);
+    }
+
+    .dashboard {
+        display: grid;
+        grid-template-areas:
+            "today renewals"
+            "upcoming renewals";
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        align-items: start;
+        gap: var(--space-28) var(--space-40);
+    }
+
+    .dashboard__today {
+        grid-area: today;
+    }
+
+    .dashboard__renewals {
+        grid-area: renewals;
+    }
+
+    .dashboard__upcoming {
+        grid-area: upcoming;
+    }
+
+    .dashboard__time {
+        font-size: var(--display-44);
+    }
+
+    .dashboard__time--compact {
+        font-size: var(--display-30);
+    }
+
+    .dashboard-lesson {
+        gap: var(--space-24);
+    }
+
+    .dashboard__wide {
+        display: inline;
+    }
+
+    .dashboard-hero__actions {
+        justify-content: flex-start;
+        margin-top: var(--space-20);
+    }
+
+    .dashboard-hero__checkin {
+        display: inline-flex;
+        width: auto;
+    }
+
+    /* Upcoming rows: meta on the right of the course name (B2) */
+    .dashboard__upcoming .list-row__text {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-12);
+    }
+
+    .dashboard__upcoming .list-row__meta {
+        flex: none;
+        font-size: var(--text-14);
+    }
+}

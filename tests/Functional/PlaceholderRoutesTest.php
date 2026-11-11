@@ -30,6 +30,7 @@ final class PlaceholderRoutesTest extends WebTestCase
         'password_forgot', 'password_reset', 'account', 'account_profile', 'account_password',
         'student_index', 'student_new', 'student_show', 'student_edit', 'student_archive', 'student_restore',
         'checkin_public', 'checkin_public_confirm',
+        'dashboard',
     ];
 
     /**
@@ -38,7 +39,6 @@ final class PlaceholderRoutesTest extends WebTestCase
     public static function placeholderRoutes(): iterable
     {
         yield 'privacy' => ['privacy', [], '/privacy'];
-        yield 'dashboard' => ['dashboard', [], '/dashboard'];
         yield 'course_index' => ['course_index', [], '/courses'];
         yield 'course_new' => ['course_new', [], '/courses/new'];
         yield 'course_show' => ['course_show', ['id' => 'x'], '/courses/x'];

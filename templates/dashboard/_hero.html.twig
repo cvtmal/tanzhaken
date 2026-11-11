@@ -1,0 +1,50 @@
+{# Hero lesson card (P4, B1/B2): badge, serif start time in the course's zone, course name, meta,
+   and the page's only filled primary button "Open check-in" (or "Show check-in" with an open window, P5)
+   when the lesson is eligible (P3); otherwise a secondary "Open lesson".
+   Variables: lesson (App\Dashboard\ReadModel\DashboardLesson), board (App\Dashboard\ReadModel\TodayBoard), teacher_timezone (string). #}
+{% embed 'components/_card.html.twig' with {variant: 'hero', tag: 'article', lesson: lesson, board: board, teacher_timezone: teacher_timezone} only %}
+    {% block card_body %}
+        {% set meta = ['lesson.students'|trans({count: lesson.studentCount}, 'dashboard')] %}
+        {% if lesson.location %}{% set meta = meta|merge([lesson.location]) %}{% endif %}
+        {% set until_start = lesson.minutesUntilStart(board.now) %}
+        {% if not lesson.isCancelled and until_start is not null and until_start < 60 %}{% set meta = meta|merge(['lesson.starts_in'|trans({minutes: until_start}, 'dashboard')]) %}{% endif %}
+        <div class="dashboard-lesson__badge">
+            {%- include 'dashboard/_lesson_badge.html.twig' with {lesson: lesson, now: board.now} only -%}
+        </div>
+        <div class="dashboard-lesson">
+            <time class="dashboard__time tabular" datetime="{{ lesson.startsAtUtc|date(constant('DATE_ATOM'), 'UTC') }}">{{ lesson.startsAtUtc|format_time('short', timezone: lesson.timezone) }}</time>
+            <div class="dashboard-lesson__text">
+                <h3 class="card__title">{{ lesson.courseName }}</h3>
+                <p class="card__meta">
+                    {{- meta|join(' · ') -}}
+                    <span class="dashboard__wide"> · {{ 'lesson.duration'|trans({minutes: lesson.durationMinutes}, 'dashboard') }}</span>
+                    {%- if lesson.timezone != teacher_timezone %} · {{ lesson.timezone }}{% endif -%}
+                </p>
+            </div>
+        </div>
+        <div class="dashboard-hero__actions">
+            {% if board.canOpenCheckIn(lesson) %}
+                {% include 'components/_link_button.html.twig' with {
+                    label: (lesson.checkInOpen ? 'action.show_checkin' : 'action.open_checkin')|trans({}, 'dashboard'),
+                    href: path('checkin_manage', {id: lesson.lessonId}),
+                    variant: 'primary',
+                    size: 'lg',
+                    icon: 'qr-code-2',
+                    full_width: true,
+                    attr: {class: 'dashboard-hero__checkin'},
+                } only %}
+                {% include 'components/_link_button.html.twig' with {
+                    label: 'action.view_lesson'|trans({}, 'dashboard'),
+                    href: path('lesson_show', {id: lesson.courseId, lessonId: lesson.lessonId}),
+                    variant: 'text',
+                } only %}
+            {% else %}
+                {% include 'components/_link_button.html.twig' with {
+                    label: 'action.open_lesson'|trans({}, 'dashboard'),
+                    href: path('lesson_show', {id: lesson.courseId, lessonId: lesson.lessonId}),
+                    variant: 'secondary',
+                } only %}
+            {% endif %}
+        </div>
+    {% endblock %}
+{% endembed %}
