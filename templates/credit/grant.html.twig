@@ -1,0 +1,63 @@
+{# Add credits (credit_grant, CRD-1, E2 as a page, PD1). Header with the back arrow to the return
+   target (PD4), the student (avatar, name, "Add lessons to the pass · {course}"), the amount block
+   (credit/_amount_fields: Now → After, pass, 10 / 5 / Other), the effective date and the note behind
+   "Date and note" (open when set or invalid), and the primary "Add 10 lessons". Works without JS;
+   assets/js/credit-amount.js keeps the after number and the submit label in step with the amount.
+   Variables: see the class docblock of App\Credits\Controller\CreditController. #}
+{% extends 'layout/teacher.html.twig' %}
+{% trans_default_domain 'credits' %}
+{% set page_scripts = ['credit-amount'] %}
+{% set name = balance.studentFirstName ~ ' ' ~ balance.studentLastName %}
+
+{% block title %}{{ 'credits.grant.title'|trans }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% if from == 'student' %}
+        {% set back_label = 'credits.back.student'|trans({name: name}) %}
+    {% elseif from == 'dashboard' %}
+        {% set back_label = 'credits.back.dashboard'|trans %}
+    {% else %}
+        {% set back_label = 'credits.back.course'|trans %}
+    {% endif %}
+    {% set quantity = after - balance.balance %}
+    {% set more_open = form.note.vars.value is not empty
+        or form.date.vars.value != form.date.vars.attr.max
+        or form.date.vars.errors|length > 0
+        or form.note.vars.errors|length > 0 %}
+
+    <div class="credit-page">
+        {% include 'components/_page_header.html.twig' with {title: 'credits.grant.title'|trans, back_href: back_url, back_label: back_label} only %}
+
+        <div class="credit-who">
+            {% include 'components/_avatar.html.twig' with {initials: (balance.studentFirstName|first ~ balance.studentLastName|first)|upper, size: 'lg'} only %}
+            <div class="credit-who__text">
+                <p class="credit-who__name">{{ name }}</p>
+                <p class="credit-who__sub">{{ 'credits.grant.subtitle'|trans({course: balance.courseName}) }}</p>
+            </div>
+        </div>
+
+        {{ form_start(form, {attr: {class: 'credit-form'}}) }}
+            {{ form_errors(form) }}
+            {% include 'credit/_amount_fields.html.twig' with {form: form, before: balance.balance, base: balance.balance, after: after} only %}
+            <details class="credit-form__more" {{ more_open ? 'open' }}>
+                <summary class="credit-form__more-toggle">{{ icon('calendar-today') }}{{ 'credits.grant.more'|trans }}</summary>
+                {{ form_row(form.date) }}
+                {{ form_row(form.note) }}
+            </details>
+            <div class="credit-form__footer">
+                {% include 'components/_button.html.twig' with {
+                    label: quantity > 0 ? 'credits.grant.submit'|trans({count: quantity}) : 'credits.grant.submit_generic'|trans,
+                    type: 'submit',
+                    size: 'lg',
+                    full_width: true,
+                    data: {
+                        'credit-submit': true,
+                        'credit-label-one': 'credits.grant.submit'|trans({count: 1}),
+                        'credit-label-other': 'credits.grant.submit_many'|trans({count: '{count}'}),
+                        'credit-label-generic': 'credits.grant.submit_generic'|trans,
+                    },
+                } only %}
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

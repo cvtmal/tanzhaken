@@ -79,3 +79,16 @@ courses:
 attendance:
     mark:
         reason_too_long: The reason may have at most {limit} characters.
+credits:
+    grant:
+        amount:
+            blank: Choose how many lessons to add.
+        other_amount:
+            out_of_range: 'Enter a number of lessons between 1 and {max}.'
+        date:
+            blank: Enter the date the lessons count from.
+        note:
+            too_long: This note is too long.
+    void:
+        reason:
+            too_long: This reason is too long.

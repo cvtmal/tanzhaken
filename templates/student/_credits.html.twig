@@ -1,0 +1,101 @@
+{# Slot of student/show.html.twig (#9): the student's credits (STU-4, CRD-4, CRD-5). Section "Credits"
+   with its own heading; one card per enrollment (credits_student(), left ones included, by course
+   name): course link, S9 balance badge, pass dots, "Left the course" badge, "Add credits" (active,
+   student and course not archived; from=student), then the entries newest first ("+10 lessons",
+   date medium in the teacher's zone, note). A voided entry is struck through with "Voided {date}" and
+   has no actions (PD9); the others have "Correct" (when credits can be added) and "Void", both pages
+   that confirm (PD2). No enrollment at all: an empty state.
+   Params (slot contract): student (App\Students\Entity\Student); courses (list<StudentCourseRow>, unused:
+   the balances list carries the courses).
+   Call: {% include 'student/_credits.html.twig' ignore missing with {student: student, courses: active_courses} only %} #}
+{% trans_default_domain 'credits' %}
+{% set credits = credits_student(student.id) %}
+{% set tz = app.user.timezone %}
+<section class="students-section credits-student" aria-labelledby="student-credits-heading">
+    <h2 class="students-section__heading" id="student-credits-heading">{{ 'credits.student.title'|trans }}</h2>
+    {% if credits.balances is empty %}
+        {% include 'components/_empty_state.html.twig' with {
+            title: 'credits.student.empty.title'|trans,
+            text: 'credits.student.empty.body'|trans,
+            level: 3,
+        } only %}
+    {% else %}
+        <div class="credit-accounts">
+            {% for b in credits.balances %}
+                {% embed 'components/_card.html.twig' with {
+                    tag: 'article',
+                    b: b,
+                    student: student,
+                    grants: credits.history[b.enrollmentId.toRfc4122] ?? [],
+                    can_add: b.active and not student.archived and credits_course_open(b.courseId),
+                    tz: tz,
+                } only %}
+                    {% trans_default_domain 'credits' %}
+                    {% block card_body %}
+                        <div class="credit-account__head">
+                            <h3 class="credit-account__course"><a href="{{ path('course_show', {id: b.courseId.toRfc4122}) }}">{{ b.courseName }}</a></h3>
+                            {% include 'components/_balance_badge.html.twig' with {balance: b.balance} only %}
+                        </div>
+                        <div class="credit-account__pass">
+                            {% include 'components/_pass_dots.html.twig' with {left: b.balance} only %}
+                            {%- if not b.active %}
+                                {% include 'components/_status_badge.html.twig' with {label: 'credits.student.left'|trans, size: 'sm'} only %}
+                            {%- endif %}
+                        </div>
+                        {%- if can_add %}
+                            <div class="credit-account__add">
+                                {% include 'components/_link_button.html.twig' with {
+                                    label: 'credits.student.add'|trans,
+                                    href: path('credit_grant', {id: b.courseId.toRfc4122, enrollmentId: b.enrollmentId.toRfc4122, from: 'student'}),
+                                    variant: 'soft',
+                                    icon: 'add',
+                                } only %}
+                            </div>
+                        {%- endif %}
+                        {% if grants is empty %}
+                            <p class="card__meta credit-history__none">{{ 'credits.student.no_grants'|trans }}</p>
+                        {% else %}
+                            <ul class="credit-history">
+                                {% for g in grants %}
+                                    {% set date = g.grantedAt|format_date('medium', timezone: tz) %}
+                                    <li class="credit-history__entry{{ g.voided ? ' credit-history__entry--voided' }}">
+                                        <span class="credit-history__text">
+                                            <span class="credit-history__quantity">{{ 'credits.student.history.entry'|trans({count: g.quantity}) }}</span>
+                                            <span class="credit-history__meta">
+                                                <span class="credit-history__date">{{ date }}</span>
+                                                {%- if g.note %}<span class="credit-history__note">{{ g.note }}</span>{% endif -%}
+                                            </span>
+                                            {%- if g.voided %}
+                                                <span class="credit-history__voided">{{ 'credits.student.history.voided'|trans({date: g.voidedAt|format_date('medium', timezone: tz)}) }}</span>
+                                            {%- endif %}
+                                        </span>
+                                        {%- if not g.voided %}
+                                            <span class="credit-history__actions">
+                                                {%- if can_add %}
+                                                    {% include 'components/_link_button.html.twig' with {
+                                                        label: 'credits.student.correct'|trans,
+                                                        href: path('credit_correct', {id: student.id.toRfc4122, grantId: g.grantId.toRfc4122, from: 'student'}),
+                                                        variant: 'text',
+                                                        size: 'compact',
+                                                        attr: {'aria-label': 'credits.student.correct_label'|trans({date: date})},
+                                                    } only %}
+                                                {%- endif %}
+                                                {% include 'components/_link_button.html.twig' with {
+                                                    label: 'credits.student.void'|trans,
+                                                    href: path('credit_void', {id: student.id.toRfc4122, grantId: g.grantId.toRfc4122, from: 'student'}),
+                                                    variant: 'text',
+                                                    size: 'compact',
+                                                    attr: {'aria-label': 'credits.student.void_label'|trans({date: date})},
+                                                } only %}
+                                            </span>
+                                        {%- endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endblock %}
+                {% endembed %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>

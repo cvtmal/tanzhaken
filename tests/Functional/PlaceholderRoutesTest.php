@@ -34,6 +34,7 @@ final class PlaceholderRoutesTest extends WebTestCase
         'course_lesson_reinstate', 'course_enroll', 'course_enrollment_remove', 'course_enrollment_label',
         'course_export',
         'lesson_show', 'lesson_mark', 'lesson_complete',
+        'credit_grant', 'credit_void', 'credit_correct',
     ];
 
     /**

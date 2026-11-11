@@ -1,0 +1,34 @@
+{# Amount block of the grant and correct pages (E2): the "Now → After" panel, the pass of the after
+   value, the owed sub-line, the amount tiles 10 / 5 / Other (segmented radios, PD6) and the Other number
+   field (credits.css shows it only while Other is chosen where :has() works, always otherwise).
+   assets/js/credit-amount.js updates the after number, its state, the pass and the submit label
+   (data-credit-*); without JS the server-rendered values stay. Negative numbers print with U+2212.
+   Params: form (GrantType or CorrectType view); before (int: the balance now);
+   base (int: the balance the chosen amount is added to: before on the grant page, before minus the
+   corrected entry on the correct page); after (int: base + the chosen amount). The owed line (base < 0)
+   speaks of the balance on the grant page and of the balance without the entry on the correct page.
+   Call: {% include 'credit/_amount_fields.html.twig' with {form: form, before: b, base: b, after: a} only %} #}
+{% trans_default_domain 'credits' %}
+{% import _self as credit %}
+{% macro number(n) %}{{ n < 0 ? '−' ~ (-n) : n }}{% endmacro %}
+{% macro state(n) %}{{ n >= 3 ? 'ok' : (n >= 1 ? 'low' : 'danger') }}{% endmacro %}
+<div class="credit-change" data-credit-change data-credit-base="{{ base }}">
+    <dl class="credit-change__panel">
+        <div class="credit-change__side">
+            <dt class="credit-change__caption">{{ 'credits.grant.before'|trans }}</dt>
+            <dd class="credit-change__number credit-change__number--{{ credit.state(before) }} tabular">{{ credit.number(before) }}</dd>
+        </div>
+        <div class="credit-change__side credit-change__side--after">
+            <dt class="credit-change__caption">{{ 'credits.grant.after'|trans }}</dt>
+            <dd class="credit-change__number credit-change__number--{{ credit.state(after) }} tabular" data-credit-after aria-live="polite">{{ credit.number(after) }}</dd>
+        </div>
+    </dl>
+    <div class="credit-change__pass" data-credit-pass data-credit-pass-label="{{ 'component.balance.of_total'|trans({left: '{left}', total: 10}, 'messages') }}">
+        {% include 'components/_pass_dots.html.twig' with {left: after} only %}
+    </div>
+    {%- if base < 0 %}
+        <p class="credit-change__owed">{{ (base == before ? 'credits.grant.owed' : 'credits.correct.owed')|trans({count: -base}) }}</p>
+    {%- endif %}
+</div>
+{{ form_row(form.amount, {attr: {class: 'segmented'}, row_attr: {class: 'credit-amount'}}) }}
+{{ form_row(form.otherAmount, {row_attr: {class: 'credit-amount__other'}}) }}

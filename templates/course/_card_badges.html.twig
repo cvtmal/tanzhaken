@@ -1,0 +1,9 @@
+{# Slot of course/_card.html.twig (#10, D-036), in the card's trailing area: the danger badge
+   "n to renew" (active enrollments of the course at or below zero) when there are any, else nothing.
+   One renewalNeeded() query per request (credits_renewal_count() is memoised).
+   Params (slot contract): course_id (Symfony\Component\Uid\Uuid).
+   Call: {% include 'course/_card_badges.html.twig' ignore missing with {course_id: card.id} only %} #}
+{% set count = credits_renewal_count(course_id) %}
+{%- if count > 0 %}
+    {% include 'components/_status_badge.html.twig' with {label: 'credits.card.to_renew'|trans({count: count}, 'credits'), variant: 'danger', size: 'sm'} only %}
+{%- endif %}

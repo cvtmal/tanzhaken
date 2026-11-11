@@ -1,0 +1,24 @@
+{# The grant a void or correct page acts on (PD2): "+10 lessons", "Added on {date}" (medium, teacher's
+   zone), the course and the note.
+   Params: grant (App\Credits\Entity\CreditGrant); course_name (string); timezone (string, IANA, the teacher's).
+   Call: {% include 'credit/_grant_summary.html.twig' with {grant: grant, course_name: course.name, timezone: app.user.timezone} only %} #}
+{% trans_default_domain 'credits' %}
+{% embed 'components/_card.html.twig' with {grant: grant, course_name: course_name, timezone: timezone} only %}
+    {% trans_default_domain 'credits' %}
+    {% block card_body %}
+        <p class="credit-summary__quantity">{{ 'credits.summary.quantity'|trans({count: grant.quantity}) }}</p>
+        <p class="card__meta">{{ 'credits.summary.granted_on'|trans({date: grant.grantedAt|format_date('medium', timezone: timezone)}) }}</p>
+        <dl class="credit-summary__facts">
+            <div>
+                <dt>{{ 'credits.summary.course'|trans }}</dt>
+                <dd>{{ course_name }}</dd>
+            </div>
+            {%- if grant.note %}
+                <div>
+                    <dt>{{ 'credits.summary.note'|trans }}</dt>
+                    <dd>{{ grant.note }}</dd>
+                </div>
+            {%- endif %}
+        </dl>
+    {% endblock %}
+{% endembed %}

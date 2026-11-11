@@ -1,0 +1,358 @@
+/*
+ * Credits (#12): the add-credits page (E2 as a page: student, Now → After panel, pass, 10 / 5 / Other
+ * tiles, date and note, primary submit), the void and correct pages, the student's credits section
+ * (cards per enrollment, history with struck-through voided entries), the roster "Lessons left" cell
+ * (E1/E3: chip, 10-segment bar from 64rem, "+10" pill, row tint through :has(), PD8) and the dashboard
+ * "+10". Tokens only; 44 px targets come from the button sizes and .hit-target.
+ */
+
+/* Pages */
+.credit-page {
+    max-width: 40rem;
+}
+
+.credit-page > * + * {
+    margin-top: var(--space-20);
+}
+
+.credit-page__explain {
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+}
+
+/* Student line (E2) */
+.credit-who {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+}
+
+.credit-who__text {
+    min-width: 0;
+}
+
+.credit-who__name {
+    margin: 0;
+    font-size: var(--text-17);
+    font-weight: var(--weight-semibold);
+}
+
+.credit-who__sub {
+    margin: 0;
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+}
+
+/* Now → After (E2) */
+.credit-change {
+    margin-bottom: var(--space-20);
+}
+
+.credit-change__panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-40);
+    margin: 0;
+    padding: var(--space-20) var(--space-16);
+    border-radius: var(--radius-18);
+    background: var(--color-inset);
+}
+
+.credit-change__side {
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.credit-change__side--after::before {
+    content: "→";
+    position: absolute;
+    top: 50%;
+    left: calc(var(--space-28) * -1);
+    color: var(--color-ink-3);
+    font-size: var(--text-19);
+    transform: translate(-50%, -75%);
+}
+
+.credit-change__caption {
+    color: var(--color-ink-2);
+    font-size: var(--text-13);
+}
+
+.credit-change__number {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--display-44);
+    line-height: 1;
+}
+
+.credit-change__number--ok {
+    color: var(--color-ink);
+}
+
+.credit-change__number--low {
+    color: var(--color-low-text);
+}
+
+.credit-change__number--danger {
+    color: var(--color-danger-text);
+}
+
+.credit-change__pass {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-16);
+}
+
+.credit-change__owed {
+    margin: var(--space-8) 0 0;
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+    text-align: center;
+}
+
+/* Amount: the Other field shows only while Other is chosen (always without :has()). */
+@supports selector(:has(*)) {
+    .credit-form:not(:has(.credit-amount input[value="other"]:checked)) .credit-amount__other {
+        display: none;
+    }
+
+    /* Shown only with Other chosen, where it is required: drop the theme's "optional" hint. */
+    .credit-amount__other .field__optional {
+        display: none;
+    }
+}
+
+/* Form */
+.credit-form__more {
+    margin-bottom: var(--space-18);
+}
+
+.credit-form__more-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    min-height: var(--control-min);
+    color: var(--color-accent);
+    font-size: var(--text-15);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    list-style: none;
+}
+
+.credit-form__more-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.credit-form__more-toggle:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+}
+
+.credit-form__footer {
+    display: flex;
+    gap: var(--space-12);
+    margin-top: var(--space-8);
+}
+
+.credit-form__footer--pair > * {
+    flex: 1;
+}
+
+.btn--primary.credit-form__danger {
+    background: var(--color-danger-solid);
+}
+
+.btn--primary.credit-form__danger:hover {
+    background: var(--color-danger-text);
+}
+
+/* Entry summary (void / correct) */
+.credit-summary__quantity {
+    margin: 0;
+    font-size: var(--text-19);
+    font-weight: var(--weight-semibold);
+}
+
+.credit-summary__facts {
+    display: grid;
+    gap: var(--space-6);
+    margin: var(--space-12) 0 0;
+    font-size: var(--text-14);
+}
+
+.credit-summary__facts div {
+    display: flex;
+    gap: var(--space-8);
+}
+
+.credit-summary__facts dt {
+    color: var(--color-ink-3);
+}
+
+.credit-summary__facts dd {
+    margin: 0;
+}
+
+/* Student page: one card per enrollment */
+.credit-accounts {
+    display: grid;
+    gap: var(--space-12);
+}
+
+.credit-account__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8) var(--space-12);
+}
+
+.credit-account__course {
+    margin: 0;
+    font-size: var(--text-16);
+    font-weight: var(--weight-semibold);
+}
+
+.credit-account__course a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--control-min);
+    color: var(--color-ink);
+    text-decoration: none;
+}
+
+.credit-account__course a:hover {
+    color: var(--color-accent);
+}
+
+.credit-account__pass {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-12);
+    margin-top: var(--space-8);
+}
+
+.credit-account__add {
+    margin-top: var(--space-14);
+}
+
+/* History */
+.credit-history {
+    margin: var(--space-14) 0 0;
+    padding: 0;
+    border-top: 1px solid var(--color-line);
+    list-style: none;
+}
+
+.credit-history__none {
+    margin-top: var(--space-14);
+}
+
+.credit-history__entry {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-12);
+    padding: var(--space-8) 0;
+}
+
+.credit-history__entry + .credit-history__entry {
+    border-top: 1px solid var(--color-inset);
+}
+
+.credit-history__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.35;
+}
+
+.credit-history__quantity {
+    font-weight: var(--weight-semibold);
+}
+
+.credit-history__meta {
+    color: var(--color-ink-2);
+    font-size: var(--text-13);
+}
+
+.credit-history__note::before {
+    content: " · ";
+}
+
+.credit-history__entry--voided .credit-history__quantity,
+.credit-history__entry--voided .credit-history__meta {
+    color: var(--color-ink-3);
+    text-decoration: line-through;
+}
+
+.credit-history__voided {
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}
+
+/* margin-left: auto keeps the actions right-aligned when a long note wraps them onto their own line. */
+.credit-history__actions {
+    display: flex;
+    gap: var(--space-4);
+    margin-left: auto;
+}
+
+/* Roster "Lessons left" cell (E1 / E3) */
+/* Stacked row: label left, chip and "+10" right; a "+10" that wraps (long S9 label) stays right. */
+.table td.roster-balance {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.table td.roster-balance::before {
+    margin-right: auto;
+}
+
+.roster-balance__value {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-12);
+}
+
+.roster-balance__bar {
+    display: none;
+}
+
+.roster-balance__add {
+    flex: none;
+}
+
+/* PD8: the badge state rings the stacked row below 64rem; the table (E3) flags by the chip and bar only. */
+.table tbody tr.roster-row:has(.roster-balance .balance--danger) {
+    box-shadow: 0 0 0 1px var(--color-danger-line);
+}
+
+.table tbody tr.roster-row:has(.roster-balance .balance--low) {
+    box-shadow: 0 0 0 1px var(--color-low-line);
+}
+
+@media (min-width: 64rem) {
+    .table td.roster-balance {
+        white-space: nowrap;
+    }
+
+    .roster-balance__bar {
+        display: inline-flex;
+    }
+
+    .roster-balance__add {
+        margin-left: var(--space-12);
+    }
+
+    .table tbody tr.roster-row:has(.roster-balance .balance--danger),
+    .table tbody tr.roster-row:has(.roster-balance .balance--low) {
+        box-shadow: none;
+    }
+}

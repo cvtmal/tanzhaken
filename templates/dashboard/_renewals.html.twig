@@ -1,6 +1,7 @@
 {# Passes to renew (P6): Balances::renewalNeeded() rows (balance <= 0), #6's order. Row: full name,
-   "In today's {course}" when the course has a lesson today, else the course name; balance chip.
-   No "+10" here (P7, D-044: #12). Row links to student_show.
+   "In today's {course}" when the course has a lesson today, else the course name; balance chip, then
+   the "+10" soft pill (#12, D-044, PD3): a link to credit_grant with from=dashboard, so nothing is
+   written by one tap and no Undo toast is needed; no extra query. Row links to student_show.
    Variables: renewals (list<App\Credits\ReadModel\EnrollmentBalance>), today_course_ids (array<string, true>, RFC 4122 keys). #}
 <section class="dashboard__section dashboard__renewals" aria-labelledby="dashboard-renewals">
     <div class="dashboard__heading-row">
@@ -21,9 +22,18 @@
                         meta: today_course_ids[r.courseId.toRfc4122] is defined ? 'renewals.in_today'|trans({course: r.courseName}, 'dashboard') : r.courseName,
                         chevron: false,
                         balance: r.balance,
+                        grant_href: path('credit_grant', {id: r.courseId.toRfc4122, enrollmentId: r.enrollmentId.toRfc4122, from: 'dashboard'}),
+                        name: r.studentFirstName ~ ' ' ~ r.studentLastName,
                     } only %}
                         {% block row_trailing %}
                             {% include 'components/_balance_badge.html.twig' with {balance: balance, show_label: false} only %}
+                            {% include 'components/_link_button.html.twig' with {
+                                label: 'credits.dashboard.add_ten'|trans({}, 'credits'),
+                                href: grant_href,
+                                variant: 'soft',
+                                size: 'pill-sm',
+                                attr: {class: 'renewal-add', 'aria-label': 'credits.dashboard.add_ten_label'|trans({name: name}, 'credits')},
+                            } only %}
                         {% endblock %}
                     {% endembed %}
                 {% endfor %}

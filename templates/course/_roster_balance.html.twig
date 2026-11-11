@@ -1,0 +1,27 @@
+{# Slot of course/_roster_row.html.twig (#10), inside the <tr>: the "Lessons left" cell (REG-5, E1/E3,
+   D-047). S9 balance badge with its label ("Low", "Renewal needed", "n lessons outstanding"), the
+   10-segment pass bar (desktop only, credits.css) and the "+10" soft pill to the grant page (PD7: only
+   when the balance is at most 2, the enrollment active, the student not archived and the course open).
+   The badge state tints the whole row through :has() (PD8, credits.css). One Balances query per roster
+   (credits_course_balance() is memoised per course).
+   Params (slot contract): course (array{id: string, name: string, timezone: string}); row (App\Courses\ReadModel\RosterRow).
+   Call: {% include 'course/_roster_balance.html.twig' ignore missing with {course: course_slot, row: row} only %} #}
+{% trans_default_domain 'credits' %}
+{% set b = credits_course_balance(course.id, row.enrollmentId) %}
+<td class="roster-balance" data-label="{{ 'credits.roster.column'|trans }}">
+    {%- if b %}
+        <span class="roster-balance__value">
+            {% include 'components/_balance_badge.html.twig' with {balance: b.balance} only %}
+            <span class="roster-balance__bar">{% include 'components/_pass_dots.html.twig' with {left: b.balance, variant: 'bar'} only %}</span>
+        </span>
+        {%- if b.balance <= 2 and b.active and not row.studentArchived and credits_course_open(course.id) %}
+            {% include 'components/_link_button.html.twig' with {
+                label: 'credits.roster.add_ten'|trans,
+                href: path('credit_grant', {id: course.id, enrollmentId: row.enrollmentId.toRfc4122, from: 'course'}),
+                variant: 'soft',
+                size: 'pill-sm',
+                attr: {class: 'roster-balance__add', 'aria-label': 'credits.roster.add_ten_label'|trans({name: row.firstName ~ ' ' ~ row.lastName})},
+            } only %}
+        {%- endif %}
+    {%- endif -%}
+</td>

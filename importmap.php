@@ -38,4 +38,8 @@ return [
         'path' => './assets/js/checkin-select.js',
         'entrypoint' => true,
     ],
+    'credit-amount' => [
+        'path' => './assets/js/credit-amount.js',
+        'entrypoint' => true,
+    ],
 ];

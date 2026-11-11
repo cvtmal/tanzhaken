@@ -1,0 +1,39 @@
+{# Void a credit entry (credit_void, CRD-5, PD2): the confirmation as a page, so it works without JS.
+   Header "Void this entry?" with the back arrow, the entry (credit/_grant_summary), the warning
+   "The balance drops by 10 lessons, to −1." (U+2212), the optional reason, "Void entry" + Cancel.
+   Variables: see the class docblock of App\Credits\Controller\CreditController. #}
+{% extends 'layout/teacher.html.twig' %}
+{% trans_default_domain 'credits' %}
+{% set name = student.firstName ~ ' ' ~ student.lastName %}
+
+{% block title %}{{ 'credits.void.title'|trans }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% if from == 'student' %}
+        {% set back_label = 'credits.back.student'|trans({name: name}) %}
+    {% elseif from == 'dashboard' %}
+        {% set back_label = 'credits.back.dashboard'|trans %}
+    {% else %}
+        {% set back_label = 'credits.back.course'|trans %}
+    {% endif %}
+
+    <div class="credit-page">
+        {% include 'components/_page_header.html.twig' with {title: 'credits.void.title'|trans, subtitle: name, back_href: back_url, back_label: back_label} only %}
+
+        {% include 'credit/_grant_summary.html.twig' with {grant: grant, course_name: course.name, timezone: app.user.timezone} only %}
+
+        {% include 'components/_alert.html.twig' with {
+            variant: 'warning',
+            text: 'credits.void.warning'|trans({count: grant.quantity, after: after < 0 ? '−' ~ (-after) : after}),
+        } only %}
+
+        {{ form_start(form, {attr: {class: 'credit-form'}}) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.reason) }}
+            <div class="credit-form__footer credit-form__footer--pair">
+                {% include 'components/_link_button.html.twig' with {label: 'credits.void.cancel'|trans, href: back_url, variant: 'secondary', size: 'lg'} only %}
+                {% include 'components/_button.html.twig' with {label: 'credits.void.submit'|trans, type: 'submit', size: 'lg', attr: {class: 'credit-form__danger'}} only %}
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

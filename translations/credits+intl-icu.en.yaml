@@ -1,0 +1,91 @@
+# Domain `credits` (S7): credit pages, slots and badges (#12).
+# credits.error.* mirrors the named constructors of App\Credits\Exception\InvalidCreditGrant
+# (mapped in CreditController::addRefusal()). Constraint messages are in `validators` (credits.*).
+credits:
+    error:
+        quantity_not_positive: Add at least one lesson.
+        note_too_long: 'The note must not be longer than {max, plural, one {# character} other {# characters}}.'
+        already_voided: This entry is already voided.
+        granted_in_future: The date cannot be in the future.
+        enrollment_not_active: Lessons can only be added while the student is in an active course.
+        reason_too_long: 'The reason must not be longer than {max, plural, one {# character} other {# characters}}.'
+        invalid: This entry could not be saved.
+    flash:
+        granted: '{count, plural, one {# lesson} other {# lessons}} added for {name} ({course}). Balance: {balance}.'
+        voided: 'Entry of {count, plural, one {# lesson} other {# lessons}} for {name} ({course}) voided.'
+        corrected: 'Entry for {name} ({course}) corrected to {count, plural, one {# lesson} other {# lessons}}.'
+    form:
+        amount:
+            label: Lessons to add
+            choice:
+                full: 10 lessons
+                half: '5'
+                other: Other
+        other_amount:
+            label: Number of lessons
+        date:
+            label: Effective date
+            help: Today, unless the pass was paid earlier.
+        note:
+            label: Note
+            help: For example “paid in cash”.
+        reason:
+            label: Reason
+            help: Kept in the log.
+    # Page copy (Phase 3).
+    back:
+        course: Back to the course
+        student: 'Back to {name}'
+        dashboard: Back to Today
+    grant:
+        title: Add lessons
+        subtitle: 'Add lessons to the pass · {course}'
+        before: Now
+        after: After
+        owed: 'The {count, plural, one {# lesson} other {# lessons}} owed {count, plural, one {comes} other {come}} off the new pass.'
+        submit: 'Add {count, plural, one {# lesson} other {# lessons}}'
+        submit_generic: Add lessons
+        # Template for credit-amount.js: rendered with count = the literal '{count}', which the script replaces.
+        submit_many: 'Add {count} lessons'
+        more: Date and note
+    void:
+        title: Void this entry?
+        warning: 'The balance drops by {count, plural, one {# lesson} other {# lessons}}, to {after}.'
+        submit: Void entry
+        cancel: Cancel
+    correct:
+        title: Correct this entry
+        explain: Saving voids this entry and adds the corrected one. Both stay in the history.
+        # The owed line of the correct page: base = the balance without this entry.
+        owed: 'Without this entry {count, plural, one {# lesson is} other {# lessons are}} owed; the corrected amount covers {count, plural, one {it} other {them}} first.'
+        submit: Save correction
+        cancel: Cancel
+    summary:
+        quantity: '+{count, plural, one {# lesson} other {# lessons}}'
+        granted_on: 'Added on {date}'
+        course: Course
+        note: Note
+    student:
+        title: Credits
+        add: Add credits
+        left: Left the course
+        no_grants: No credits yet
+        empty:
+            title: No courses, no credits
+            body: Enrol the student in a course to add lessons.
+        history:
+            entry: '+{count, plural, one {# lesson} other {# lessons}}'
+            voided: 'Voided {date}'
+        correct: Correct
+        void: Void
+        correct_label: 'Correct the entry of {date}'
+        void_label: 'Void the entry of {date}'
+    roster:
+        column: Lessons left
+        add_ten: '+10'
+        add_ten_label: 'Add 10 lessons for {name}'
+    card:
+        to_renew: '{count} to renew'
+    dashboard:
+        add_ten: '+10'
+        add_ten_label: 'Add 10 lessons for {name}'
