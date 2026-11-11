@@ -536,4 +536,4 @@ Backend only. Implements S8.
 
 ## Out of scope / proposals (not scheduled)
 
-PRD §9 in full. Noted for later: German catalogue; per-student private check-in code; PWA install; `design-alignment` (only if G2's default was used).
+PRD §9 in full. Noted for later: German catalogue; per-student private check-in code; PWA install; per-student erasure for data-subject requests (D-049); `design-alignment` (only if G2's default was used).

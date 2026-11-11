@@ -4,7 +4,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 
 ## Now
 
-- **CTO generation:** 3
+- **CTO generation:** 4
 - **Phase of the project:** W0–W2 done; W3: #8, #9, #11 done, #10 awaits review; W4: #14 done; W5: #17 awaits review, #18 awaits plan
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
@@ -36,9 +36,9 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 17 `dashboard` | implement DONE → review next | — | D (8004) | 11-11 10:47 | 446 tests; D-044, D-048; query count asserted equal (3) at 2 vs 20 |
-| 18 `data-protection` | research DONE → plan next | — | A (8001) | 11-11 10:45 | 123k; research applies D-046 (APP_HOSTING_REGION) and D-043 |
-| 10 `courses-ui` | implement DONE → review next | — | B (8002) | 11-11 10:40 | 508 tests; D-047; c10-impl shut down; next: c10-review (keep both sides on list conflicts) |
+| 17 `dashboard` | review | c17-review | D (8004) | 11-11 10:50 | 446 tests; D-044, D-048; query count asserted equal (3) at 2 vs 20 |
+| 18 `data-protection` | plan | c18-plan | A (8001) | 11-11 10:50 | 123k; research applies D-046 (APP_HOSTING_REGION) and D-043 |
+| 10 `courses-ui` | review | c10-review | B (8002) | 11-11 10:50 | 508 tests; D-047; c10-impl shut down; next: c10-review (keep both sides on list conflicts) |
 
 ## Next actions
 
@@ -55,7 +55,6 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
 - For #22's prompt (from #18): document APP_OPERATOR_* and APP_HOSTING_REGION.
-- Proposal from c18-research: per-student erasure (FADP data-subject requests) is not in the PRD; decide whether to add it under "Out of scope / proposals" in docs/rpi-cycles.md.
 - For #22's prompt (from #14): the check-in IP limiter needs `trusted_proxies` behind a proxy; also document `DEFAULT_URI`.
 - The owner's 5-hour usage limit hit all sessions at ~09:58 on 11-11; teammates resumed by message after the owner said "limit resetted". After such a stop: message each teammate to continue, and check its lane for half-done subagent work.
 - For #19's prompt (from #10): concurrent double enrolment of one student → 500 (unique-key race unmapped).
@@ -90,3 +89,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
 CTO-2 active since 2026-11-11 07:55 · handed over 2026-11-11 12:30 at 200k · landed #2, #5, #6, #7
 CTO-3 active since 2026-11-11 08:46 · handed over 2026-11-11 10:50 at 215k · landed #4, #8, #9, #11, #14
+CTO-4 active since 2026-11-11 10:48
