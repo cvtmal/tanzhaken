@@ -6,6 +6,8 @@ namespace App\Attendance\Repository;
 
 use App\Account\Entity\Teacher;
 use App\Attendance\Entity\Attendance;
+use App\Courses\Entity\LessonSession;
+use App\Students\Entity\Student;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -37,5 +39,24 @@ class AttendanceRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
 
         return $attendance instanceof Attendance ? $attendance : null;
+    }
+
+    public function findOneForLessonAndStudent(LessonSession $lesson, Student $student): ?Attendance
+    {
+        $attendance = $this->findOneBy(['lessonSession' => $lesson, 'student' => $student]);
+
+        return $attendance instanceof Attendance ? $attendance : null;
+    }
+
+    /**
+     * Attendance's own read of an enrollment fact (S2: no Courses class needed).
+     */
+    public function hasActiveEnrollment(Uuid $courseId, Uuid $studentId): bool
+    {
+        return false !== $this->getEntityManager()->getConnection()->fetchOne(
+            'SELECT 1 FROM enrollment WHERE course_id = :course AND student_id = :student AND left_at IS NULL LIMIT 1',
+            ['course' => $courseId, 'student' => $studentId],
+            ['course' => UuidType::NAME, 'student' => UuidType::NAME],
+        );
     }
 }
