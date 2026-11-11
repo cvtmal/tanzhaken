@@ -14,6 +14,7 @@ Things only the owner can do or approve. The project keeps moving on the default
 | O-4 | Data controller details for the privacy page | Legal content | Gate G5: placeholders from the environment | open |
 | O-5 | Test on a real iPhone and Android phone | An agent cannot hold a phone | Gate G7: desktop browser at 390 px | open |
 | O-7 | Decide whether to scrub commit `08a164e` from public history | Its `docs/rpi-cycles.md` named two of the owner's other local projects (folder names only, no content); reworded on `main` since, but rewriting history needs a force push | Left in history; names removed from the current tree and moved to a git-ignored file | open |
+| O-8 | Stop the finished background session `c08-impl` (`claude stop 40c34956 && claude rm 40c34956`), and allow `claude stop`/`claude rm` for harness sessions | Auto mode denies the CTO stopping background sessions | Finished bg teammates are left idle; they report via file and do no further work | open |
 | O-6 | SMTP account that sends the password-reset mails in production | The app has to mail reset links | Gate G6: `MAILER_DSN` from the environment; nothing real is sent in development | open |
 
 ## Log

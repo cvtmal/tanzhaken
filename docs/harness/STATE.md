@@ -4,7 +4,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 
 ## Now
 
-- **CTO generation:** 2
+- **CTO generation:** 3
 - **Phase of the project:** W0, W1 done; W2 backend done, #4 left
 - **Wave in progress:** W2 (#4) and W3 (#8 running; #9–#11 research/plan allowed, D-032)
 
@@ -36,14 +36,14 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 8 `checkin-core` | implement | c08-impl (bg 40c34956) | A (8001) | 11-11 12:05 | plan 6 phases; D-035; outcome carries #14 notes (label rule P2, limiter reset) |
 | 4 `teacher-auth` | implement | c04-impl (bg 6004b4d2) | C (8003) | 11-11 11:45 | plan 6 phases; lane synced onto #2/#7; D-031, D-033; #11 must put logout on /account (phones) |
+| 11 `account-and-reset` | research | c11-research | A (8001) | 11-11 08:57 | D-032: implement only after #4 lands; reads #4 plan read-only |
 | 10 `courses-ui` | waiting for #4 | — | B (8002) | 11-11 12:25 | plan done (9 phases, L; from Phase 4 needs #4); next: `lane sync courses-ui`, then c10-impl "start at Step 0.1" |
 | 9 `students-ui` | waiting for #4 | — | D (8004) | 11-11 11:55 | plan done (6 phases, phases 0, 3–4 need #4); next: `lane sync students-ui`, then c09-impl |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **Adopt the two running background teammates (D-037).** `c04-impl` (`6004b4d2`, lane C) and `c08-impl` (`40c34956`, lane A) are `claude --bg` sessions; they are not your teammates and cannot be messaged reliably. Watch for `.claude/worktrees/teacher-auth/.rpi-tracking/reports/c04-impl.md` and `.claude/worktrees/checkin-core/.rpi-tracking/reports/c08-impl.md` with a background waiter (a loop over the files, `sleep 30`, time limit). When one reports: read the file, `claude stop <id>`, `claude rm <id>`, then spawn the next phase as usual (you are in iTerm2: Agent tool, §5). If one is silent 45 min by `ctx` AGE: `claude stop`/`rm` and continue from its changes log with a fresh teammate.
 2. On `c04-impl` DONE: spawn `c04-review` (lane C, 8003). #4 is the critical path. After it lands and CI is green: `lane sync students-ui` → `c09-impl` (lane D, 8004); `lane sync courses-ui` → `c10-impl` (lane B, 8002, "start at Step 0.1; L cycle, WIP commit per phase"). Both plans are in their lanes' `.rpi-tracking/plans/2026-11-11/`.
@@ -72,3 +72,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 
 CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
 CTO-2 active since 2026-11-11 07:55 · handed over 2026-11-11 12:30 at 200k · landed #2, #5, #6, #7
+CTO-3 active since 2026-11-11 08:46
