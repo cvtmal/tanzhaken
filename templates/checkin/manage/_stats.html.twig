@@ -1,0 +1,25 @@
+{# Live stats of the open check-in (G1 stats row, G2 stats + one dot per student). Params: counts (CheckInCounts
+   {checkedIn, enrolled}), expires_at (\DateTimeImmutable), timezone (string, the course's).
+   Without JS: "n of m checked in" and "Closes at 7:42 PM" (course zone). checkin-live.js rebuilds the count from
+   data-count-template (placeholders %checked% / %enrolled%, so no English in JS), turns the second cell into a
+   ticking mm:ss with its "until it closes" label, and fills the dots. Dots only up to 40 students (D8). #}
+{% trans_default_domain 'checkin' %}
+<div class="checkin-stats">
+    <div class="checkin-stat">
+        <p class="checkin-stat__value" aria-live="polite" data-checkin-count
+            data-count-template="{{ 'manage.stats.checked_in'|trans({checked: '%checked%', enrolled: '%enrolled%'}) }}">
+            {{- 'manage.stats.checked_in'|trans({checked: counts.checkedIn, enrolled: counts.enrolled}) -}}
+        </p>
+    </div>
+    <div class="checkin-stat">
+        <p class="checkin-stat__value checkin-stat__value--time" data-checkin-countdown>
+            {{- 'manage.stats.closes_at'|trans({time: expires_at|format_time('short', timezone: timezone, locale: app.locale)}) -}}
+        </p>
+        <p class="checkin-stat__label" data-checkin-countdown-label hidden>{{ 'manage.stats.time_left'|trans }}</p>
+    </div>
+</div>
+{% if counts.enrolled > 0 and counts.enrolled <= 40 %}
+    <div class="checkin-dots" aria-hidden="true" data-checkin-dots>
+        {%- for i in 1..counts.enrolled %}<span class="checkin-dots__dot{{ i <= counts.checkedIn ? ' checkin-dots__dot--on' }}"></span>{% endfor -%}
+    </div>
+{% endif %}

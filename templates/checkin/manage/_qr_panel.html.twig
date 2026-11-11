@@ -1,0 +1,23 @@
+{# QR card and copyable link of the open check-in (G1/G2, D1, D11). Params: qr_svg (string, the inline SVG from
+   App\CheckIn\Service\QrCodeRenderer; its only input is our own generated URL, hence |raw), public_url (string,
+   absolute checkin_public URL). White card around the code: its padding adds to the SVG's 4-module quiet zone.
+   The input is readonly and selectable, so the link can be copied without JS; checkin-live.js un-hides the
+   Copy button when the Clipboard API exists. #}
+{% trans_default_domain 'checkin' %}
+<div class="checkin-qr">
+    <div class="checkin-qr__card" role="img" aria-label="{{ 'manage.qr_label'|trans }}">
+        {{- qr_svg|raw -}}
+    </div>
+    <div class="checkin-qr__link">
+        <label class="checkin-qr__label" for="checkin-public-url">{{ 'manage.url.label'|trans }}</label>
+        <div class="checkin-qr__row">
+            <input id="checkin-public-url" class="checkin-qr__input" type="text" value="{{ public_url }}" readonly spellcheck="false" autocomplete="off" data-checkin-url>
+            {% include 'components/_button.html.twig' with {
+                label: 'manage.url.copy'|trans,
+                variant: 'secondary',
+                attr: {class: 'checkin-qr__copy', hidden: 'hidden'},
+                data: {'checkin-copy': true, 'copied-label': 'manage.url.copied'|trans},
+            } only %}
+        </div>
+    </div>
+</div>

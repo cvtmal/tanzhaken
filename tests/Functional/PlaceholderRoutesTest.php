@@ -4,24 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
-use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Routing\RouterInterface;
 use Zenstruck\Foundry\Attribute\ResetDatabase;
 
 /**
- * Every S5 route exists from cycle #0 on and renders the placeholder until its owner ships it.
- * When a cycle replaces a placeholder with the real page, it moves the route's row from
- * placeholderRoutes() to SHIPPED.
- *
- * Every remaining placeholder is a teacher route: it needs a logged-in teacher (ACC-5, #4). The last
- * public placeholder (privacy) shipped with #18, so the PUBLIC list is gone.
+ * Every S5 route existed from cycle #0 on and rendered the placeholder until its owner shipped it.
+ * The last placeholders (checkin_manage, checkin_status) shipped with #16 (D-056), so the
+ * placeholder provider and its tests are gone; the router still holds exactly the S5 routes.
  */
 #[ResetDatabase]
 final class PlaceholderRoutesTest extends WebTestCase
 {
-    use LogsInTeacher;
-
     /** S5 routes whose real page has shipped; they are tested by their own cycle's tests. */
     private const SHIPPED = [
         'home', 'register', 'login', 'logout', 'privacy',
@@ -35,47 +29,8 @@ final class PlaceholderRoutesTest extends WebTestCase
         'course_export',
         'lesson_show', 'lesson_mark', 'lesson_complete',
         'credit_grant', 'credit_void', 'credit_correct',
+        'checkin_manage', 'checkin_status', 'checkin_open', 'checkin_close',
     ];
-
-    /**
-     * @return iterable<string, array{string, array<string, string>, string}>
-     */
-    public static function placeholderRoutes(): iterable
-    {
-        yield 'checkin_manage' => ['checkin_manage', ['id' => 'x'], '/lessons/x/check-in'];
-        yield 'checkin_status' => ['checkin_status', ['id' => 'x'], '/lessons/x/check-in/status'];
-    }
-
-    /**
-     * @param array<string, string> $params
-     */
-    #[DataProvider('placeholderRoutes')]
-    public function test_route_renders_its_placeholder(string $name, array $params, string $expectedPath): void
-    {
-        $client = self::createClient();
-        $router = self::getContainer()->get(RouterInterface::class);
-        self::assertInstanceOf(RouterInterface::class, $router);
-
-        self::assertSame($expectedPath, $router->generate($name, $params));
-
-        $this->logInTeacher($client);
-        $client->request('GET', $expectedPath);
-
-        self::assertResponseIsSuccessful();
-        self::assertSelectorExists(\sprintf('[data-route="%s"]', $name));
-    }
-
-    /**
-     * @param array<string, string> $params
-     */
-    #[DataProvider('placeholderRoutes')]
-    public function test_teacher_placeholder_redirects_anonymous_visitors_to_login(string $name, array $params, string $expectedPath): void
-    {
-        $client = self::createClient();
-        $client->request('GET', $expectedPath);
-
-        self::assertResponseRedirects('/login');
-    }
 
     public function test_router_holds_exactly_the_s5_routes(): void
     {
@@ -87,7 +42,7 @@ final class PlaceholderRoutesTest extends WebTestCase
             array_keys($router->getRouteCollection()->all()),
             static fn (string $name): bool => !str_starts_with($name, '_'),
         ));
-        $expected = [...array_keys(iterator_to_array(self::placeholderRoutes())), ...self::SHIPPED, 'health'];
+        $expected = [...self::SHIPPED, 'health'];
         sort($names);
         sort($expected);
 

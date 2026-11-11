@@ -52,3 +52,48 @@ message:
     too_many:
         heading: Too many attempts
         text: Wait a minute and try again.
+
+# The teacher's QR page /lessons/{id}/check-in (#16, boards G1/G2) and the lesson-page slot
+# lesson/_checkin_action.html.twig (F1/F2). Times print in the course's timezone (S7).
+manage:
+    title: 'Check-in · {course}'
+    back: Back to the lesson
+    # "Tue 10 Nov · 7:00 PM–8:00 PM"; the date uses lesson.date_pattern above.
+    when: '{date} · {start}–{end}'
+    with_timezone: '{when} ({timezone})'
+    badge:
+        open: Check-in open
+        closed: Check-in closed
+    scan: Scan to confirm your attendance
+    qr_label: QR code for the check-in link
+    url:
+        label: Check-in link
+        copy: Copy link
+        copied: Link copied
+    stats:
+        # Plain arguments (no ", number"): the page also renders this text with placeholders as the
+        # template assets/js/checkin-live.js fills in, so no English lives in JS. ICU still formats
+        # a numeric argument as a number.
+        checked_in: '{checked} of {enrolled} checked in'
+        closes_at: 'Closes at {time}'
+        time_left: until it closes
+    open: Open check-in
+    open_caption: Shows a QR code for 60 minutes
+    close: Close check-in
+    reopen: Reopen with a new code
+    fullscreen: Present full screen
+    token_missing:
+        title: This code is not shown on this device
+        text: The check-in is open, but its code is only kept in the browser session that opened it. Reopen it to show a new code here; the old code stops working.
+    not_yet: Check-in can be opened from 15 minutes before the lesson starts.
+    cancelled: This lesson is cancelled, so it has no check-in.
+    archived: This course is archived, so its lessons have no check-in.
+    closed: Check-in is closed.
+    slot:
+        open_until: 'Open until {time}'
+        show: Show QR code
+    flash:
+        opened: Check-in is open for 60 minutes.
+        closed: Check-in closed.
+        not_open: Check-in was not open.
+        cannot_open: Check-in cannot be opened for this lesson.

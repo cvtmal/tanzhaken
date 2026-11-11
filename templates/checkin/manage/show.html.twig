@@ -1,0 +1,95 @@
+{# The teacher's QR page (checkin_manage, QR-1/QR-6, #16; G1 phone, G2 laptop/tablet/projector). Variables: see the
+   class docblock of App\CheckIn\Controller\CheckInManageController (lesson, course, state, status_url, and in
+   state open: expires_at, counts, public_url, qr_svg).
+   Layout (D8): one column below 56rem (badge, course name, date line, QR card, scan line, stats, Close); two
+   columns above in state open (QR card left; badge, title, date line, scan line, stats, dots, actions right).
+   States (D2): open → QR, link, live stats; token_missing → explanation + Reopen + Close; offer → Open;
+   not_yet / cancelled / archived → text and the way back. Works without JS; assets/js/checkin-live.js
+   enhances the open state through the data-checkin-* hooks (poll, countdown, copy, full screen). #}
+{% extends 'checkin/manage/_shell.html.twig' %}
+{% trans_default_domain 'checkin' %}
+
+{% set back_href = path('lesson_show', {id: course.id, lessonId: lesson.id}) %}
+
+{% block title %}{{ 'manage.title'|trans({course: course.name}) }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% set timezone = course.timezone %}
+    {% set when = 'manage.when'|trans({
+        date: lesson.startsAtUtc|format_datetime(pattern: 'lesson.date_pattern'|trans, timezone: timezone, locale: app.locale),
+        start: lesson.startsAtUtc|format_time('short', timezone: timezone, locale: app.locale),
+        end: lesson.endsAtUtc|format_time('short', timezone: timezone, locale: app.locale),
+    }) %}
+    {% if app.user and app.user.timezone != timezone %}
+        {% set when = 'manage.with_timezone'|trans({when: when, timezone: timezone}) %}
+    {% endif %}
+    {% set is_open = state in ['open', 'token_missing'] %}
+
+    <div class="checkin-manage checkin-manage--{{ state|replace({'_': '-'}) }}"
+        {%- if state == 'open' %} data-checkin-live data-checkin-status-url="{{ status_url }}" data-checkin-expires-at="{{ expires_at|date('c', 'UTC') }}"{% endif %}>
+        <div class="checkin-manage__head">
+            {% if is_open %}
+                {% include 'components/_status_badge.html.twig' with {label: 'manage.badge.open'|trans, variant: 'open', pulse: true} only %}
+            {% else %}
+                {% include 'components/_status_badge.html.twig' with {label: 'manage.badge.closed'|trans, variant: 'neutral'} only %}
+            {% endif %}
+            <h1 class="checkin-manage__title">{{ course.name }}</h1>
+            <p class="checkin-manage__when">{{ when }}</p>
+        </div>
+
+        {% if state == 'open' %}
+            {% include 'checkin/manage/_qr_panel.html.twig' with {qr_svg: qr_svg, public_url: public_url} only %}
+        {% endif %}
+
+        <div class="checkin-manage__body">
+            {% if state == 'open' %}
+                <p class="checkin-manage__scan">{{ 'manage.scan'|trans }}</p>
+                {% include 'checkin/manage/_stats.html.twig' with {counts: counts, expires_at: expires_at, timezone: timezone} only %}
+                <div class="checkin-manage__actions">
+                    {% include 'components/_button.html.twig' with {
+                        label: 'manage.fullscreen'|trans,
+                        variant: 'secondary',
+                        icon: 'fullscreen',
+                        attr: {class: 'checkin-manage__fullscreen', hidden: 'hidden'},
+                        data: {'checkin-fullscreen': true},
+                    } only %}
+                    <form method="post" action="{{ path('checkin_close', {id: lesson.id}) }}" class="checkin-manage__form checkin-manage__form--close">
+                        <input type="hidden" name="_token" value="{{ csrf_token('checkin_close') }}">
+                        {% include 'components/_button.html.twig' with {label: 'manage.close'|trans, type: 'submit', variant: 'secondary', size: 'lg', full_width: true} only %}
+                    </form>
+                </div>
+            {% elseif state == 'token_missing' %}
+                {% include 'components/_alert.html.twig' with {
+                    variant: 'info',
+                    title: 'manage.token_missing.title'|trans,
+                    text: 'manage.token_missing.text'|trans,
+                } only %}
+                <div class="checkin-manage__actions">
+                    <form method="post" action="{{ path('checkin_open', {id: lesson.id}) }}" class="checkin-manage__form">
+                        <input type="hidden" name="_token" value="{{ csrf_token('checkin_open') }}">
+                        {% include 'components/_button.html.twig' with {label: 'manage.reopen'|trans, type: 'submit', size: 'lg', icon: 'qr-code-2', full_width: true} only %}
+                    </form>
+                    <form method="post" action="{{ path('checkin_close', {id: lesson.id}) }}" class="checkin-manage__form">
+                        <input type="hidden" name="_token" value="{{ csrf_token('checkin_close') }}">
+                        {% include 'components/_button.html.twig' with {label: 'manage.close'|trans, type: 'submit', variant: 'secondary', size: 'lg', full_width: true} only %}
+                    </form>
+                </div>
+            {% elseif state == 'offer' %}
+                <p class="checkin-manage__text">{{ 'manage.closed'|trans }}</p>
+                <div class="checkin-manage__actions">
+                    <form method="post" action="{{ path('checkin_open', {id: lesson.id}) }}" class="checkin-manage__form">
+                        <input type="hidden" name="_token" value="{{ csrf_token('checkin_open') }}">
+                        {% include 'components/_button.html.twig' with {label: 'manage.open'|trans, type: 'submit', size: 'lg', icon: 'qr-code-2', full_width: true} only %}
+                    </form>
+                    <p class="checkin-manage__caption">{{ 'manage.open_caption'|trans }}</p>
+                </div>
+            {% else %}
+                {# not_yet, cancelled, archived: no button (D2 c, D7). #}
+                <p class="checkin-manage__text">{{ ('manage.' ~ state)|trans }}</p>
+                <div class="checkin-manage__actions">
+                    {% include 'components/_link_button.html.twig' with {label: 'manage.back'|trans, href: back_href, variant: 'secondary', size: 'lg', icon: 'arrow-back', full_width: true} only %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

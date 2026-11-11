@@ -1,0 +1,360 @@
+/* The teacher's QR page (#16, boards G1 phone / G2 full screen; D8) and the lesson-page slot
+   (lesson/_checkin_action.html.twig, F1/F2). Shell without navigation: close icon + wordmark, then one
+   column below 56rem (badge, course name, date line, QR card, scan line, stats, Close) and, in state open,
+   two columns above it (QR card left, the rest right). The QR SVG has no width/height: it scales by its
+   viewBox inside a white card whose padding adds to the code's 4-module quiet zone. Tokens only. */
+
+/* Shell */
+.checkin-manage-shell {
+    background: var(--color-paper);
+}
+
+.checkin-manage-shell__frame {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.checkin-manage-shell__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-12);
+    width: 100%;
+    max-width: var(--content-max-desktop);
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-12) 0;
+}
+
+.checkin-manage-shell__main {
+    flex: 1;
+    width: 100%;
+    max-width: var(--content-max-desktop);
+    margin: 0 auto;
+    padding: var(--space-8) var(--space-20) var(--space-32);
+}
+
+.checkin-manage-shell__main > .flash-region {
+    margin: 0 auto var(--space-16);
+    max-width: 30rem;
+}
+
+/* Page: one column (G1) */
+.checkin-manage {
+    display: grid;
+    grid-template-areas:
+        "head"
+        "qr"
+        "body";
+    gap: var(--space-20);
+    max-width: 30rem;
+    margin: 0 auto;
+}
+
+.checkin-manage__head {
+    grid-area: head;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-8);
+    text-align: center;
+}
+
+.checkin-manage__title {
+    margin: var(--space-4) 0 0;
+    font-family: var(--font-serif);
+    font-size: var(--display-32);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    overflow-wrap: anywhere;
+}
+
+.checkin-manage__when {
+    margin: 0;
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+    font-variant-numeric: tabular-nums;
+}
+
+.checkin-manage__body {
+    grid-area: body;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+}
+
+.checkin-manage__scan {
+    margin: 0;
+    font-size: var(--text-17);
+    font-weight: var(--weight-semibold);
+    text-align: center;
+}
+
+.checkin-manage__text {
+    margin: 0;
+    color: var(--color-ink-2);
+    font-size: var(--text-16);
+    text-align: center;
+}
+
+.checkin-manage__caption {
+    margin: 0;
+    color: var(--color-ink-3);
+    font-size: var(--text-14);
+    text-align: center;
+}
+
+.checkin-manage__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    margin-top: var(--space-8);
+}
+
+.checkin-manage__form {
+    margin: 0;
+}
+
+/* QR card and link */
+.checkin-qr {
+    grid-area: qr;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-16);
+}
+
+.checkin-qr__card {
+    width: min(100%, 31.25rem);
+    padding: var(--space-12);
+    border-radius: var(--radius-28);
+    background: #fff; /* G1 "pure white card": no token is pure white (--color-card is #FFFEFB) */
+    box-shadow: var(--shadow-hero);
+}
+
+.checkin-qr__card svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.checkin-qr__link {
+    width: min(100%, 31.25rem);
+}
+
+.checkin-qr__label {
+    display: block;
+    margin-bottom: var(--space-6);
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+    font-weight: var(--weight-semibold);
+}
+
+.checkin-qr__row {
+    display: flex;
+    gap: var(--space-8);
+}
+
+.checkin-qr__input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--control-min);
+    padding: 0 var(--space-12);
+    border: 1px solid var(--color-field-line);
+    border-radius: var(--radius-12);
+    background: var(--color-card);
+    color: var(--color-ink-2);
+    font: inherit;
+    font-size: var(--text-14);
+}
+
+.checkin-qr__copy {
+    flex: none;
+}
+
+/* Stats: "n of m checked in" and the countdown (tabular numbers) */
+.checkin-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-18);
+    background: var(--color-card);
+}
+
+.checkin-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12) var(--space-8);
+    text-align: center;
+}
+
+.checkin-stat + .checkin-stat {
+    border-left: 1px solid var(--color-line);
+}
+
+.checkin-stat__value {
+    margin: 0;
+    font-size: var(--text-17);
+    font-weight: var(--weight-semibold);
+    line-height: var(--leading-display);
+    font-variant-numeric: tabular-nums;
+}
+
+.checkin-stat__value--time.is-ticking {
+    font-size: var(--text-22);
+}
+
+.checkin-stat__label {
+    margin: var(--space-2) 0 0;
+    color: var(--color-ink-2);
+    font-size: var(--text-13);
+}
+
+/* One dot per enrolled student, filled as they check in (G2 only) */
+.checkin-dots {
+    display: none;
+    flex-wrap: wrap;
+    gap: var(--space-10);
+}
+
+.checkin-dots__dot {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-line-strong);
+    border-radius: var(--radius-round);
+}
+
+.checkin-dots__dot--on {
+    border-color: var(--color-success-solid);
+    background: var(--color-success-solid);
+}
+
+/* Lesson-page slot (#13's page actions; F1/F2) */
+/* `.page-header__actions` is `flex: none`, so it takes the slot's one-line width and the caption ran
+   past a 390 px screen; capping it at the row lets the slot wrap (Step 5.1). */
+.page-header__actions:has(.checkin-slot) {
+    max-width: 100%;
+}
+
+.checkin-slot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.checkin-slot__form {
+    margin: 0;
+}
+
+.checkin-slot__caption {
+    margin: 0;
+    color: var(--color-ink-3);
+    font-size: var(--text-13);
+}
+
+/* Laptop, tablet, projector (G2): QR left, the rest right */
+@media (min-width: 56rem) {
+    .checkin-manage-shell__bar {
+        padding: var(--space-16) var(--space-24) 0;
+    }
+
+    .checkin-manage-shell__main {
+        padding: var(--space-16) var(--space-40) var(--space-40);
+    }
+
+    .checkin-manage--open {
+        grid-template-areas:
+            "qr head"
+            "qr body";
+        grid-template-columns: minmax(0, 31.25rem) minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        column-gap: var(--space-56);
+        row-gap: var(--space-20);
+        align-items: start;
+        max-width: none;
+    }
+
+    .checkin-manage--open .checkin-manage__head {
+        align-self: end;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .checkin-manage--open .checkin-manage__title {
+        font-size: clamp(var(--display-44), 5.5vw, 4.75rem);
+    }
+
+    .checkin-manage--open .checkin-manage__when {
+        font-size: var(--text-19);
+    }
+
+    .checkin-manage--open .checkin-manage__scan {
+        padding-bottom: var(--space-20);
+        border-bottom: 1px solid var(--color-line-strong);
+        font-size: var(--text-22);
+        text-align: left;
+    }
+
+    .checkin-qr__card {
+        padding: var(--space-24);
+        box-shadow: var(--shadow-hero-desktop);
+    }
+
+    .checkin-manage--open .checkin-stats {
+        grid-template-columns: auto auto;
+        justify-content: start;
+        column-gap: var(--space-40);
+        border: 0;
+        background: none;
+    }
+
+    .checkin-manage--open .checkin-stat {
+        align-items: flex-start;
+        padding: 0;
+        text-align: left;
+    }
+
+    .checkin-manage--open .checkin-stat + .checkin-stat {
+        border-left: 0;
+    }
+
+    .checkin-manage--open .checkin-stat__value {
+        font-size: var(--text-22);
+    }
+
+    .checkin-manage--open .checkin-stat__value--time.is-ticking {
+        font-family: var(--font-sans);
+        font-size: var(--display-44);
+    }
+
+    .checkin-manage--open .checkin-stat__label {
+        font-size: var(--text-15);
+    }
+
+    .checkin-dots {
+        display: flex;
+    }
+
+    .checkin-manage--open .checkin-manage__actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .checkin-manage--open .checkin-manage__form--close .btn--block {
+        width: auto;
+    }
+}
+
+/* base.css already stops .pulse; repeated here so the open badge on these pages never animates under it. */
+@media (prefers-reduced-motion: reduce) {
+    .checkin-manage .pulse,
+    .checkin-slot .pulse {
+        animation: none;
+    }
+}

@@ -1,0 +1,34 @@
+{# #16's slot in #13's lesson page actions (F1/F2; D6, P1, P2). Contract (#13): included `ignore missing` with
+   {course: {id, name, timezone}, lesson: {id, status, startsAtUtc}} only — ids are RFC 4122 strings, status the
+   LessonStatus value, startsAtUtc a \DateTimeImmutable. `app` is a Twig global, so app.user reaches it.
+   - cancelled lesson → nothing;
+   - an open window of this teacher (checkin_open_until) → "Open until 7:42 PM" badge (course zone; static,
+     no JS on #13's page — P2), "Show QR code" (checkin_manage) and Close (POST checkin_close);
+   - else, from 15 minutes before the start (checkin_offerable, P3) → Open check-in (POST checkin_open) + caption;
+   - else nothing. The POST is not gated by the lead time (D-055). Renders in both of #13's action positions. #}
+{% trans_default_domain 'checkin' %}
+{% if lesson.status != 'cancelled' and app.user %}
+    {% set until = checkin_open_until(app.user, lesson.id) %}
+    {% if until %}
+        <div class="checkin-slot">
+            {% include 'components/_status_badge.html.twig' with {
+                label: 'manage.slot.open_until'|trans({time: until|format_time('short', timezone: course.timezone, locale: app.locale)}),
+                variant: 'open',
+                pulse: true,
+            } only %}
+            <form method="post" action="{{ path('checkin_close', {id: lesson.id}) }}" class="checkin-slot__form">
+                <input type="hidden" name="_token" value="{{ csrf_token('checkin_close') }}">
+                {% include 'components/_button.html.twig' with {label: 'manage.close'|trans, type: 'submit', variant: 'secondary'} only %}
+            </form>
+            {% include 'components/_link_button.html.twig' with {label: 'manage.slot.show'|trans, href: path('checkin_manage', {id: lesson.id}), icon: 'qr-code-2'} only %}
+        </div>
+    {% elseif checkin_offerable(lesson.startsAtUtc) %}
+        <div class="checkin-slot">
+            <form method="post" action="{{ path('checkin_open', {id: lesson.id}) }}" class="checkin-slot__form">
+                <input type="hidden" name="_token" value="{{ csrf_token('checkin_open') }}">
+                {% include 'components/_button.html.twig' with {label: 'manage.open'|trans, type: 'submit', icon: 'qr-code-2'} only %}
+            </form>
+            <p class="checkin-slot__caption">{{ 'manage.open_caption'|trans }}</p>
+        </div>
+    {% endif %}
+{% endif %}
