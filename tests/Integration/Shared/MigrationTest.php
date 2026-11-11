@@ -17,7 +17,7 @@ final class MigrationTest extends TestCase
 {
     private const TABLES = [
         'attendance', 'audit_event', 'check_in_window', 'course', 'credit_grant',
-        'doctrine_migration_versions', 'enrollment', 'lesson_session', 'student', 'teacher',
+        'doctrine_migration_versions', 'enrollment', 'lesson_session', 'password_reset_request', 'student', 'teacher',
     ];
 
     private string $databaseFile;

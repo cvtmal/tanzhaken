@@ -22,11 +22,12 @@ final class PlaceholderRoutesTest extends WebTestCase
     use LogsInTeacher;
 
     /** Placeholders that render without a login (S5 public routes, security.yaml access_control). */
-    private const PUBLIC = ['password_forgot', 'password_reset', 'privacy', 'checkin_public'];
+    private const PUBLIC = ['privacy', 'checkin_public'];
 
     /** S5 routes whose real page has shipped; they are tested by their own cycle's tests. */
     private const SHIPPED = [
         'home', 'register', 'login', 'logout',
+        'password_forgot', 'password_reset', 'account', 'account_profile', 'account_password',
         'student_index', 'student_new', 'student_show', 'student_edit', 'student_archive', 'student_restore',
     ];
 
@@ -35,9 +36,6 @@ final class PlaceholderRoutesTest extends WebTestCase
      */
     public static function placeholderRoutes(): iterable
     {
-        yield 'password_forgot' => ['password_forgot', [], '/forgot-password'];
-        yield 'password_reset' => ['password_reset', ['token' => 'abc'], '/reset-password/abc'];
-        yield 'account' => ['account', [], '/account'];
         yield 'privacy' => ['privacy', [], '/privacy'];
         yield 'dashboard' => ['dashboard', [], '/dashboard'];
         yield 'course_index' => ['course_index', [], '/courses'];

@@ -13,6 +13,20 @@ account:
             blank: Choose a password.
             too_short: Use 8 characters or more.
             too_long: This password is too long.
+    forgot:
+        email:
+            blank: Enter your email address.
+            invalid: Enter a full email address.
+            too_long: This email address is too long.
+    settings:
+        name:
+            blank: Enter your name.
+            too_long: This name is too long.
+        timezone:
+            invalid: Choose a time zone from the list.
+        current_password:
+            blank: Enter your current password.
+            wrong: This is not your current password.
 students:
     student:
         first_name:

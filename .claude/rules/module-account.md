@@ -37,3 +37,11 @@ Namespace `App\Account\<Layer>`. Placeholder actions in `src/Account/Controller/
 - Form validation messages are keys in `translations/validators+intl-icu.en.yaml` (the validator translates in `validators`, not `account`), prefixed with the module: `account.register.*`.
 - Logout is `templates/account/_logout_form.html.twig` (POST, `logout` CSRF token; renders nothing when anonymous). Included in the sidebar footer only; #11 includes it on `/account` for phones.
 - Catalogue strings around a link are split into keys (`before`/`link`/`after`) so templates need no `|raw`.
+
+## #11 notes (account-and-reset)
+
+- Table `password_reset_request` (final name): `id`, `teacher_id` FK → `teacher(id)` ON DELETE CASCADE (`idx_password_reset_request_teacher`), `token_hash` CHAR(64) (`uk_password_reset_request_token_hash`), `requested_at`, `expires_at`. No `used_at`: used, superseded and expired rows are deleted (ephemeral credential, not domain history).
+- `Service\PasswordResets::request(string $email)` (never throws, same outcome for unknown/limited emails), `findValid(string $token): ?PasswordResetRequest`, `reset(string $token, string $newPassword)` (throws `Exception\InvalidResetLink`; audit `teacher.password_reset`). `Service\AccountSettings::updateProfile(Teacher, ProfileData)` (audit `teacher.profile_updated`), `changePassword(Teacher, string)` (audit `teacher.password_changed`; also deletes the teacher's pending reset links).
+- Mail goes through `Service\DeferredMailer::queue()`; it is sent on `kernel.terminate`. In a `KernelTestCase` call `sendQueued()` by hand; functional tests see it with `assertEmailCount()`. Sender is env `MAILER_FROM`; the link host is `DEFAULT_URI`, never the request Host.
+- Limiters `password_forgot_ip` (10/15 min) and `password_forgot_email` (3/60 min) in `config/packages/rate_limiter_account.yaml` live in the filesystem `cache.rate_limiter` pool: tests that POST `/forgot-password` call `resetLoginThrottling($client)` first (it clears that pool).
+- `templates/account/show.html.twig` ends with `{% include 'account/_delete.html.twig' ignore missing %}`: #18 creates that file, nothing else. Page spacing for the two cards is `assets/styles/account/settings.css` (keyed on the form names `profile`, `change_password`).

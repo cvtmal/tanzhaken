@@ -1,0 +1,105 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Account\Controller;
+
+use App\Account\Entity\Teacher;
+use App\Account\Exception\InvalidTeacher;
+use App\Account\Form\ChangePasswordData;
+use App\Account\Form\ChangePasswordType;
+use App\Account\Form\ProfileData;
+use App\Account\Form\ProfileType;
+use App\Account\Service\AccountSettings;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+/**
+ * The account page (ACC-4): a profile card (name, time zone) and a password card, each posting to
+ * its own route. An invalid card re-renders the page with 422; the other card is a fresh form.
+ */
+final class AccountController extends AbstractController
+{
+    #[Route('/account', name: 'account', methods: ['GET'])]
+    public function show(): Response
+    {
+        return $this->renderPage($this->teacher());
+    }
+
+    #[Route('/account/profile', name: 'account_profile', methods: ['POST'])]
+    public function profile(Request $request, AccountSettings $settings, TranslatorInterface $translator): Response
+    {
+        $teacher = $this->teacher();
+        $data = ProfileData::fromTeacher($teacher);
+        $form = $this->profileForm($data);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $settings->updateProfile($teacher, $data);
+                $this->addFlash('success', $translator->trans('settings.profile.saved', [], 'account'));
+
+                return $this->redirectToRoute('account');
+            } catch (InvalidTeacher) {
+                $form->get('timezone')->addError(new FormError($translator->trans('account.settings.timezone.invalid', [], 'validators')));
+            }
+        }
+
+        return $this->renderPage($teacher, profile: $form);
+    }
+
+    #[Route('/account/password', name: 'account_password', methods: ['POST'])]
+    public function password(Request $request, AccountSettings $settings, TranslatorInterface $translator): Response
+    {
+        $teacher = $this->teacher();
+        $data = new ChangePasswordData();
+        $form = $this->passwordForm($data);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $settings->changePassword($teacher, (string) $data->newPassword);
+            $this->addFlash('success', $translator->trans('settings.password.changed', [], 'account'));
+
+            return $this->redirectToRoute('account');
+        }
+
+        return $this->renderPage($teacher, password: $form);
+    }
+
+    /**
+     * Passing the forms (not their views) makes render() answer 422 when a submitted one is invalid.
+     */
+    private function renderPage(Teacher $teacher, ?FormInterface $profile = null, ?FormInterface $password = null): Response
+    {
+        return $this->render('account/show.html.twig', [
+            'teacher' => $teacher,
+            'profile_form' => $profile ?? $this->profileForm(ProfileData::fromTeacher($teacher)),
+            'password_form' => $password ?? $this->passwordForm(new ChangePasswordData()),
+        ]);
+    }
+
+    private function profileForm(ProfileData $data): FormInterface
+    {
+        return $this->createForm(ProfileType::class, $data, ['action' => $this->generateUrl('account_profile')]);
+    }
+
+    private function passwordForm(ChangePasswordData $data): FormInterface
+    {
+        return $this->createForm(ChangePasswordType::class, $data, ['action' => $this->generateUrl('account_password')]);
+    }
+
+    private function teacher(): Teacher
+    {
+        $user = $this->getUser();
+        if (!$user instanceof Teacher) {
+            throw new \LogicException('The firewall lets only a logged-in teacher reach /account.');
+        }
+
+        return $user;
+    }
+}

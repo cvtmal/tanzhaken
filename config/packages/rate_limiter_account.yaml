@@ -1,0 +1,16 @@
+# Password-reset throttles (cycle #11). Account\Service\PasswordResetThrottle receives them as
+# $passwordForgotIpLimiter and $passwordForgotEmailLimiter; PasswordResetController and
+# PasswordResets call it on POST /forgot-password.
+framework:
+    rate_limiter:
+        # Per client IP. The refusal is shown ("Too many requests"); it reveals nothing about accounts.
+        password_forgot_ip:
+            policy: sliding_window
+            limit: 10
+            interval: '15 minutes'
+        # Per email. The key is the sha256 of the normalised email; the refusal is silent (no mail,
+        # same answer as for an unknown email), so it cannot be used to probe accounts.
+        password_forgot_email:
+            policy: sliding_window
+            limit: 3
+            interval: '60 minutes'

@@ -1,0 +1,15 @@
+/*
+ * Account page (#11, account/show.html.twig): the card component has no outer margin, so the
+ * two settings cards, their titles and the phone logout form need their own gaps. Tokens only.
+ */
+section.card:has(> form[name="profile"]) + section.card:has(> form[name="change_password"]) {
+    margin-top: var(--space-16);
+}
+
+section.card:has(> form[name="profile"], > form[name="change_password"]) > .card__title {
+    margin-bottom: var(--space-14);
+}
+
+section.card:has(> form[name="change_password"]) + .logout-form {
+    margin-top: var(--space-16);
+}

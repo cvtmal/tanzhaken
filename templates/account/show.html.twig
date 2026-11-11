@@ -1,0 +1,42 @@
+{# Account page (ACC-4; AccountController). Hotspot owned by #11: #18 adds account/_delete.html.twig at the end.
+   Variables: teacher (Teacher); profile_form (ProfileType view, posts to account_profile);
+   password_form (ChangePasswordType view, posts to account_password). #}
+{% extends 'layout/teacher.html.twig' %}
+
+{% set page_scripts = ['password-toggle'] %}
+
+{% block title %}{{ 'settings.title'|trans({}, 'account') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% include 'components/_page_header.html.twig' with {title: 'settings.heading'|trans({}, 'account'), subtitle: teacher.email} only %}
+
+    {% embed 'components/_card.html.twig' with {tag: 'section', form: profile_form} only %}
+        {% block card_body %}
+            <h2 class="card__title">{{ 'settings.profile.heading'|trans({}, 'account') }}</h2>
+            {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.name) }}
+                {{ form_row(form.timezone) }}
+                {% include 'components/_button.html.twig' with {label: 'settings.profile.submit'|trans({}, 'account'), type: 'submit'} only %}
+            {{ form_end(form) }}
+        {% endblock %}
+    {% endembed %}
+
+    {% embed 'components/_card.html.twig' with {tag: 'section', form: password_form} only %}
+        {% block card_body %}
+            <h2 class="card__title">{{ 'settings.password.heading'|trans({}, 'account') }}</h2>
+            {{ form_start(form) }}
+                {{ form_errors(form) }}
+                {{ form_row(form.currentPassword) }}
+                {{ form_row(form.newPassword) }}
+                {% include 'components/_button.html.twig' with {label: 'settings.password.submit'|trans({}, 'account'), type: 'submit'} only %}
+            {{ form_end(form) }}
+        {% endblock %}
+    {% endembed %}
+
+    {# Logout for phones: the sidebar footer, which also has it, is hidden there (D-033). #}
+    {% include 'account/_logout_form.html.twig' %}
+
+    {# #18 slot: account deletion #}
+    {% include 'account/_delete.html.twig' ignore missing %}
+{% endblock %}

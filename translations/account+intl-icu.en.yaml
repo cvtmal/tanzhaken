@@ -52,3 +52,65 @@ brand_panel:
         name: Anna M.
         left: '{count, plural, one {# lesson left} other {# lessons left}}'
         hint: one comes off with every tick
+
+# #11: forgot and reset password, the reset mail, the account page.
+forgot:
+    title: Forgot password
+    back: Back to log in
+    heading: Forgot your password?
+    lede: Enter the email you registered with. We will send you a link to choose a new password.
+    email:
+        label: Email
+    submit: Send link
+    switch:
+        question: Remembered it?
+        link: Log in
+    sent: If an account exists for that email, we have sent a link. It is valid for 60 minutes.
+    throttled: 'Too many requests. Try again in {minutes, plural, one {# minute} other {# minutes}}.'
+
+reset:
+    title: Choose a new password
+    heading: Choose a new password
+    password:
+        label: New password
+        help: 8 characters or more
+    submit: Save new password
+    done: Your password is changed. Log in with the new one.
+    invalid:
+        title: Invalid link
+        heading: This link is invalid or has expired
+        text: Reset links work once and for 60 minutes.
+        request_new: Request a new link
+        back: Back to log in
+
+email:
+    password_reset:
+        subject: 'Reset your {brand} password'
+        greeting: 'Hello {name},'
+        intro: 'Someone (hopefully you) asked to reset the password of your {brand} account.'
+        open_link: 'Open this link to choose a new password:'
+        validity: 'The link works once and is valid for {minutes, plural, one {# minute} other {# minutes}}.'
+        ignore: If you did not ask for this, ignore this mail. Your password stays the same.
+        sign_off: '— {brand}'
+
+settings:
+    title: Account
+    heading: Account
+    profile:
+        heading: Profile
+        submit: Save profile
+        saved: Profile saved.
+    name:
+        label: Your name
+    timezone:
+        label: Time zone
+        help: Lesson times use each course's own time zone; this one is used everywhere else.
+    password:
+        heading: Password
+        submit: Change password
+        changed: Password changed. Other devices are logged out.
+    current_password:
+        label: Current password
+    new_password:
+        label: New password
+        help: 8 characters or more
