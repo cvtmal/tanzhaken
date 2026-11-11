@@ -15,7 +15,9 @@ use App\CheckIn\ReadModel\RosterEntry;
  * 2. While labels collide case-insensitively, every generated label of a colliding set that can
  *    still grow takes one more last-name character, up to min(3, length − 1), at least 1.
  *    Custom labels never change.
- * 3. Labels still equal get ` (2)`, ` (3)` … by joinedAt, then enrollment id; the first keeps its label.
+ * 3. Labels still equal are ordered by joinedAt, then enrollment id; the first keeps its label, each
+ *    later one gets ` (n)` with the smallest n ≥ 2 for which `label (n)` equals no other label in the
+ *    list case-insensitively (a custom `Anna M. (2)` pushes a generated `Anna M.` to `Anna M. (3)`).
  * 4. Sorted with the `en` collator on the final label, ties by enrollment id.
  */
 final class RosterLabeller
@@ -69,8 +71,12 @@ final class RosterLabeller
         foreach (self::collisions($labels) as $set) {
             usort($set, static fn (int $a, int $b): int => [$entries[$a]->joinedAt, $entries[$a]->enrollmentId->toRfc4122()]
                 <=> [$entries[$b]->joinedAt, $entries[$b]->enrollmentId->toRfc4122()]);
-            foreach (\array_slice($set, 1) as $position => $i) {
-                $labels[$i] .= \sprintf(' (%d)', $position + 2);
+            foreach (\array_slice($set, 1) as $i) {
+                $n = 2;
+                while (self::isTaken($labels, $i, \sprintf('%s (%d)', $labels[$i], $n))) {
+                    ++$n;
+                }
+                $labels[$i] .= \sprintf(' (%d)', $n);
             }
         }
 
@@ -89,6 +95,23 @@ final class RosterLabeller
     private static function generatedLabel(string $first, string $last, int $length): string
     {
         return trim($first.' '.mb_substr($last, 0, $length).'.');
+    }
+
+    /**
+     * Whether a label other than the one at $self equals $candidate case-insensitively.
+     *
+     * @param array<int, string> $labels
+     */
+    private static function isTaken(array $labels, int $self, string $candidate): bool
+    {
+        $key = mb_strtolower($candidate);
+        foreach ($labels as $i => $label) {
+            if ($i !== $self && mb_strtolower($label) === $key) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -22,13 +22,14 @@ final class PlaceholderRoutesTest extends WebTestCase
     use LogsInTeacher;
 
     /** Placeholders that render without a login (S5 public routes, security.yaml access_control). */
-    private const PUBLIC = ['privacy', 'checkin_public'];
+    private const PUBLIC = ['privacy'];
 
     /** S5 routes whose real page has shipped; they are tested by their own cycle's tests. */
     private const SHIPPED = [
         'home', 'register', 'login', 'logout',
         'password_forgot', 'password_reset', 'account', 'account_profile', 'account_password',
         'student_index', 'student_new', 'student_show', 'student_edit', 'student_archive', 'student_restore',
+        'checkin_public', 'checkin_public_confirm',
     ];
 
     /**
@@ -46,7 +47,6 @@ final class PlaceholderRoutesTest extends WebTestCase
         yield 'course_export' => ['course_export', ['id' => 'x'], '/courses/x/export.csv'];
         yield 'checkin_manage' => ['checkin_manage', ['id' => 'x'], '/lessons/x/check-in'];
         yield 'checkin_status' => ['checkin_status', ['id' => 'x'], '/lessons/x/check-in/status'];
-        yield 'checkin_public' => ['checkin_public', ['token' => 'abc'], '/c/abc'];
     }
 
     /**

@@ -1,0 +1,9 @@
+{# One name tile of the roster (H1): a visually hidden radio whose label is the tile, selected via :checked (no JS).
+   Variables: student (App\CheckIn\Service\RosterLabel), index (int, unique on the page). #}
+<div class="checkin-tile">
+    <input class="checkin-tile__input" type="radio" id="checkin-tile-{{ index }}" name="enrollment" value="{{ student.enrollmentId }}" required data-checkin-label="{{ student.label }}">
+    <label class="checkin-tile__label" for="checkin-tile-{{ index }}">
+        <span class="checkin-tile__name">{{ student.label }}</span>
+        <span class="checkin-tile__check" aria-hidden="true">{{ icon('check', null, 'icon--18') }}</span>
+    </label>
+</div>

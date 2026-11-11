@@ -34,4 +34,8 @@ return [
         'path' => './assets/js/alert.js',
         'entrypoint' => true,
     ],
+    'checkin-select' => [
+        'path' => './assets/js/checkin-select.js',
+        'entrypoint' => true,
+    ],
 ];

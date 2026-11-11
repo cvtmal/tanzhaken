@@ -1,0 +1,25 @@
+{# Frame of every public check-in page (#14): the public layout plus the S8 meta tags; the controller
+   sends the matching headers. No session and no flash use of its own (D-041). #}
+{% extends 'layout/public.html.twig' %}
+
+{% block meta %}
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="referrer" content="no-referrer">
+{% endblock %}
+
+{% block body_class 'layout-public checkin' %}
+
+{# The public shell of layout/public.html.twig minus its flash region (plan P5): reading app.flashes
+   starts a session, which turns Cache-Control into "max-age=0, must-revalidate, …" and breaks
+   D-041 (no session on this flow). Keep in step with the layout's shell. #}
+{% block body %}
+    <div class="public-shell">
+        <header class="public-shell__brand">
+            {% include 'components/_wordmark.html.twig' with {size: 'sm'} only %}
+        </header>
+        <main id="main" class="public-main" tabindex="-1">
+            {% block main %}{% endblock %}
+        </main>
+        {% include 'layout/_footer.html.twig' %}
+    </div>
+{% endblock %}

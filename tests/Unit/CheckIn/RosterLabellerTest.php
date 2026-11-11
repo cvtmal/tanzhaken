@@ -7,6 +7,7 @@ namespace App\Tests\Unit\CheckIn;
 use App\CheckIn\ReadModel\RosterEntry;
 use App\CheckIn\Service\RosterLabel;
 use App\CheckIn\Service\RosterLabeller;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 
@@ -82,6 +83,79 @@ final class RosterLabellerTest extends TestCase
         self::assertSame(['Anna M.', 'Anna Mü.'], self::labels([self::entry('Zoe', 'Roth', 'Anna M.'), self::entry('Anna', 'Müller')]));
     }
 
+    public function test_suffix_skips_a_number_taken_by_a_custom_label(): void
+    {
+        $first = self::entry('Anna', 'Mo', null, '2026-01-01 10:00:00');
+        $second = self::entry('Anna', 'Ma', null, '2026-01-02 10:00:00');
+        $custom = self::entry('Zoe', 'Roth', 'Anna M. (2)', '2026-01-03 10:00:00');
+
+        $byEnrollment = self::byEnrollment((new RosterLabeller())->label([$custom, $second, $first]));
+
+        self::assertSame('Anna M.', $byEnrollment[$first->enrollmentId->toRfc4122()]);
+        self::assertSame('Anna M. (3)', $byEnrollment[$second->enrollmentId->toRfc4122()]);
+        self::assertSame('Anna M. (2)', $byEnrollment[$custom->enrollmentId->toRfc4122()]);
+        self::assertPairwiseDistinct(array_values($byEnrollment));
+    }
+
+    public function test_identical_custom_labels_are_numbered(): void
+    {
+        $first = self::entry('Anna', 'Müller', 'X', '2026-01-01 10:00:00');
+        $second = self::entry('Zoe', 'Roth', 'X', '2026-01-02 10:00:00');
+
+        $byEnrollment = self::byEnrollment((new RosterLabeller())->label([$second, $first]));
+
+        self::assertSame('X', $byEnrollment[$first->enrollmentId->toRfc4122()]);
+        self::assertSame('X (2)', $byEnrollment[$second->enrollmentId->toRfc4122()]);
+    }
+
+    /**
+     * @param list<RosterEntry> $entries
+     */
+    #[DataProvider('rosters')]
+    public function test_labels_are_pairwise_distinct(array $entries): void
+    {
+        self::assertPairwiseDistinct(self::labels($entries));
+    }
+
+    /**
+     * Every roster used by the cases above.
+     *
+     * @return iterable<string, array{list<RosterEntry>}>
+     */
+    public static function rosters(): iterable
+    {
+        yield 'single' => [[self::entry('Anna', 'Müller')]];
+        yield 'custom' => [[self::entry('Anna', 'Müller', '  Annie ')]];
+        yield 'blank custom' => [[self::entry('Anna', 'Müller', '   ')]];
+        yield 'initials grow' => [[self::entry('Anna', 'Müller'), self::entry('Anna', 'Maier')]];
+        yield 'growth stops at three' => [[
+            self::entry('Anna', 'Müller', null, '2026-01-02 10:00:00'),
+            self::entry('Anna', 'Mülheim', null, '2026-01-01 10:00:00'),
+            self::entry('Anna', 'Maier', null, '2026-01-03 10:00:00'),
+        ]];
+        yield 'identical full names' => [[
+            self::entry('Anna', 'Müller', null, '2026-01-02 10:00:00'),
+            self::entry('Anna', 'Müller', null, '2026-01-01 10:00:00'),
+        ]];
+        yield 'two-letter last name' => [[
+            self::entry('Anna', 'Li', null, '2026-01-01 10:00:00'),
+            self::entry('Anna', 'Li', null, '2026-01-02 10:00:00'),
+        ]];
+        yield 'case-insensitive custom' => [[self::entry('Zoe', 'Roth', 'anna m.'), self::entry('Anna', 'Müller')]];
+        yield 'custom equal to generated' => [[self::entry('Zoe', 'Roth', 'Anna M.'), self::entry('Anna', 'Müller')]];
+        yield 'multibyte' => [[self::entry('Élodie', 'Ölmez')]];
+        yield 'collator sort' => [[self::entry('Zoe', 'Roth'), self::entry('Élodie', 'Ölmez'), self::entry('Anna', 'Müller')]];
+        yield 'suffix taken by custom' => [[
+            self::entry('Zoe', 'Roth', 'Anna M. (2)', '2026-01-03 10:00:00'),
+            self::entry('Anna', 'Ma', null, '2026-01-02 10:00:00'),
+            self::entry('Anna', 'Mo', null, '2026-01-01 10:00:00'),
+        ]];
+        yield 'identical custom labels' => [[
+            self::entry('Zoe', 'Roth', 'X', '2026-01-02 10:00:00'),
+            self::entry('Anna', 'Müller', 'X', '2026-01-01 10:00:00'),
+        ]];
+    }
+
     public function test_multibyte_first_letter(): void
     {
         self::assertSame(['Élodie Ö.'], self::labels([self::entry('Élodie', 'Ölmez')]));
@@ -108,6 +182,15 @@ final class RosterLabellerTest extends TestCase
     private static function labels(array $entries): array
     {
         return array_map(static fn (RosterLabel $label): string => $label->label, (new RosterLabeller())->label($entries));
+    }
+
+    /**
+     * @param list<string> $labels
+     */
+    private static function assertPairwiseDistinct(array $labels): void
+    {
+        $keys = array_map(mb_strtolower(...), $labels);
+        self::assertSame(\count($keys), \count(array_unique($keys)), implode(' | ', $labels));
     }
 
     /**

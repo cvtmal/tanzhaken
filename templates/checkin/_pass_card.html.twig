@@ -1,0 +1,32 @@
+{# The student's pass after a check-in (H2/H3, S9): lessons left (or owed), the dots, and the state copy.
+   Variables: balance (int, this enrollment only; may be negative), renewal (App\Credits\ReadModel\RenewalState of balance),
+   teacher (string, the teacher's display name). #}
+{% if balance < 0 %}
+    {% set tone = 'owed' %}
+{% elseif renewal.value == 'renewal_needed' %}
+    {% set tone = 'zero' %}
+{% elseif renewal.value == 'low' %}
+    {% set tone = 'low' %}
+{% else %}
+    {% set tone = 'ok' %}
+{% endif %}
+<section class="checkin-pass checkin-pass--{{ tone }}" aria-labelledby="checkin-pass-title">
+    <h2 class="checkin-pass__title" id="checkin-pass-title">{{ 'pass.title'|trans({}, 'checkin') }}</h2>
+    <p class="checkin-pass__count">
+        {%- if tone == 'owed' -%}
+            <span class="checkin-pass__owed">{{ 'pass.owed'|trans({count: -balance}, 'checkin') }}</span>
+        {%- else -%}
+            <span class="checkin-pass__number">{{ balance }}</span> <span class="checkin-pass__unit">{{ 'pass.left'|trans({count: balance}, 'checkin') }}</span>
+        {%- endif -%}
+    </p>
+    <div class="checkin-pass__dots">
+        {% include 'components/_pass_dots.html.twig' with {left: balance} only %}
+    </div>
+    {% if tone == 'low' %}
+        <p class="checkin-pass__note">{{ 'pass.state.low'|trans({teacher: teacher}, 'checkin') }}</p>
+    {% elseif tone == 'zero' %}
+        <p class="checkin-pass__note">{{ 'pass.state.zero'|trans({}, 'checkin') }}</p>
+    {% elseif tone == 'owed' %}
+        <p class="checkin-pass__note">{{ 'pass.state.owed'|trans({}, 'checkin') }}</p>
+    {% endif %}
+</section>

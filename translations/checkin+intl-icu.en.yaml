@@ -1,0 +1,54 @@
+# Domain `checkin` (S7): the public student check-in at /c/{token} (#14, boards H1–H3).
+# The public pages show only the teacher's display name, the course name, the lesson time and the
+# check-in labels (S4). Every refusal shares one message (message.refused), so a visitor learns
+# nothing about the token (S8).
+lesson:
+    # The lesson start in the course's timezone: "Tue 10 Nov, 7:00 PM". The date comes from this
+    # date-only ICU pattern, the time from the locale's short time format (D-042: no 24 h pattern).
+    date_pattern: 'EEE d MMM'
+    when: '{date}, {time}'
+    with: 'with {teacher} · {when}'
+    summary: '{course} · {when}'
+
+roster:
+    title: Check in
+    heading: Tap your name
+    caption: 'Not on the list? Ask {teacher} to add you.'
+    empty: No one is on the list yet.
+    invalid: Tap your name, then confirm.
+    footer:
+        # Without JavaScript the footer keeps this hint; assets/js/checkin-select.js swaps in "selected"
+        # with the label in bold (roster.html.twig splits this sentence around {label}).
+        hint: Tap your name, then confirm.
+        selected: 'Checking in as {label}'
+    submit: Confirm attendance
+
+result:
+    recorded:
+        title: Checked in
+        # No closing full stop: a generated label already ends with one ("Mia S.").
+        heading: "You're checked in, {label}"
+    already:
+        title: Already checked in
+        heading: Already checked in
+    footer: You can close this page. Wrong name? Tell your teacher.
+
+pass:
+    title: Your pass
+    left: '{count, plural, one {lesson left} other {lessons left}}'
+    owed: '{count, plural, one {# lesson owed} other {# lessons owed}}'
+    state:
+        low: 'Nearly used up. Ask {teacher} about a new pass next time.'
+        zero: That was the last lesson on your pass. Time for a new one.
+        owed: "You're still checked in. This lesson comes off your next pass."
+
+message:
+    refused:
+        heading: "This check-in isn't open"
+        text: Ask your teacher for the current QR code.
+    marked:
+        heading: Your teacher has already marked this lesson.
+        text: Talk to them if this looks wrong.
+    too_many:
+        heading: Too many attempts
+        text: Wait a minute and try again.

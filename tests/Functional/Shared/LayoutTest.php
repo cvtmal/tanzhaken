@@ -64,7 +64,7 @@ final class LayoutTest extends WebTestCase
     public function test_public_layout_has_only_brand_content_and_privacy_link(): void
     {
         $client = self::createClient();
-        $client->request('GET', '/c/abc');
+        $client->request('GET', '/privacy');
 
         self::assertResponseIsSuccessful();
         self::assertSelectorExists('body.layout-public');

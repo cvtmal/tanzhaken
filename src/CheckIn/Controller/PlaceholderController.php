@@ -24,10 +24,4 @@ final class PlaceholderController extends AbstractController
     {
         return $this->render('placeholder.html.twig', ['route' => 'checkin_status']);
     }
-
-    #[Route('/c/{token}', name: 'checkin_public', methods: ['GET'])]
-    public function public(): Response
-    {
-        return $this->render('placeholder.html.twig', ['route' => 'checkin_public']);
-    }
 }

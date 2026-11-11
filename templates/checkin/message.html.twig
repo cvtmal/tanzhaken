@@ -1,0 +1,15 @@
+{# The one public message of the check-in (J-D, README :148) on the error-page frame: icon, serif heading, one sentence.
+   No lesson data and no names, so every refusal renders the same body.
+   Variables: kind ('refused': every CheckInRefusal and a cross-site POST | 'marked': the teacher marked this lesson | 'too_many': throttled). #}
+{% extends 'checkin/_base.html.twig' %}
+
+{% block title %}{{ ('message.' ~ kind ~ '.heading')|trans({}, 'checkin') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% set icons = {refused: 'qr-code-2', marked: 'info', too_many: 'timer'} %}
+    <div class="error-page checkin-message">
+        <span class="error-page__icon" aria-hidden="true">{{ icon(icons[kind], null, 'icon--24') }}</span>
+        <h1 class="error-page__heading">{{ ('message.' ~ kind ~ '.heading')|trans({}, 'checkin') }}</h1>
+        <p class="error-page__text">{{ ('message.' ~ kind ~ '.text')|trans({}, 'checkin') }}</p>
+    </div>
+{% endblock %}

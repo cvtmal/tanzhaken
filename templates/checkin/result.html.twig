@@ -1,0 +1,21 @@
+{# Public check-in result (H2/H3, QR-5): "checked in" or "already checked in" with this student's pass. Rendered on the POST, no redirect.
+   Variables: state ('recorded'|'already'), check_in (App\CheckIn\Service\ValidCheckIn), label (string, the public check-in label),
+   balance (int), renewal (App\Credits\ReadModel\RenewalState). #}
+{% extends 'checkin/_base.html.twig' %}
+
+{% block title %}{{ ('result.' ~ state ~ '.title')|trans({}, 'checkin') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {# D-042: the time in the locale's short format ("7:00 PM"), the date from a date-only pattern; both in the course's zone. #}
+    {% set when = 'lesson.when'|trans({
+        date: check_in.lessonStartsAtUtc|format_datetime(pattern: 'lesson.date_pattern'|trans({}, 'checkin'), timezone: check_in.courseTimezone, locale: app.locale),
+        time: check_in.lessonStartsAtUtc|format_time(timeFormat: 'short', timezone: check_in.courseTimezone, locale: app.locale),
+    }, 'checkin') %}
+    <div class="checkin-page checkin-result">
+        <span class="checkin-result__tick" aria-hidden="true">{{ icon('check', null, 'checkin-result__tick-icon') }}</span>
+        <h1 class="checkin-result__heading">{{ ('result.' ~ state ~ '.heading')|trans({label: label}, 'checkin') }}</h1>
+        <p class="checkin-result__lesson">{{ 'lesson.summary'|trans({course: check_in.courseName, when: when}, 'checkin') }}</p>
+        {% include 'checkin/_pass_card.html.twig' with {balance: balance, renewal: renewal, teacher: check_in.teacherName} only %}
+        <p class="checkin-result__footer">{{ 'result.footer'|trans({}, 'checkin') }}</p>
+    </div>
+{% endblock %}

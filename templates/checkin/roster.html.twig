@@ -1,0 +1,48 @@
+{# Public check-in roster (H1, QR-2/QR-3): lesson header, name tiles, confirm in a sticky footer. Two taps, works without JS.
+   Variables: token (string, the path token), check_in (App\CheckIn\Service\ValidCheckIn), students (list<RosterLabel>),
+   invalid_choice (bool: the POST had no valid selection, answered with 422). #}
+{% extends 'checkin/_base.html.twig' %}
+
+{% set page_scripts = ['checkin-select'] %}
+
+{% block title %}{{ 'roster.title'|trans({}, 'checkin') }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {# D-042: the time in the locale's short format ("7:00 PM"), the date from a date-only pattern; both in the course's zone. #}
+    {% set when = 'lesson.when'|trans({
+        date: check_in.lessonStartsAtUtc|format_datetime(pattern: 'lesson.date_pattern'|trans({}, 'checkin'), timezone: check_in.courseTimezone, locale: app.locale),
+        time: check_in.lessonStartsAtUtc|format_time(timeFormat: 'short', timezone: check_in.courseTimezone, locale: app.locale),
+    }, 'checkin') %}
+    <div class="checkin-page">
+        <header class="checkin-lesson">
+            <h1 class="display-32 checkin-lesson__course">{{ check_in.courseName }}</h1>
+            <p class="checkin-lesson__meta">{{ 'lesson.with'|trans({teacher: check_in.teacherName, when: when}, 'checkin') }}</p>
+        </header>
+
+        {% if students is empty %}
+            {% include 'components/_empty_state.html.twig' with {title: 'roster.empty'|trans({}, 'checkin'), text: 'roster.caption'|trans({teacher: check_in.teacherName}, 'checkin')} only %}
+        {% else %}
+            <form class="checkin-roster" method="post" action="{{ path('checkin_public_confirm', {token: token}) }}">
+                {% if invalid_choice %}
+                    {% include 'components/_alert.html.twig' with {variant: 'danger', text: 'roster.invalid'|trans({}, 'checkin')} only %}
+                {% endif %}
+                <fieldset class="checkin-roster__group">
+                    <legend class="checkin-roster__heading">{{ 'roster.heading'|trans({}, 'checkin') }}</legend>
+                    <div class="checkin-tiles">
+                        {% for student in students %}
+                            {% include 'checkin/_name_tile.html.twig' with {student: student, index: loop.index} only %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <p class="checkin-roster__caption">{{ 'roster.caption'|trans({teacher: check_in.teacherName}, 'checkin') }}</p>
+                <div class="checkin-footer">
+                    {# The status names the student in bold (H1). The translated sentence is split around the label, so
+                       assets/js/checkin-select.js builds text + <strong> + text without HTML from data attributes. #}
+                    {% set status_parts = 'roster.footer.selected'|trans({label: '{label}'}, 'checkin')|split('{label}', 2) %}
+                    <p class="checkin-footer__status" data-checkin-status data-checkin-status-before="{{ status_parts[0] }}" data-checkin-status-after="{{ status_parts[1]|default('') }}" aria-live="polite">{{ 'roster.footer.hint'|trans({}, 'checkin') }}</p>
+                    {% include 'components/_button.html.twig' with {label: 'roster.submit'|trans({}, 'checkin'), type: 'submit', size: 'lg', full_width: true} only %}
+                </div>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

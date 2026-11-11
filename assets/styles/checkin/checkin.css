@@ -1,0 +1,279 @@
+/* Public student check-in (#14, boards H1–H3): lesson header, name tiles with a sticky confirm footer,
+   the result with its tick and pass card. Tokens only; the column is the public layout's (README :157:
+   desktop = the mobile column centred). The message page uses error-page.css. */
+
+/* Lesson header (H1) */
+.checkin-lesson {
+    margin-bottom: var(--space-24);
+}
+
+.checkin-lesson__course {
+    overflow-wrap: anywhere;
+}
+
+.checkin-lesson__meta {
+    margin-top: var(--space-6);
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+}
+
+/* Roster form */
+.checkin-roster .alert {
+    margin-bottom: var(--space-16);
+}
+
+.checkin-roster__group {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.checkin-roster__heading {
+    margin-bottom: var(--space-12);
+    padding: 0;
+    font-size: var(--text-17);
+    font-weight: var(--weight-semibold);
+}
+
+.checkin-roster__caption {
+    margin-top: var(--space-16);
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+}
+
+/* Name tiles: 2 columns, 52 px; the radio covers the tile (visually hidden, focusable), its label is the tile. */
+.checkin-tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8);
+}
+
+.checkin-tile {
+    position: relative;
+    display: flex;
+}
+
+.checkin-tile__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkin-tile__label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    min-height: var(--control-lg);
+    padding: var(--space-8) var(--space-12) var(--space-8) var(--space-16);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-14);
+    background: var(--color-card);
+    color: var(--color-ink);
+    font-size: var(--text-16);
+    font-weight: var(--weight-medium);
+    cursor: pointer;
+}
+
+.checkin-tile__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.checkin-tile__check {
+    display: none;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-round);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+}
+
+.checkin-tile__input:hover + .checkin-tile__label {
+    background: var(--color-inset);
+}
+
+.checkin-tile__input:checked + .checkin-tile__label {
+    border: 1.5px solid var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-weight: var(--weight-semibold);
+}
+
+.checkin-tile__input:checked + .checkin-tile__label .checkin-tile__check {
+    display: inline-flex;
+}
+
+.checkin-tile__input:focus-visible + .checkin-tile__label {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+}
+
+/* Sticky footer (H1): status line + full-width primary button, above the home indicator. */
+.checkin-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin: var(--space-24) calc(-1 * var(--space-20)) 0;
+    padding: var(--space-12) var(--space-20) calc(var(--space-16) + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--color-line);
+    background: var(--color-card);
+}
+
+.checkin-footer__status {
+    margin-bottom: var(--space-10);
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+    text-align: center;
+}
+
+.checkin-footer__status strong {
+    color: var(--color-ink);
+    font-weight: var(--weight-semibold);
+}
+
+/* Result (H2) */
+.checkin-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.checkin-result__tick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 104px;
+    height: 104px;
+    margin: var(--space-8) 0 var(--space-28);
+    border-radius: var(--radius-round);
+    background: var(--color-success-solid);
+    box-shadow: 0 0 0 14px var(--color-success-bg);
+    color: var(--color-on-accent);
+}
+
+.checkin-result__tick-icon {
+    width: 56px;
+    height: 56px;
+}
+
+.checkin-result__heading {
+    font-family: var(--font-serif);
+    font-size: var(--display-32);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    overflow-wrap: anywhere;
+}
+
+.checkin-result__lesson {
+    margin-top: var(--space-10);
+    color: var(--color-ink-2);
+    font-size: var(--text-15);
+}
+
+.checkin-result__footer {
+    margin-top: var(--space-32);
+    padding-bottom: var(--space-16);
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+}
+
+/* Pass card (H2/H3): state colours follow S9 (low 1–2, zero, owed below 0). */
+.checkin-pass {
+    --checkin-pass-number: var(--color-ink);
+    --checkin-pass-line: var(--color-line);
+    --checkin-pass-note-bg: var(--color-inset);
+    --checkin-pass-note-text: var(--color-ink-2);
+
+    width: 100%;
+    margin-top: var(--space-28);
+    padding: var(--space-20) var(--space-20) var(--space-24);
+    border: 1px solid var(--checkin-pass-line);
+    border-radius: var(--radius-20);
+    background: var(--color-card);
+    box-shadow: var(--shadow-card-lift);
+    text-align: center;
+}
+
+.checkin-pass--low {
+    --checkin-pass-number: var(--color-low-text);
+    --checkin-pass-line: var(--color-low-line);
+    --checkin-pass-note-bg: var(--color-low-bg);
+    --checkin-pass-note-text: var(--color-low-text);
+}
+
+.checkin-pass--zero,
+.checkin-pass--owed {
+    --checkin-pass-number: var(--color-danger-text);
+    --checkin-pass-line: var(--color-danger-line);
+    --checkin-pass-note-bg: var(--color-danger-bg);
+    --checkin-pass-note-text: var(--color-danger-text);
+}
+
+.checkin-pass__title {
+    color: var(--color-ink-2);
+    font-size: var(--text-13);
+    font-weight: var(--weight-semibold);
+}
+
+.checkin-pass__count {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: var(--space-10);
+    margin-top: var(--space-4);
+}
+
+.checkin-pass__number,
+.checkin-pass__owed {
+    color: var(--checkin-pass-number);
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+}
+
+.checkin-pass__number {
+    font-size: var(--display-44);
+}
+
+.checkin-pass__owed {
+    font-size: var(--display-30);
+}
+
+.checkin-pass__unit {
+    font-size: var(--text-17);
+}
+
+.checkin-pass__dots {
+    margin-top: var(--space-16);
+}
+
+.checkin-pass__note {
+    margin-top: var(--space-16);
+    padding: var(--space-12) var(--space-16);
+    border-radius: var(--radius-12);
+    background: var(--checkin-pass-note-bg);
+    color: var(--checkin-pass-note-text);
+    font-size: var(--text-14);
+}
+
+@media (min-width: 64rem) {
+    .checkin-footer {
+        margin-right: 0;
+        margin-left: 0;
+        border: 1px solid var(--color-line);
+        border-radius: var(--radius-18) var(--radius-18) 0 0;
+    }
+}
