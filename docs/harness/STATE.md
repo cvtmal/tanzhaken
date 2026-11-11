@@ -5,8 +5,8 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3 done; W4 done; W5: #17, #18 done; #16 waits on #13
-- **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
+- **Phase of the project:** W0–W5 done (#0–#18 all ✅); W6 not started. **Stopped for the owner's review (G9).**
+- **Wave in progress:** none; no teammate, no lane, no watchdog
 
 ## Mechanics
 
@@ -36,19 +36,17 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 16 `checkin-teacher-ui` | review | c16-review | A (8001) | 11-11 12:36 | 776 tests; bacon-qr-code; D-059 |
 
 ## Next actions
 
-**OWNER STOP (G9, owner instruction 2026-11-11, clarified 11:58):** the stop condition is that **every cycle of W0–W5 (#0–#18) is ✅ Done**, not only W5's. While any W0–W5 cycle is still running, keep going (teammates, lanes, rework). Start no W6 cycle (#19–#23) at any point. When the last W0–W5 cycle has landed and its CI is green: shut down every teammate, close the lanes, delete the watchdog, commit and push the harness files, send the owner one push notification "W0–W5 done, ready for your review", and stop. Resume only when the owner says so.
+**G9 REACHED 2026-11-11 12:48.** Every cycle of W0–W5 is ✅ Done and CI on `main` is green (1ba2a24). The CTO stopped for the owner's review. **Do not start any W6 cycle until the owner says to continue.** When the owner lifts G9: mark G9 answered in `docs/rpi-cycles.md` and `DECISIONS.md`, then open W6: #19 `security-hardening`, #20 `a11y-responsive-polish`, #21 `db-portability`, #22 `deploy-docs` into lanes A–D (critical path #19 first), using the notes below for each prompt; then #23.
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511`, #13 `0e3913b`, #12 `ae549d3` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511`, #13 `0e3913b`, #12 `ae549d3`, #16 `1ba2a24` (all ✅ Done in the overview). W0–W5 done.
 
-1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
-2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
-3. #16 after #13; #19–#22 after #14, #16, #18 (see the notes below for each prompt).
-4. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them.
-5. Then the loop in `CTO.md` §4.
+1. **No teammate runs; no lane is open; no watchdog.** Wait for the owner (G9).
+2. After the owner's go: W6 per the G9 line above. #19, #20, #22 need only landed cycles; #21 too. The Notes below hold the carried-forward items for each prompt (#19, #20, #22 have many).
+3. O-8: `c04-impl` (6004b4d2) and `c08-impl` (40c34956) are idle bg sessions the CTO may not stop (auto mode); ignore them. The four `busy` agent rows of 4 h age in `ctx` (c02-impl-2, c05/c06/c07-research) are stale entries, not live sessions.
+4. Then the loop in `CTO.md` §4.
 
 ## Notes for the successor
 
@@ -107,4 +105,4 @@ One line per CTO, in exactly this form, because a predecessor waits for the firs
 CTO-1 active since 2026-11-10 22:40 · handed over 2026-11-11 00:25 at 200.1k · landed #0, #1, #3
 CTO-2 active since 2026-11-11 07:55 · handed over 2026-11-11 12:30 at 200k · landed #2, #5, #6, #7
 CTO-3 active since 2026-11-11 08:46 · handed over 2026-11-11 10:50 at 215k · landed #4, #8, #9, #11, #14
-CTO-4 active since 2026-11-11 10:48
+CTO-4 active since 2026-11-11 10:48 · stopped for the owner's review (G9) 2026-11-11 12:48 at 227k · landed #17, #10, #18, #15, #13, #12, #16
