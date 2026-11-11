@@ -36,8 +36,8 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 11 `account-and-reset` | implement | c11-impl | A (8001) | 11-11 09:10 | plan 8 phases, Phase 0 checks #4 outcome; D-039; MigrationTest one-line edit allowed |
-| 17 `dashboard` | plan | c17-plan | D (8004) | 11-11 09:37 | starts at Plan; links via S5 placeholders |
+| 11 `account-and-reset` | review | c11-review | A (8001) | 11-11 09:46 | impl DONE 132k; table `password_reset_request` |
+| 17 `dashboard` | implement | c17-impl | D (8004) | 11-11 09:42 | plan 132k; D-044 (no Low rows, no +10) |
 | 10 `courses-ui` | implement | c10-impl | B (8002) | 11-11 09:05 | L cycle, synced onto #4; D-035, D-036, D-038 |
 | 14 `checkin-public` | implement | c14-impl | C (8003) | 11-11 09:17 | plan 6 phases (126k); D-040, D-041; P6 405 page without S8 headers → #19 |
 
@@ -55,7 +55,10 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 - For #20's prompt (from #9 review): course rows on the student page omit the location (F-m3).
 - For #20's prompt (from #9): shared `btn--pill` is 40 px (#9 overrides to 44 in its own CSS); seed lacks a student with one active and one left course. For #21's prompt: student search uses SQL LOWER(), ASCII-only (ö ≠ Ö).
-- For #19's prompt: review D-041 (cookie-less public confirm) and the c14 Sec-Fetch-Site check; GET /c/{token}/confirm 405 page lacks S8 headers (c14-plan P6).
+- For #19's prompt (from #11): equal mail timing for known/unknown emails holds only under PHP-FPM (fastcgi_finish_request).
+- For #20's prompt (from #14): captions show the teacher's full display name (board: first name); board polish items in 14's outcome.
+- For #20's prompt (from #11): forgot/reset pages lack A3 split panel; /account fields full-width at 1440; info alert tight on /login.
+- For #19's prompt: review D-041 (cookie-less public confirm); c14-impl found Chrome sends Origin: null on same-origin submits under no-referrer, Sec-Fetch-Site works (verify Safari/Firefox); GET /c/{token}/confirm 405 page lacks S8 headers (c14-plan P6).
 - For #14's prompt (D-040): fix the comment above `^/c/` in `security.yaml` ("#16" → "#14"), comment only.
 - From c11-research, for later prompts: #22 must document `DEFAULT_URI=https://<domain>` in production (reset links are built from it); `trusted_hosts` and a limiter on `/reset-password` go to #19.
 
