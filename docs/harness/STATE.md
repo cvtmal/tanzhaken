@@ -42,7 +42,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 ## Next actions
 
-**OWNER STOP (G9, owner instruction 2026-11-11 11:50):** when W5 is complete (#16, #17, #18 landed, plus W4's #12, #13, #15 that are in flight), start no W6 cycle (#19–#23). Shut down every teammate, close the lanes, delete the watchdog, commit and push the harness files, send the owner one push notification "W5 done, ready for your review", and stop. Resume only when the owner says so.
+**OWNER STOP (G9, owner instruction 2026-11-11, clarified 11:58):** the stop condition is that **every cycle of W0–W5 (#0–#18) is ✅ Done**, not only W5's. While any W0–W5 cycle is still running, keep going (teammates, lanes, rework). Start no W6 cycle (#19–#23) at any point. When the last W0–W5 cycle has landed and its CI is green: shut down every teammate, close the lanes, delete the watchdog, commit and push the harness files, send the owner one push notification "W0–W5 done, ready for your review", and stop. Resume only when the owner says so.
 
 Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307`, #15 `6781511` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 

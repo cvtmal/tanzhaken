@@ -147,7 +147,7 @@ Every gate has a default, so no cycle is blocked as a whole. The CTO records ans
 | G6 | Which SMTP account sends the reset mails in production? | `MAILER_DSN` from the environment. Development and tests send nothing real. | #11, #22 |
 | G7 | Manual smoke test on a real iPhone (Safari) and Android phone (Chrome). | The CTO tests in desktop Chrome at 390 px and 1440 px and in Firefox if installed. The device test is listed for the owner in the release report. | #20, #23 |
 | G8 | May the README advertise MariaDB/MySQL support? | Only if #21 ran migrations and the whole suite green against MariaDB in Docker. Otherwise the README says "SQLite supported, MariaDB untested". | #21, #22 |
-| G9 | Owner review of the application after W5 (owner instruction, 2026-11-11) | **No default: hard stop.** When W5 is complete, no W6 cycle starts; the CTO stops until the owner says to continue. | #19–#23 |
+| G9 | Owner review of the application after W5 (owner instruction, 2026-11-11) | **No default: hard stop.** No W6 cycle starts. When every cycle of W0–W5 (#0–#18) is ✅ Done, the CTO stops until the owner says to continue; while any of them still runs, work continues. | #19–#23 |
 
 ## Settled decisions
 
