@@ -36,7 +36,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 16 `checkin-teacher-ui` | implement | c16-impl | A (8001) | 11-11 12:20 | lane synced onto #13 (0e3913b); plan Phase 0 precondition; D-055, D-056 |
+| 16 `checkin-teacher-ui` | review | c16-review | A (8001) | 11-11 12:36 | 776 tests; bacon-qr-code; D-059 |
 
 ## Next actions
 
@@ -52,6 +52,8 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 ## Notes for the successor
 
+- For #20's prompt (D-059, from #16): remove dead `templates/placeholder.html.twig` and the skipping slot-absent tests (#9, #13); design deltas: slot in header actions not F1/F2 sticky bar, static "Open until" badge, no Close confirm dialog, full-screen button on phones, no feedback on fullscreen refusal.
+- For the owner review / #23 (G7): full screen on the QR page (Chrome refuses it under automation) and a real phone scan over LAN.
 - For #19's prompt (c12-review): Credits `addRefusal()` maps refusals by exception message. For #20: `credits_course_open()` uses ORM findBy in Twig; correct page's "owed" line static, tile labels "10 lessons" vs "5"; #10 course page student-name links 19 px high and "Edit" summary 26 px wide (< 44 px).
 - For #20's prompt (from #12): no E1 sub-lines; shared segmented style instead of E2's soft tile; `_pass_dots` aria-label "12 of 10" above 10; `_button` has no danger variant.
 - Browser checks in parallel lanes: cookies on 127.0.0.1 are shared across ports, so sessions clash; give a second lane `localhost:<port>`.
