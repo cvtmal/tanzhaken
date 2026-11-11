@@ -1,0 +1,47 @@
+{# One lesson in "All lessons" (P4, CRS-5): date, time range in the course zone (D-042), status badge
+   (scheduled outlined, completed green, cancelled grey). A non-cancelled lesson has a "Change"
+   <details> with the re-time form and the cancel form (optional reason; the cancel button opens the
+   shared #cancel-lesson confirm dialog of show.html.twig); a cancelled one has a Reinstate button.
+   No forms on an archived course (forms = {}).
+   Variables: lesson (LessonRow); forms (array{reschedule?, cancel?, reinstate?: FormView}); timezone (string).
+   Call: {% include 'course/_lesson_row.html.twig' with {lesson: lesson, forms: forms, timezone: timezone} only %} #}
+{% trans_default_domain 'courses' %}
+{% set date = lesson.startsAtUtc|format_date(pattern: 'EEE d MMM', timezone: timezone) %}
+{% set status = lesson.status.value %}
+{% set badge_variants = {scheduled: 'not-yet', completed: 'present', cancelled: 'absent'} %}
+<li class="lesson-row lesson-row--{{ status }}">
+    <div class="lesson-row__main">
+        <span class="lesson-row__text">
+            <span class="lesson-row__date">{{ date }}</span>
+            <span class="lesson-row__time">{{ 'course.lessons.time_range'|trans({
+                start: lesson.startsAtUtc|format_time('short', timezone: timezone),
+                end: lesson.endsAtUtc|format_time('short', timezone: timezone),
+            }) }}</span>
+        </span>
+        {% include 'components/_status_badge.html.twig' with {label: ('course.lessons.status.' ~ status)|trans, variant: badge_variants[status], size: 'sm'} only %}
+        {%- if forms.reinstate is defined %}
+            {{ form_start(forms.reinstate, {attr: {class: 'lesson-row__reinstate'}}) }}
+                {% include 'components/_button.html.twig' with {label: 'course.lessons.reinstate'|trans, type: 'submit', variant: 'soft', size: 'compact', attr: {'aria-label': 'course.lessons.reinstate_label'|trans({date: date})}} only %}
+            {{ form_end(forms.reinstate) }}
+        {%- endif %}
+    </div>
+    {%- if forms.reschedule is defined and forms.cancel is defined %}
+        <details class="lesson-row__change">
+            <summary class="lesson-row__toggle" aria-label="{{ 'course.lessons.change_label'|trans({date: date}) }}">{{ 'course.lessons.change'|trans }}</summary>
+            <div class="lesson-row__forms">
+                {{ form_start(forms.reschedule, {attr: {class: 'lesson-form'}}) }}
+                    <h3 class="lesson-form__title">{{ 'course.lessons.reschedule.title'|trans }}</h3>
+                    {{ form_row(forms.reschedule.date) }}
+                    {{ form_row(forms.reschedule.time) }}
+                    {{ form_row(forms.reschedule.durationMinutes) }}
+                    {% include 'components/_button.html.twig' with {label: 'course.lessons.reschedule.submit'|trans, type: 'submit', variant: 'soft'} only %}
+                {{ form_end(forms.reschedule) }}
+                {{ form_start(forms.cancel, {attr: {class: 'lesson-form'}}) }}
+                    <h3 class="lesson-form__title">{{ 'course.lessons.cancel.title'|trans }}</h3>
+                    {{ form_row(forms.cancel.reason) }}
+                    {% include 'components/_button.html.twig' with {label: 'course.lessons.cancel.submit'|trans, type: 'submit', variant: 'secondary', data: {'dialog-open': 'cancel-lesson'}} only %}
+                {{ form_end(forms.cancel) }}
+            </div>
+        </details>
+    {%- endif %}
+</li>

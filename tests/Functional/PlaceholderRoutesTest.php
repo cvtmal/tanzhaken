@@ -31,6 +31,9 @@ final class PlaceholderRoutesTest extends WebTestCase
         'student_index', 'student_new', 'student_show', 'student_edit', 'student_archive', 'student_restore',
         'checkin_public', 'checkin_public_confirm',
         'dashboard',
+        'course_index', 'course_new', 'course_show', 'course_edit',
+        'course_archive', 'course_extend', 'course_lesson_add', 'course_lesson_reschedule', 'course_lesson_cancel',
+        'course_lesson_reinstate', 'course_enroll', 'course_enrollment_remove', 'course_enrollment_label',
     ];
 
     /**
@@ -39,10 +42,6 @@ final class PlaceholderRoutesTest extends WebTestCase
     public static function placeholderRoutes(): iterable
     {
         yield 'privacy' => ['privacy', [], '/privacy'];
-        yield 'course_index' => ['course_index', [], '/courses'];
-        yield 'course_new' => ['course_new', [], '/courses/new'];
-        yield 'course_show' => ['course_show', ['id' => 'x'], '/courses/x'];
-        yield 'course_edit' => ['course_edit', ['id' => 'x'], '/courses/x/edit'];
         yield 'lesson_show' => ['lesson_show', ['id' => 'x', 'lessonId' => 'y'], '/courses/x/lessons/y'];
         yield 'course_export' => ['course_export', ['id' => 'x'], '/courses/x/export.csv'];
         yield 'checkin_manage' => ['checkin_manage', ['id' => 'x'], '/lessons/x/check-in'];

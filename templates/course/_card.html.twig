@@ -1,0 +1,29 @@
+{# One course card (C1/C3) as a _list_row inside the course list: weekday/time tile (plum when the course
+   has a lesson today, course-list.css), name, "n students · location", then "Today" / "Starts 9 Jan" /
+   "Next lesson Thu 12 Nov" and the #12 slot course/_card_badges.html.twig (D-036, receives course_id).
+   Times are en-locale intl times (D-042); the next lesson is printed in the course's zone.
+   Variables: card (App\Courses\ReadModel\CourseCard).
+   Call: {% include 'course/_card.html.twig' with {card: card} only %} #}
+{% trans_default_domain 'courses' %}
+{% set students = 'course.card.students'|trans({count: card.studentCount}) %}
+{% embed 'components/_list_row.html.twig' with {
+    title: card.name,
+    href: path('course_show', {id: card.id.toRfc4122}),
+    meta: card.location ? 'course.card.meta'|trans({students: students, location: card.location}) : students,
+    lead: 'date',
+    date_weekday: ('course.weekday.short.' ~ card.weekday)|trans,
+    date_day: date(card.localStartTime)|format_time('short', timezone: false),
+    card: card,
+} only %}
+    {% trans_default_domain 'courses' %}
+    {% block row_trailing %}
+        {%- if card.isToday %}
+            {% include 'components/_status_badge.html.twig' with {label: 'course.card.today'|trans, variant: 'today', size: 'sm'} only %}
+        {%- elseif card.startsLater %}
+            {% include 'components/_status_badge.html.twig' with {label: 'course.card.starts'|trans({date: card.startsOn|format_date(pattern: 'd MMM', timezone: false)}), variant: 'not-yet', size: 'sm'} only %}
+        {%- elseif card.nextLessonAtUtc %}
+            <span class="course-card__next">{{ 'course.card.next_lesson'|trans({date: card.nextLessonAtUtc|format_date(pattern: 'EEE d MMM', timezone: card.timezone)}) }}</span>
+        {%- endif %}
+        {% include 'course/_card_badges.html.twig' ignore missing with {course_id: card.id} only %}
+    {% endblock %}
+{% endembed %}

@@ -1,0 +1,13 @@
+{# New course (D1 mobile; C3's form as a page on desktop, D5). Variables: form (CourseType);
+   last_location (?string, prefilled into the location field, shows "Filled in from your last course"). #}
+{% extends 'layout/teacher.html.twig' %}
+{% trans_default_domain 'courses' %}
+
+{% block title %}{{ 'course.new.title'|trans }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="course-form-page">
+        {% include 'components/_page_header.html.twig' with {title: 'course.new.title'|trans, back_href: path('course_index'), back_label: 'course.new.close'|trans} only %}
+        {% include 'course/_form.html.twig' with {form: form, submit_label: 'course.new.submit'|trans, cancel_href: path('course_index'), last_location: last_location} only %}
+    </div>
+{% endblock %}

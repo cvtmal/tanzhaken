@@ -1,0 +1,86 @@
+{# Lessons of the course page (P4, E1/E3): "Next lesson" card with "Open lesson" (lesson_show, #13),
+   "Previous lesson" card with "{present} of {marked} present", then "All lessons (N)" as a <details>
+   with one _lesson_row per lesson (CRS-5), then "+ Add a lesson" (<details>) and the Extend button
+   (only when extend_form is set). Times in the course's zone, en-locale intl formats (D-042).
+   Variables: course_id (string RFC 4122); timezone (string); lessons (list<LessonRow>);
+   next_lesson, previous_lesson (?LessonRow); today (string Y-m-d in the course zone);
+   lesson_forms (array<string, array{reschedule?, cancel?, reinstate?: FormView}>);
+   add_lesson_form, extend_form (?FormView); extension_target (?\DateTimeImmutable, local date).
+   Call: see course/show.html.twig. #}
+{% trans_default_domain 'courses' %}
+<h2 id="course-lessons-title" class="visually-hidden">{{ 'course.lessons.heading'|trans }}</h2>
+
+<div class="lesson-cards">
+    {% if next_lesson %}
+        {% set next_time = next_lesson.startsAtUtc|format_time('short', timezone: timezone) %}
+        {% set next_when = next_lesson.startsAtUtc|date('Y-m-d', timezone) == today
+            ? 'course.lessons.today_at'|trans({time: next_time})
+            : 'course.lessons.date_at'|trans({date: next_lesson.startsAtUtc|format_date(pattern: 'EEE d MMM', timezone: timezone), time: next_time}) %}
+    {% endif %}
+    {% embed 'components/_card.html.twig' with {
+        tag: 'div',
+        label: 'course.lessons.next'|trans,
+        when: next_when ?? 'course.lessons.none_upcoming'|trans,
+        meta: next_lesson ? 'course.lessons.checkin_not_opened'|trans : null,
+        open_href: next_lesson ? path('lesson_show', {id: course_id, lessonId: next_lesson.id.toRfc4122}) : null,
+    } only %}
+        {% trans_default_domain 'courses' %}
+        {% block card_body %}
+            <span class="card__label lesson-card__label">{{ label }}</span>
+            <span class="lesson-card__when lesson-card__when--next">{{ when }}</span>
+            {%- if meta %}<span class="card__meta">{{ meta }}</span>{% endif %}
+            {%- if open_href %}
+                <span class="lesson-card__action">
+                    {% include 'components/_link_button.html.twig' with {label: 'course.lessons.open'|trans, href: open_href, full_width: true} only %}
+                </span>
+            {%- endif %}
+        {% endblock %}
+    {% endembed %}
+
+    {% if previous_lesson %}
+        {% embed 'components/_card.html.twig' with {
+            tag: 'div',
+            label: 'course.lessons.previous'|trans,
+            when: previous_lesson.startsAtUtc|format_date(pattern: 'EEE d MMM', timezone: timezone),
+            meta: 'course.lessons.attendance'|trans({present: previous_lesson.presentCount, marked: previous_lesson.markedCount}),
+        } only %}
+            {% block card_body %}
+                <span class="card__label">{{ label }}</span>
+                <span class="lesson-card__when">{{ when }}</span>
+                <span class="card__meta">{{ meta }}</span>
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+</div>
+
+<details class="lesson-all">
+    <summary class="lesson-all__toggle">
+        <span>{{ 'course.lessons.all'|trans({count: lessons|length}) }}</span>
+        {{- icon('chevron-right', null, 'lesson-all__chevron') -}}
+    </summary>
+    {% if lessons is not empty %}
+        <ol class="lesson-list" aria-label="{{ 'course.lessons.list_label'|trans }}">
+            {%- for lesson in lessons %}
+                {% include 'course/_lesson_row.html.twig' with {lesson: lesson, forms: lesson_forms[lesson.id.toRfc4122] ?? {}, timezone: timezone} only %}
+            {%- endfor %}
+        </ol>
+    {% endif %}
+</details>
+
+{% if add_lesson_form %}
+    <details class="lesson-add">
+        <summary class="lesson-add__toggle">{{ icon('add') }}{{ 'course.lessons.add.summary'|trans }}</summary>
+        {{ form_start(add_lesson_form, {attr: {class: 'lesson-form'}}) }}
+            {{ form_row(add_lesson_form.date) }}
+            {{ form_row(add_lesson_form.time) }}
+            {{ form_row(add_lesson_form.durationMinutes) }}
+            {% include 'components/_button.html.twig' with {label: 'course.lessons.add.submit'|trans, type: 'submit', variant: 'soft'} only %}
+        {{ form_end(add_lesson_form) }}
+    </details>
+{% endif %}
+
+{% if extend_form and extension_target %}
+    {{ form_start(extend_form, {attr: {class: 'lesson-extend'}}) }}
+        {% include 'components/_button.html.twig' with {label: 'course.lessons.extend'|trans({date: extension_target|format_date(pattern: 'd MMM y', timezone: false)}), type: 'submit', variant: 'secondary', icon: 'repeat', full_width: true} only %}
+    {{ form_end(extend_form) }}
+{% endif %}

@@ -32,3 +32,6 @@
 @import "./account/settings.css";
 @import "./checkin/checkin.css";
 @import "./dashboard/dashboard.css";
+@import "./courses/course-list.css";
+@import "./courses/course-form.css";
+@import "./courses/course-page.css";

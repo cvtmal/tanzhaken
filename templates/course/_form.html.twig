@@ -1,0 +1,32 @@
+{# The course form shared by new and edit (D1 mobile; C3's fields on a page at both widths, D5).
+   Field order of D1: name, weekday tiles, start time + duration tiles, location (helper when it was
+   prefilled from the last course), first + last lesson, description behind "+ Add a description"
+   (open when filled or invalid), sticky footer Cancel + submit. Root errors as the theme's danger alert.
+   Variables: form (CourseType view); submit_label (string, translated); cancel_href (string);
+   last_location (?string, the prefill of course_new; null on edit).
+   Call: {% include 'course/_form.html.twig' with {form: form, submit_label: 'x'|trans, cancel_href: path('course_index'), last_location: null} only %} #}
+{% trans_default_domain 'courses' %}
+{% set prefilled = last_location is not null and form.location.vars.value == last_location %}
+{% set description_open = form.description.vars.value is not empty or form.description.vars.errors|length > 0 %}
+{{ form_start(form, {attr: {class: 'course-form'}}) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.weekday) }}
+    <div class="course-form__pair course-form__pair--time">
+        {{ form_row(form.localStartTime) }}
+        {{ form_row(form.durationMinutes) }}
+    </div>
+    {{ form_row(form.location, prefilled ? {help: 'course.form.location.prefilled'} : {}) }}
+    <div class="course-form__pair">
+        {{ form_row(form.startsOn) }}
+        {{ form_row(form.endsOn) }}
+    </div>
+    <details class="course-form__more" {{ description_open ? 'open' }}>
+        <summary class="course-form__more-toggle">{{ icon('add') }}{{ 'course.form_page.add_description'|trans }}</summary>
+        {{ form_row(form.description) }}
+    </details>
+    <div class="course-form__footer">
+        {% include 'components/_link_button.html.twig' with {label: 'course.form_page.cancel'|trans, href: cancel_href, variant: 'secondary', size: 'lg', attr: {class: 'course-form__cancel'}} only %}
+        {% include 'components/_button.html.twig' with {label: submit_label, type: 'submit', size: 'lg', attr: {class: 'course-form__submit'}} only %}
+    </div>
+{{ form_end(form) }}

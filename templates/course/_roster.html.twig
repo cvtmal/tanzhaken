@@ -1,0 +1,30 @@
+{# Roster of the course page (E1/E3): heading "Students n", then a _table (stacked cards below 64rem,
+   a table at and above it) with one course/_roster_row per active enrolment, alphabetical (CourseRoster).
+   Variables: roster (list<RosterRow>); roster_forms (array<string enrollment id, array{label, remove: FormView}>,
+   empty on an archived course); course_slot (array{id, name, timezone}, handed on to the #12 slot).
+   Call: see course/show.html.twig. #}
+{% trans_default_domain 'courses' %}
+<div class="course-section__head">
+    <h2 id="course-roster-title" class="course-section__title">
+        {{- 'course.roster.heading'|trans }} <span class="course-section__count">{{ roster|length }}</span>
+    </h2>
+</div>
+
+{% if roster is empty %}
+    <p class="course-section__empty">{{ 'course.roster.empty'|trans }}</p>
+{% else %}
+    {% embed 'components/_table.html.twig' with {caption: 'course.roster.caption'|trans, roster: roster, roster_forms: roster_forms, course_slot: course_slot} only %}
+        {% trans_default_domain 'courses' %}
+        {% block table_head %}
+            <tr>
+                <th scope="col">{{ 'course.roster.student'|trans }}</th>
+                <th scope="col"><span class="visually-hidden">{{ 'course.roster.actions'|trans }}</span></th>
+            </tr>
+        {% endblock %}
+        {% block table_body %}
+            {%- for row in roster %}
+                {% include 'course/_roster_row.html.twig' with {row: row, forms: roster_forms[row.enrollmentId.toRfc4122] ?? null, course_slot: course_slot} only %}
+            {%- endfor %}
+        {% endblock %}
+    {% endembed %}
+{% endif %}

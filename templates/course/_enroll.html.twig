@@ -1,0 +1,21 @@
+{# Enrol an existing student (STU-3; target of the "Add student" header button, #enroll). A <details>
+   (works without JS) with the student select and the optional check-in label; when no student is
+   enrollable, a line and a link to student_new (#9). Not rendered for an archived course.
+   Variables: enroll_form (?FormView, EnrollType); open (bool: start expanded, e.g. on an empty roster).
+   Call: {% include 'course/_enroll.html.twig' with {enroll_form: enroll_form, open: roster is empty} only %} #}
+{% trans_default_domain 'courses' %}
+<details id="enroll" class="enroll" {{ open ? 'open' }}>
+    <summary class="enroll__toggle">{{ icon('person-add') }}{{ 'course.enroll.summary'|trans }}</summary>
+    <div class="enroll__body">
+        {%- if enroll_form %}
+            {{ form_start(enroll_form, {attr: {class: 'enroll__form'}}) }}
+                {{ form_row(enroll_form.student) }}
+                {{ form_row(enroll_form.label) }}
+                {% include 'components/_button.html.twig' with {label: 'course.enroll.submit'|trans, type: 'submit'} only %}
+            {{ form_end(enroll_form) }}
+        {%- else %}
+            <p class="enroll__none">{{ 'course.enroll.none'|trans }}</p>
+            {% include 'components/_link_button.html.twig' with {label: 'course.enroll.create'|trans, href: path('student_new'), variant: 'secondary', icon: 'add'} only %}
+        {%- endif %}
+    </div>
+</details>

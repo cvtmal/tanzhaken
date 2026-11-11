@@ -1,0 +1,97 @@
+{# Course page (E1 mobile, E3 desktop). Hotspot file owned by #10: the page actions include
+   course/_export_action.html.twig (#15, receives course = course_slot) and every roster row includes
+   course/_roster_balance.html.twig (#12, see _roster_row). Header: back arrow below 64rem, breadcrumbs
+   at and above it (course-page.css); sub-line "Tuesdays · 7:00 PM–8:00 PM · Studio 2" plus the course's
+   zone when it differs from the teacher's (S7, D-042). An archived course shows an "Archived" badge and
+   no forms (D8). Below 64rem lessons come first, then the roster; at and above it the roster is the
+   left column and the lesson cards the right one (E3).
+   Variables: see the class docblock of App\Courses\Controller\CourseController. #}
+{% extends 'layout/teacher.html.twig' %}
+{% trans_default_domain 'courses' %}
+{% set page_scripts = ['dialog'] %}
+
+{% block title %}{{ course.name }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    {% set schedule = 'course.show.schedule'|trans({
+        weekdays: ('course.weekday.plural.' ~ course.weekday)|trans,
+        start: course.localStartTime|format_time('short', timezone: false),
+        end: course.localStartTime|date_modify('+' ~ course.durationMinutes ~ ' minutes')|format_time('short', timezone: false),
+    }) %}
+    {% if course.location %}
+        {% set schedule = 'course.show.with_location'|trans({schedule: schedule, location: course.location}) %}
+    {% endif %}
+    {% if app.user and app.user.timezone != course.timezone %}
+        {% set schedule = 'course.show.with_timezone'|trans({schedule: schedule, timezone: course.timezone}) %}
+    {% endif %}
+    {% set archived = course.archived %}
+
+    <div class="course-page">
+        {% embed 'components/_page_header.html.twig' with {
+            title: course.name,
+            subtitle: schedule,
+            back_href: path('course_index'),
+            back_label: 'course.show.back'|trans,
+            breadcrumbs: [{label: 'course.show.breadcrumb'|trans, href: path('course_index')}, {label: course.name}],
+            archived: archived,
+            course_slot: course_slot,
+        } only %}
+            {% trans_default_domain 'courses' %}
+            {% block page_actions %}
+                {%- if archived %}
+                    {% include 'components/_status_badge.html.twig' with {label: 'course.show.archived'|trans, variant: 'neutral'} only %}
+                {%- else %}
+                    {% include 'components/_link_button.html.twig' with {label: 'course.show.edit'|trans, href: path('course_edit', {id: course_slot.id}), variant: 'secondary', icon: 'edit'} only %}
+                    {% include 'components/_link_button.html.twig' with {label: 'course.show.add_student'|trans, href: '#enroll', variant: 'soft', icon: 'person-add'} only %}
+                {%- endif %}
+                {% include 'course/_export_action.html.twig' ignore missing with {course: course_slot} only %}
+            {% endblock %}
+        {% endembed %}
+
+        <div class="course-page__grid">
+            <section class="course-page__lessons" aria-labelledby="course-lessons-title">
+                {% include 'course/_lessons.html.twig' with {
+                    course_id: course_slot.id,
+                    timezone: course.timezone,
+                    lessons: lessons,
+                    next_lesson: next_lesson,
+                    previous_lesson: previous_lesson,
+                    today: today,
+                    lesson_forms: lesson_forms,
+                    add_lesson_form: add_lesson_form,
+                    extend_form: extend_form,
+                    extension_target: extension_target,
+                } only %}
+            </section>
+            <section class="course-page__roster" aria-labelledby="course-roster-title">
+                {% include 'course/_roster.html.twig' with {roster: roster, roster_forms: roster_forms, course_slot: course_slot} only %}
+                {% if not archived %}
+                    {% include 'course/_enroll.html.twig' with {enroll_form: enroll_form, open: roster is empty} only %}
+                {% endif %}
+            </section>
+        </div>
+    </div>
+
+    {% if not archived %}
+        {% embed 'components/_dialog.html.twig' with {id: 'cancel-lesson', title: 'course.lessons.cancel.dialog_title'|trans, text: 'course.lessons.cancel.dialog_text'|trans} only %}
+            {% trans_default_domain 'courses' %}
+            {% block dialog_body %}
+                <p>{{ text }}</p>
+            {% endblock %}
+            {% block dialog_actions %}
+                {% include 'components/_button.html.twig' with {label: 'course.lessons.cancel.keep'|trans, variant: 'secondary', type: 'submit'} only %}
+                {% include 'components/_button.html.twig' with {label: 'course.lessons.cancel.confirm'|trans, data: {'dialog-confirm': true}} only %}
+            {% endblock %}
+        {% endembed %}
+        {% embed 'components/_dialog.html.twig' with {id: 'remove-student', title: 'course.roster.remove.dialog_title'|trans, text: 'course.roster.remove.dialog_text'|trans} only %}
+            {% trans_default_domain 'courses' %}
+            {% block dialog_body %}
+                <p>{{ text }}</p>
+            {% endblock %}
+            {% block dialog_actions %}
+                {% include 'components/_button.html.twig' with {label: 'course.roster.remove.keep'|trans, variant: 'secondary', type: 'submit'} only %}
+                {% include 'components/_button.html.twig' with {label: 'course.roster.remove.confirm'|trans, data: {'dialog-confirm': true}} only %}
+            {% endblock %}
+        {% endembed %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{# Edit course (D1/C3 form, D2 hint: edits apply to lessons added later) plus Archive with a confirm
+   dialog (D8; without JS the button posts directly). Variables: form (CourseType); course (Course);
+   archive_form (ConfirmActionType view, posts to course_archive). #}
+{% extends 'layout/teacher.html.twig' %}
+{% trans_default_domain 'courses' %}
+{% set page_scripts = ['dialog'] %}
+
+{% block title %}{{ 'course.edit.title'|trans }} · {{ course.name }} · {{ brand_name }}{% endblock %}
+
+{% block main %}
+    <div class="course-form-page">
+        {% include 'components/_page_header.html.twig' with {
+            title: 'course.edit.title'|trans,
+            subtitle: course.name,
+            back_href: path('course_show', {id: course.id.toRfc4122}),
+            back_label: 'course.edit.back'|trans({name: course.name}),
+        } only %}
+
+        <div class="course-form-page__hint">
+            {% include 'components/_alert.html.twig' with {text: 'course.edit.hint'|trans} only %}
+        </div>
+
+        {% include 'course/_form.html.twig' with {form: form, submit_label: 'course.edit.submit'|trans, cancel_href: path('course_show', {id: course.id.toRfc4122}), last_location: null} only %}
+
+        <section class="course-archive" aria-labelledby="course-archive-title">
+            <h2 id="course-archive-title" class="course-archive__title">{{ 'course.edit.archive.title'|trans }}</h2>
+            <p class="course-archive__text">{{ 'course.edit.archive.text'|trans }}</p>
+            {{ form_start(archive_form, {attr: {class: 'course-archive__form'}}) }}
+                {% include 'components/_button.html.twig' with {label: 'course.edit.archive.button'|trans, variant: 'secondary', type: 'submit', data: {'dialog-open': 'archive-course'}} only %}
+            {{ form_end(archive_form) }}
+        </section>
+    </div>
+
+    {% embed 'components/_dialog.html.twig' with {id: 'archive-course', title: 'course.edit.archive.dialog_title'|trans({name: course.name}), text: 'course.edit.archive.dialog_text'|trans} only %}
+        {% trans_default_domain 'courses' %}
+        {% block dialog_body %}
+            <p>{{ text }}</p>
+        {% endblock %}
+        {% block dialog_actions %}
+            {% include 'components/_button.html.twig' with {label: 'course.edit.archive.keep'|trans, variant: 'secondary', type: 'submit'} only %}
+            {% include 'components/_button.html.twig' with {label: 'course.edit.archive.confirm'|trans, data: {'dialog-confirm': true}} only %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}

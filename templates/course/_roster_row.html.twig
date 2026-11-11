@@ -1,0 +1,42 @@
+{# One roster row (<tr>, E1/E3). Hotspot file owned by #10. Student cell: avatar, name (link to
+   student_show), check-in label, "Archived student" badge. Then the #12 slot
+   course/_roster_balance.html.twig, included directly inside the <tr> with {course: course_slot, row: row}:
+   it renders its own <td data-label="…"> cell(s). Last cell: an "Edit" <details> with the label form and
+   "Remove from course" (opens the shared #remove-student confirm dialog of show.html.twig); empty on an
+   archived course.
+   Variables: row (RosterRow); forms (array{label: FormView, remove: FormView}|null);
+   course_slot (array{id: string, name: string, timezone: string}).
+   Call: {% include 'course/_roster_row.html.twig' with {row: row, forms: forms, course_slot: course_slot} only %} #}
+{% trans_default_domain 'courses' %}
+{% set name = row.firstName ~ ' ' ~ row.lastName %}
+<tr class="roster-row">
+    <td class="roster-row__student" data-label="{{ 'course.roster.student'|trans }}">
+        <span class="roster-row__who">
+            {% include 'components/_avatar.html.twig' with {initials: (row.firstName|first ~ row.lastName|first)|upper, size: 'sm'} only %}
+            <span class="roster-row__text">
+                <a class="roster-row__name" href="{{ path('student_show', {id: row.studentId.toRfc4122}) }}">{{ name }}</a>
+                {%- if row.label %}<span class="roster-row__label">{{ 'course.roster.label'|trans({label: row.label}) }}</span>{% endif %}
+            </span>
+            {%- if row.studentArchived %}
+                {% include 'components/_status_badge.html.twig' with {label: 'course.roster.student_archived'|trans, variant: 'neutral', size: 'sm'} only %}
+            {%- endif %}
+        </span>
+    </td>
+    {% include 'course/_roster_balance.html.twig' ignore missing with {course: course_slot, row: row} only %}
+    <td class="table__actions roster-row__actions" data-label="{{ 'course.roster.actions'|trans }}">
+        {%- if forms %}
+            <details class="roster-row__edit">
+                <summary class="roster-row__toggle" aria-label="{{ 'course.roster.edit_label'|trans({name: name}) }}">{{ 'course.roster.edit'|trans }}</summary>
+                <div class="roster-row__forms">
+                    {{ form_start(forms.label, {attr: {class: 'roster-row__form'}}) }}
+                        {{ form_row(forms.label.label) }}
+                        {% include 'components/_button.html.twig' with {label: 'course.roster.save_label'|trans, type: 'submit', variant: 'soft'} only %}
+                    {{ form_end(forms.label) }}
+                    {{ form_start(forms.remove, {attr: {class: 'roster-row__form'}}) }}
+                        {% include 'components/_button.html.twig' with {label: 'course.roster.remove.button'|trans, type: 'submit', variant: 'secondary', data: {'dialog-open': 'remove-student'}} only %}
+                    {{ form_end(forms.remove) }}
+                </div>
+            </details>
+        {%- endif -%}
+    </td>
+</tr>

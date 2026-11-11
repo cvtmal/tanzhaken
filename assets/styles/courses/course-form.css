@@ -1,0 +1,97 @@
+/*
+ * Course form pages (#10): new and edit (D1 mobile; C3's fields as a page at both widths, D5).
+ * Two-column pairs (start time + duration, first + last lesson), the "+ Add a description"
+ * disclosure, a sticky footer above the tab bar (below 64rem) or the viewport bottom, and the
+ * archive section of the edit page. Tokens only.
+ */
+.course-form-page {
+    max-width: 40rem;
+}
+
+.course-form-page__hint {
+    margin-bottom: var(--space-20);
+}
+
+.course-form__pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-12);
+}
+
+.course-form__pair--time {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+
+.course-form__more {
+    margin-bottom: var(--space-18);
+}
+
+.course-form__more-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-6);
+    min-height: var(--control-min);
+    color: var(--color-accent);
+    font-size: var(--text-15);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    list-style: none;
+}
+
+.course-form__more-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.course-form__more[open] .course-form__more-toggle {
+    margin-bottom: var(--space-8);
+}
+
+.course-form__footer {
+    position: sticky;
+    bottom: var(--tabbar-height);
+    z-index: 2;
+    display: flex;
+    gap: var(--space-12);
+    margin: var(--space-8) calc(var(--space-20) * -1) 0;
+    padding: var(--space-14) var(--space-20);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-card);
+}
+
+.course-form__footer .course-form__submit {
+    flex: 1;
+}
+
+.course-archive {
+    margin-top: var(--space-40);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--color-line);
+}
+
+.course-archive__title {
+    font-size: var(--text-17);
+    font-weight: var(--weight-semibold);
+}
+
+.course-archive__text {
+    margin: var(--space-6) 0 var(--space-14);
+    color: var(--color-ink-2);
+    font-size: var(--text-14);
+}
+
+@media (min-width: 64rem) {
+    .course-form__footer {
+        bottom: 0;
+        justify-content: flex-end;
+        margin: var(--space-8) 0 0;
+        padding: var(--space-16) 0;
+        border-top-color: var(--color-line);
+        background: var(--color-paper);
+    }
+
+    .course-form__footer .course-form__submit {
+        flex: none;
+        min-width: 16rem;
+    }
+}

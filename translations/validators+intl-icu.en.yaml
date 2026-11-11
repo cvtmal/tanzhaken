@@ -41,3 +41,34 @@ students:
         notes:
             too_long: These notes are too long.
         invalid: Check the name and email and try again.
+courses:
+    course:
+        name:
+            blank: Enter a course name.
+            too_long: This course name is too long.
+        weekday:
+            blank: Choose a weekday.
+        local_start_time:
+            blank: Enter the start time.
+        duration:
+            blank: Choose a duration.
+        location:
+            too_long: This location is too long.
+        starts_on:
+            blank: Enter the date of the first lesson.
+        ends_on:
+            before_start: The last lesson cannot be before the first one.
+    lesson:
+        date:
+            blank: Enter the date of the lesson.
+        time:
+            blank: Enter the time of the lesson.
+        duration:
+            out_of_range: A lesson lasts between 1 and 1440 minutes.
+        reason:
+            too_long: This reason is too long.
+    enroll:
+        student:
+            blank: Choose a student.
+        label:
+            too_long: This check-in label is too long.

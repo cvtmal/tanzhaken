@@ -1,0 +1,206 @@
+# Domain `courses` (S7): course pages, lessons, roster (#10).
+# course.error.* mirrors App\Courses\Exception\InvalidCourse::translationKey() (D7);
+# tests/Unit/Courses/InvalidCourseTest.php checks every key exists.
+course:
+    error:
+        empty_name: Enter a course name.
+        too_long: 'The {field} must not be longer than {max, plural, one {# character} other {# characters}}.'
+        invalid_timezone: '“{timezone}” is not a valid time zone.'
+        invalid_weekday: Choose a weekday.
+        invalid_duration: 'A lesson lasts between 1 and 1440 minutes.'
+        ends_before_start: The last lesson cannot be before the first one.
+        already_archived: This course is already archived.
+        student_of_another_teacher: This student cannot be enrolled in this course.
+        enrollment_already_left: This student has already left the course.
+        lesson_ends_before_start: The lesson must end after it starts.
+        lesson_already_cancelled: This lesson is already cancelled.
+        cancelled_lesson_cannot_complete: A cancelled lesson cannot be completed.
+        course_archived: This course is archived and cannot be changed.
+        lesson_time_taken: The course already has a lesson at that time.
+        lesson_has_attendance: This lesson already has attendance and cannot be cancelled.
+        lesson_not_cancelled: This lesson is not cancelled.
+        cancelled_lesson_cannot_move: A cancelled lesson cannot be moved. Reinstate it first.
+        invalid_weeks: 'The schedule can be planned for 1 to 104 weeks, not {weeks}.'
+        extension_too_far: 'The schedule can be extended by at most {max, plural, one {# week} other {# weeks}} at once.'
+        student_archived: This student is archived and cannot be enrolled.
+        already_enrolled: This student is already enrolled in the course.
+        label_taken: 'Another student of this course already uses the check-in label “{label}”.'
+    # Form labels and flashes used by the controllers and form types (Phase 4); page copy follows in Phase 5.
+    form:
+        name:
+            label: Course name
+        weekday:
+            label: Weekday
+            choice:
+                1: Mo
+                2: Tu
+                3: We
+                4: Th
+                5: Fr
+                6: Sa
+                7: Su
+        local_start_time:
+            label: Starts at
+        duration:
+            label: Duration, minutes
+        location:
+            label: Location
+            prefilled: Filled in from your last course
+        starts_on:
+            label: First lesson
+        ends_on:
+            label: Last lesson
+        description:
+            label: Description
+            placeholder: Level, what to bring, partner needed…
+    flash:
+        created: 'Course “{name}” created.'
+        updated: 'Changes to “{name}” saved.'
+        archived: 'Course “{name}” archived.'
+        extended: '{count, plural, =0 {No lessons added} one {# lesson added} other {# lessons added}}, until {date}.'
+        nothing_to_extend: There are no more lessons to add to this course.
+        lesson_added: 'Lesson on {date} added.'
+        lesson_rescheduled: 'Lesson moved to {date}.'
+        lesson_cancelled: 'Lesson on {date} cancelled.'
+        lesson_reinstated: 'Lesson on {date} reinstated.'
+        enrolled: '{first_name} {last_name} enrolled.'
+        removed: '{first_name} {last_name} removed from the course.'
+        label_saved: 'Check-in label of {first_name} {last_name} saved.'
+        invalid_request: Something went wrong with that form. Please try again.
+    # Page copy (Phase 5): C1/C2 list, D1/C3 form, E1/E3 course page.
+    weekday:
+        short:
+            1: Mon
+            2: Tue
+            3: Wed
+            4: Thu
+            5: Fri
+            6: Sat
+            7: Sun
+        plural:
+            1: Mondays
+            2: Tuesdays
+            3: Wednesdays
+            4: Thursdays
+            5: Fridays
+            6: Saturdays
+            7: Sundays
+    index:
+        title: Courses
+        new: New course
+        list_label: Your courses
+    card:
+        students: '{count, plural, =0 {No students yet} one {# student} other {# students}}'
+        meta: '{students} · {location}'
+        next_lesson: 'Next lesson {date}'
+        today: Today
+        starts: 'Starts {date}'
+    empty:
+        title: No courses yet
+        text: Add your first course and its weekly lessons appear here. It takes about a minute.
+        action: Create your first course
+    new:
+        title: New course
+        close: Close, back to your courses
+        submit: Create course
+    edit:
+        title: Edit course
+        back: 'Back to {name}'
+        hint: Changes to the weekday, time, length or dates apply to lessons added from now on. Lessons already planned keep their time; move or cancel them one by one on the course page.
+        submit: Save changes
+        archive:
+            title: Archive this course
+            text: An archived course leaves your course list. Its lessons, attendance and passes stay, but nothing can be changed any more.
+            button: Archive course
+            dialog_title: 'Archive “{name}”?'
+            dialog_text: The course disappears from your list and cannot be changed afterwards. Attendance and passes are kept.
+            keep: Keep course
+            confirm: Archive
+    form_page:
+        cancel: Cancel
+        add_description: Add a description
+    show:
+        breadcrumb: Courses
+        back: Back to your courses
+        schedule: '{weekdays} · {start}–{end}'
+        with_location: '{schedule} · {location}'
+        with_timezone: '{schedule} · {timezone}'
+        archived: Archived
+        edit: Edit course
+        add_student: Add student
+    lessons:
+        heading: Lessons
+        next: Next lesson
+        previous: Previous lesson
+        today_at: 'Today, {time}'
+        date_at: '{date}, {time}'
+        none_upcoming: No upcoming lessons
+        checkin_not_opened: Check-in not opened
+        attendance: '{marked, plural, =0 {No attendance marked} other {{present} of # present}}'
+        open: Open lesson
+        all: '{count, plural, =0 {All lessons (none yet)} other {All lessons (#)}}'
+        list_label: All lessons of this course
+        time_range: '{start}–{end}'
+        change: Change
+        change_label: 'Change the lesson on {date}'
+        reschedule:
+            title: Move this lesson
+            submit: Move lesson
+        cancel:
+            title: Cancel this lesson
+            submit: Cancel lesson
+            dialog_title: Cancel this lesson?
+            dialog_text: Students will see that it does not take place. You can reinstate it later.
+            keep: Keep lesson
+            confirm: Cancel lesson
+        reinstate: Reinstate
+        reinstate_label: 'Reinstate the lesson on {date}'
+        add:
+            summary: Add a lesson
+            submit: Add lesson
+        extend: 'Add lessons until {date}'
+        status:
+            scheduled: Scheduled
+            completed: Completed
+            cancelled: Cancelled
+    roster:
+        heading: Students
+        caption: Students of this course
+        student: Student
+        actions: Actions
+        label: 'Check-in label: {label}'
+        student_archived: Archived student
+        empty: No students in this course yet.
+        edit: Edit
+        edit_label: 'Edit {name}'
+        save_label: Save label
+        remove:
+            button: Remove from course
+            dialog_title: Remove this student?
+            dialog_text: The student leaves the course. Their attendance and passes are kept, and you can add them again later.
+            keep: Keep student
+            confirm: Remove
+    enroll:
+        summary: Add a student
+        submit: Add to course
+        none: All your students are already in this course.
+        create: Create a new student
+lesson:
+    form:
+        date:
+            label: Date
+        time:
+            label: Time
+        duration:
+            label: Duration, minutes
+            help: Leave empty to keep the usual length.
+        reason:
+            label: Reason
+enroll:
+    form:
+        student:
+            label: Student
+            placeholder: Choose a student
+        label:
+            label: Check-in label
+            help: Shown on the check-in page instead of the name, e.g. “Alex R.”
