@@ -38,7 +38,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 |---|---|---|---|---|---|
 | 8 `checkin-core` | implement | c08-impl (bg 40c34956) | A (8001) | 11-11 12:05 | plan 6 phases; D-035; outcome carries #14 notes (label rule P2, limiter reset) |
 | 4 `teacher-auth` | implement | c04-impl (bg 6004b4d2) | C (8003) | 11-11 11:45 | plan 6 phases; lane synced onto #2/#7; D-031, D-033; #11 must put logout on /account (phones) |
-| 10 `courses-ui` | research | c10-research (bg ad07eb35) | B (8002) | 11-11 11:25 | D-032: implement after #4 lands (`lane sync` first) |
+| 10 `courses-ui` | plan | c10-plan (bg) | B (8002) | 11-11 12:15 | research done (152k); D-034 rows, D-036 badge slot; implement after #4 lands |
 | 9 `students-ui` | waiting for #4 | — | D (8004) | 11-11 11:55 | plan done (6 phases, phases 0, 3–4 need #4); next: `lane sync students-ui`, then c09-impl |
 
 ## Next actions

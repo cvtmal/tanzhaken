@@ -60,7 +60,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `assets/styles/app.css` (import list) | #2 | append one line for their own file |
    | `translations/messages+intl-icu.en.yaml` (layout strings) | #2 | nothing; each module has its own domain file |
    | `templates/student/show.html.twig` | #9 | #12 creates `student/_credits.html.twig`, #13 creates `student/_attendance.html.twig` (both `ignore missing` includes) |
-   | `templates/course/show.html.twig`, `course/_roster_row.html.twig` | #10 | #12 creates `course/_roster_balance.html.twig`, #15 `course/_export_action.html.twig` |
+   | `templates/course/show.html.twig`, `course/_roster_row.html.twig`, the course card on `course_index` | #10 | #12 creates `course/_roster_balance.html.twig` and `course/_card_badges.html.twig` (the card's `ignore missing` badge slot), #15 `course/_export_action.html.twig` |
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
    | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` |
    | `.env`, `.env.example` | #0 | append their own variables with safe defaults and a one-line comment (#2 adds `APP_BRAND_NAME`) |
