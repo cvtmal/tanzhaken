@@ -63,7 +63,7 @@ Artifacts land in `.rpi-tracking/{research,plans,changes,reviews}/<date>/<slug>-
    | `templates/student/show.html.twig` | #9 | #12 creates `student/_credits.html.twig`, #13 creates `student/_attendance.html.twig` (both `ignore missing` includes) |
    | `templates/course/show.html.twig`, `course/_roster_row.html.twig`, the course card on `course_index` | #10 | #12 creates `course/_roster_balance.html.twig` and `course/_card_badges.html.twig` (the card's `ignore missing` badge slot), #15 `course/_export_action.html.twig`; #12 may add the one "Lessons left" `<th>` to `course/_roster.html.twig`, and its `_roster_balance` renders its own `<td>` (D-047) |
    | `templates/lesson/show.html.twig` | #13 | #16 creates `lesson/_checkin_action.html.twig` |
-   | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` |
+   | `templates/account/show.html.twig` | #11 | #18 creates `account/_delete.html.twig` and adds `'dialog'` to `page_scripts` (D-050) |
    | `.env`, `.env.example` | #0 | append their own variables with safe defaults and a one-line comment (#2 adds `APP_BRAND_NAME`) |
 | `templates/placeholder.html.twig`, the placeholder routes test | #0 | #2 puts the placeholder into the layouts and adds `_styleguide` to the expected routes; #4 makes the test log in before its requests; every cycle that ships a real route edits only the expected-route rows for its own routes (drops the placeholder row, adds its POST sub-routes) |
 | `CLAUDE.md`, `.claude/rules/module-<name>.md` | #0 | append to their own module's rule file; `CLAUDE.md` keeps one pointer per module |

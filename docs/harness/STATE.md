@@ -37,7 +37,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
 | 17 `dashboard` | review | c17-review | D (8004) | 11-11 10:50 | 446 tests; D-044, D-048; query count asserted equal (3) at 2 vs 20 |
-| 18 `data-protection` | plan | c18-plan | A (8001) | 11-11 10:50 | 123k; research applies D-046 (APP_HOSTING_REGION) and D-043 |
+| 18 `data-protection` | implement | c18-impl | A (8001) | 11-11 11:05 | plan 26 steps; D-049, D-050; Step 3.8 may BLOCK on flash after logout |
 | 10 `courses-ui` | review | c10-review | B (8002) | 11-11 10:50 | 508 tests; D-047; c10-impl shut down; next: c10-review (keep both sides on list conflicts) |
 
 ## Next actions
