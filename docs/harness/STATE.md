@@ -39,7 +39,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 | 2 `design-system` | review | c02-review (bg cfb964ec) | B (8002) | 11-11 10:10 | impl done in 3 sessions (150 tests); new importmap entry `alert` |
 | 5 `scheduling` | review | c05-review (bg 3cfa810f) | A (8001) | 11-11 10:25 | impl green (166 tests); race backstops read-only (P7); D8 race on MariaDB → #21 |
 | 4 `teacher-auth` | research | c04-research (bg 802fb667) | C (8003) | 11-11 09:55 | #2 not landed: reads its plan; implement only after #2 lands (`lane sync` first) |
-| 7 `attendance-core` | implement | c07-impl (bg 51e61cbc) | D (8004) | 11-11 08:55 | plan: 7 phases; told to apply D-027 to AttendanceMarker; child-process concurrency test in make test |
+| 7 `attendance-core` | review | c07-review (bg 92ff473c) | D (8004) | 11-11 10:40 | impl green (145 tests, concurrency group 3/3); retry-once branch untested → #8/#23 |
 
 ## Next actions
 
