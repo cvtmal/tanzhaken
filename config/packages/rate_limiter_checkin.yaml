@@ -1,0 +1,14 @@
+# Public check-in throttles (cycle #8). CheckIn\Service\CheckInThrottle receives them as
+# $checkinIpLimiter and $checkinTokenLimiter; #14 calls it on /c/{token}.
+framework:
+    rate_limiter:
+        # Per client IP. A whole class shares the studio Wi-Fi, so one IP stands for many students.
+        checkin_ip:
+            policy: sliding_window
+            limit: 100
+            interval: '5 minutes'
+        # Per check-in window. The key is the token hash (CheckInTokens::hash()), never the plain token.
+        checkin_token:
+            policy: sliding_window
+            limit: 300
+            interval: '60 minutes'

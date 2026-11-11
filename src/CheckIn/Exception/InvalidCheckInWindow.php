@@ -20,4 +20,14 @@ final class InvalidCheckInWindow extends \DomainException
     {
         return new self('The check-in window is already closed.');
     }
+
+    public static function lessonCancelled(): self
+    {
+        return new self('A check-in cannot be opened for a cancelled lesson.');
+    }
+
+    public static function courseArchived(): self
+    {
+        return new self('A check-in cannot be opened for a lesson of an archived course.');
+    }
 }
