@@ -36,7 +36,7 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 2 `design-system` | implement | c02-impl-3 (bg c0ba60e9) | B (8002) | 11-11 09:20 | phases 1–6 green (8df631e, 150 tests); resumes at Step 7.1 (validation, browser pass, outcome file) |
+| 2 `design-system` | review | c02-review (bg cfb964ec) | B (8002) | 11-11 10:10 | impl done in 3 sessions (150 tests); new importmap entry `alert` |
 | 5 `scheduling` | implement | c05-impl (bg 60afd909) | A (8001) | 11-11 09:00 | plan: 7 phases; LessonScheduler unwired until #10 injects it |
 | 4 `teacher-auth` | research | c04-research (bg 802fb667) | C (8003) | 11-11 09:55 | #2 not landed: reads its plan; implement only after #2 lands (`lane sync` first) |
 | 7 `attendance-core` | implement | c07-impl (bg 51e61cbc) | D (8004) | 11-11 08:55 | plan: 7 phases; told to apply D-027 to AttendanceMarker; child-process concurrency test in make test |
