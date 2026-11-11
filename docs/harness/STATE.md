@@ -36,12 +36,14 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 16 `checkin-teacher-ui` | research | c16-research | A (8001) | 11-11 11:28 | opened before #13 landed (D-051 pattern): lane sync before implement |
+| 16 `checkin-teacher-ui` | plan DONE → implement after #13 lands | — | A (8001) | 11-11 11:45 | plan Phase 0 = precondition; D-055, D-056; `lane sync` then spawn c16-impl |
 | 12 `credits-ui` | implement | c12-impl | B (8002) | 11-11 11:13 | plan PD1–PD10; D-053 |
-| 15 `csv-export` | implement | c15-impl | D (8004) | 11-11 11:12 | plan D1–D9; D-052; add/add conflict with #13 on attendance translations |
+| 15 `csv-export` | rework 1 (implement) | c15-impl-2 | D (8004) | 11-11 11:42 | F-M1 sideways scroll at 390 px from #2's `.page-header__actions {flex:none}`; fix in own export.css; then c15-review-2 |
 | 13 `attendance-ui` | implement | c13-impl | C (8003) | 11-11 11:10 | plan 27 steps (P1–P8); lane synced onto #10; F3 segmented bar → #20 |
 
 ## Next actions
+
+**OWNER STOP (G9, owner instruction 2026-11-11 11:50):** when W5 is complete (#16, #17, #18 landed, plus W4's #12, #13, #15 that are in flight), start no W6 cycle (#19–#23). Shut down every teammate, close the lanes, delete the watchdog, commit and push the harness files, send the owner one push notification "W5 done, ready for your review", and stop. Resume only when the owner says so.
 
 Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a`, #10 `e3e14d5`, #18 `351d307` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
@@ -53,6 +55,9 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 ## Notes for the successor
 
+- For #19's prompt (D-055): add a lead-time rule to `CheckInWindows::open()` (a crafted POST can open and complete a future lesson of one's own). For #20 (c16-research D9): F3 desktop QR side panel.
+- For #20/#3 seed (from #15): the seed has no archived course. For #23: open the CSV in Excel/LibreOffice (manual, owner). A `;` variant is one constant, `CsvEncoder::SEPARATOR`.
+- Chrome in this setup will not narrow below ~560 px; 390 px checks use a 390 px iframe (c18-impl's method).
 - For #20's prompt (from #18): #2's `.public-main` caps the privacy page at 30rem (~60 chars per line).
 - For #20's prompt (D-053): dashboard "+10" Undo and Low rows; void/correct as dialogs (may add `page_scripts = ['dialog']` to student/show.html.twig).
 - For #20's prompt (c10-review): F-m1 course card "next lesson" uses starts_at >= now, the page ends_at >= now (a running lesson differs); F-m2/F-m3 test gaps (edit on archived course; sub-route field-error flash, nothing_to_extend); i18n `{field}` in English and missing invalid_message.
