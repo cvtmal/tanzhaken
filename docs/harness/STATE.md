@@ -5,7 +5,7 @@ The CTO's memory. Edited only by the active CTO, with small edits. A successor r
 ## Now
 
 - **CTO generation:** 4
-- **Phase of the project:** W0–W2 done; W3: #8, #9, #11 done, #10 awaits review; W4: #14 done; W5: #17 awaits review, #18 awaits plan
+- **Phase of the project:** W0–W2 done; W3: #8, #9, #11 done, #10 awaits review; W4: #14 done; W5: #17 done, #18 implementing
 - **Wave in progress:** W3 (#10), W4/W5 overlapping; no teammate running at handover
 
 ## Mechanics
@@ -36,13 +36,13 @@ Status of every cycle is the last column of the overview in `docs/rpi-cycles.md`
 
 | Cycle | Phase | Teammate | Lane | Since | Note |
 |---|---|---|---|---|---|
-| 17 `dashboard` | review | c17-review | D (8004) | 11-11 10:50 | 446 tests; D-044, D-048; query count asserted equal (3) at 2 vs 20 |
 | 18 `data-protection` | implement | c18-impl | A (8001) | 11-11 11:05 | plan 26 steps; D-049, D-050; Step 3.8 may BLOCK on flash after logout |
+| 13 `attendance-ui` | research | c13-research | C (8003) | 11-11 10:57 | opened before #10 landed (D-051): lane sync before implement |
 | 10 `courses-ui` | review | c10-review | B (8002) | 11-11 10:50 | 508 tests; D-047; c10-impl shut down; next: c10-review (keep both sides on list conflicts) |
 
 ## Next actions
 
-Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
+Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca71d`, #7 `ac0c0c2`, #2 `7659e70`, #8 `d8296d8`, #4 `6646214`, #9 `5335c26`, #11 `eb9f4c9`, #14 `c5cb3eb`, #17 `acdaa7a` (all ✅ Done in the overview). W0, W1 done; W2 has only #4 left.
 
 1. **No teammate runs.** Lanes: A `data-protection` (#18 research done → spawn c18-plan), B `courses-ui` (#10 implement done → spawn c10-review first: critical path, #12/#13/#15 wait on it), C free, D `dashboard` (#17 implement done → spawn c17-review). Run `lane sync` before each, and tell every reviewer "list conflicts on rebase (PlaceholderRoutesTest, app.css, validators yaml): keep both sides".
 2. After #10 lands and CI is green: #12 `credits-ui` (Plan; D-047 `<th>` grant; also the "+10 with Undo" and optional Low rows from D-044), #13 `attendance-ui` (Research), #15 `csv-export` (Plan, S) into free lanes, critical path (#13 → #16) first.
