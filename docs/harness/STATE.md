@@ -50,6 +50,7 @@ Landed so far: #0 `cff3e1a`, #1 `831184b`, #3 `b4dcb75`, #6 `43477a9`, #5 `3cca7
 
 ## Notes for the successor
 
+- For #20's prompt (owner review 2026-11-11): on phones, logout is hard to find: it is a small text button at the bottom of /account, above the delete card (the sidebar that carries it on desktop is hidden, D-033). Make it clearly visible on mobile (e.g. a prominent button near the top of /account, or in the tab bar's account area).
 - For #20's prompt (D-059, from #16): remove dead `templates/placeholder.html.twig` and the skipping slot-absent tests (#9, #13); design deltas: slot in header actions not F1/F2 sticky bar, static "Open until" badge, no Close confirm dialog, full-screen button on phones, no feedback on fullscreen refusal.
 - For the owner review / #23 (G7): full screen on the QR page (Chrome refuses it under automation) and a real phone scan over LAN.
 - For #19's prompt (c12-review): Credits `addRefusal()` maps refusals by exception message. For #20: `credits_course_open()` uses ORM findBy in Twig; correct page's "owed" line static, tile labels "10 lessons" vs "5"; #10 course page student-name links 19 px high and "Edit" summary 26 px wide (< 44 px).
